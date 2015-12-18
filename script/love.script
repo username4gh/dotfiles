@@ -1,0 +1,8 @@
+set term svg
+set output 'gnuplot_heart.svg'
+set yrange [-3.5:2]
+set xzeroaxis
+set yzeroaxis
+plot [-2:2] acos(1-abs(x))-pi,sqrt(1-(abs(x)-1)**2)
+unset output
+unset term
