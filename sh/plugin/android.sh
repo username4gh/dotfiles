@@ -27,3 +27,15 @@ if [[ -d "$ANDROID_NDK" ]];then
     fi
 fi
 export CSCOPE_DB="$HOME/cscope_db/ndk/cscope.out"
+
+_android_apktool_jar(){
+  local url
+  url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | grep -Po "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
+  echo $url
+}
+
+# apktool
+if [[ ! -f "$HOME/bin/apktool" ]];then
+   wget -c https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool -O "$HOME/bin/apktool"
+   wget -c "$(_android_apktool_jar)" -O "$HOME/bin/apktool.jar"
+fi

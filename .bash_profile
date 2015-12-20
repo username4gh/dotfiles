@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# If not running interactively, don't do anything 
-# this line has to be placed at this front-pos, 
+# If not running interactively, don't do anything
+# this line has to be placed at this front-pos,
 # otherwise the rsync will not work
 case $- in
     *i*) ;;
     *) return;;
 esac
 
-# despite there are some issue with bash-it, but still the price to maintain a brand new config with 
+# despite there are some issue with bash-it, but still the price to maintain a brand new config with
 # at least the same quality is too high, so my approach is trying to build sth based on it.
 
 # Path to the bash it configuration
@@ -134,7 +134,3 @@ if [[ -f "$HOME/repo/my-i3/sh/init.sh" ]];then
 fi
 
 source "$HOME/repo/my-i3/.profile"
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/ubuntu/.sdkman"
-[[ -s "/home/ubuntu/.sdkman/bin/sdkman-init.sh" ]] && source "/home/ubuntu/.sdkman/bin/sdkman-init.sh"
