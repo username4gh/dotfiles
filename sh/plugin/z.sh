@@ -3,4 +3,5 @@ if [[ ! -d "$HOME/repo/z" ]];then
 fi
 
 source "$HOME/repo/z/z.sh"
+
 export MANPATH="$HOME/repo/z:${MANPATH}"

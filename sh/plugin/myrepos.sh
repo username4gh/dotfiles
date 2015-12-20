@@ -14,11 +14,13 @@ export PATH="$HOME/repo/myrepos:$PATH"
 
 _myrepos_get_remote_url() {
     (cd "$1";
+    local url;
     url=$(git-info | grep 'remote.origin.url=' | sed "s/remote.origin.url=//g") ;
     echo "$url")
 }
 
 _myrepos_info() {
+    local file
     while IFS= read -r -d '' file
     do
         if [[ -d "$file/.git" ]];then
@@ -32,6 +34,7 @@ _myrepos_register_all() {
         rm "$HOME/repo/my-i3/.mrconfig"
     fi
 
+    local file
     while IFS= read -r -d '' file
     do
         echo "$file"

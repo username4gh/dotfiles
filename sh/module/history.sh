@@ -4,16 +4,13 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
         if [[ "$(_check_dir "$HOME/repo/my-history")" == 1 ]]; then
             # there is a threshold for history file, so it might cause 'git command' not always 
             # return true
-            pushd "$HOME/repo/bash_history_git" \
+            (cd "$HOME/repo/bash_history_git" \
                 && git add . \
-                && git commit -am save
-            popd
+                && git commit -am save)
         else
             if [[ "$(_check_variant "$HISTORY_REPO")" == 1 ]]; then
-                pushd "$HOME/repo" \
-                    && git clone "$HISTORY_REPO" \
-                    && ln -s "$HOME/repo/bash_history_git/.bash_history.archive" ~/.bash_history.archive \
-                    && popd
+                (git clone "$HISTORY_REPO" "$HOME/repo/my-history" \
+                    && ln -s "$HOME/repo/bash_history_git/.bash_history.archive" ~/.bash_history.archive)
             fi
         fi
     }

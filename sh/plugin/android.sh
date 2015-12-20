@@ -20,22 +20,21 @@ if [[ -d "$ANDROID_NDK" ]];then
         mkdir -vp "$HOME/cscope_db/ndk"
         echo "mkdir cscope_db/ndk"
 
-        find "$ANDROID_NDK/platforms/android-16/arch-arm/usr/include/" -name '*.[ch]' > "$HOME/cscope_db/ndk/cscope.files" \
-            && pushd "$HOME/cscope_db/ndk" \
-            && cscope -bvq \
-            && popd || exit
+        (find "$ANDROID_NDK/platforms/android-16/arch-arm/usr/include/" -name '*.[ch]' > "$HOME/cscope_db/ndk/cscope.files" \
+            && cd "$HOME/cscope_db/ndk" \
+            && cscope -bvq)
     fi
 fi
 export CSCOPE_DB="$HOME/cscope_db/ndk/cscope.out"
 
 _android_apktool_jar(){
-  local url
-  url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | grep -Po "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
-  echo $url
+    local url
+    url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | grep -Po "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
+    echo $url
 }
 
 # apktool
 if [[ ! -f "$HOME/bin/apktool" ]];then
-   wget -c https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool -O "$HOME/bin/apktool"
-   wget -c "$(_android_apktool_jar)" -O "$HOME/bin/apktool.jar"
+    wget -c https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool -O "$HOME/bin/apktool"
+    wget -c "$(_android_apktool_jar)" -O "$HOME/bin/apktool.jar"
 fi

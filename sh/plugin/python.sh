@@ -2,9 +2,7 @@
 
 if [[ ! -d "$HOME/repo/pyenv" ]]; then
     echo "newly installed pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
-    pushd "$HOME/repo" \
-        && git clone 'https://github.com/yyuu/pyenv' \
-        && popd
+    git clone 'https://github.com/yyuu/pyenv' "$HOME/repo/pyenv"
 fi
 
 export PYENV_ROOT="$HOME/repo/pyenv"
@@ -27,10 +25,14 @@ export PATH="$HOME/.local/bin:$PATH"
 _python_pip_upgrade_all() {
     echo "Searching for outdated packages ..."
 
-    while IFS= read -r -d '' item; do
-        local name=$("${item%\(*}" | tr --delete ' ')
+    local item
+    local name
+    local t
 
-        local t=$(pip show "$name" | tr --delete "[:space:]")
+    while IFS= read -r -d '' item; do
+        name=$("${item%\(*}" | tr --delete ' ')
+
+        t=$(pip show "$name" | tr --delete "[:space:]")
 
         if [ -n "$t" ]; then
             echo "Upgrading $name"
