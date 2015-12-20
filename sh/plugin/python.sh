@@ -49,7 +49,7 @@ if [[ "$(_check_command 'howdoi')" == 0 ]];then
     if [[ "$(_check_os)" == 'Linux' ]];then
         echo "apt-get install libxml2-dev libxslt-dev"
     fi
-    echo "pip install pypw"
+    echo "pip install howdoi"
 fi
 
 if [[ "$(_check_command 'pypw')" == 0 ]];then
