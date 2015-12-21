@@ -1,24 +1,40 @@
 # Guidelines
 + Don't put any lines in your config files that you don't understand!
+
 + Keep necessary notes
  1. <small>meaningfull name</small>
  2. <small>reference url</small>
 
-+ internal -> path -> (function - alias) -> plugin -> custom
- 1. internal (shell-builtin)
- 2. path (common 'PATH' stuff, normally controlled by package-manager)
- 3. plugin (no dependence between each other)
++ Compatibility & LightWeight (so i had to ditch my beloved emacs)
+ 1. <small>support Darwin & ubuntu</small>
+ 2. <small>support zsh & bash</small>
+ 3. <small>both local & ssh</small>
 
-+ functions with prefix '_' are used internally or cautiously
+# Pre-arrangement
++ internal -> path -> (function - alias) -> plugin -> custom
+ 1. <small>internal (shell-builtin command & pre-installed program(as less as i can, BSD vs GNU))</small>
+ 2. <small>path (package-manager specific & custom-defined 'PATH')</small>
+ 3. <small>plugin (least dependence between each other)</small>
+
++ functions with prefix '_' are used either internally or cautiously
 
 
 # TODO & Question & Reference
-+ backup cmd-hist to github with encryption
++ backup shell-command-history to github with encryption
  1. <small>[How to write a new git protocol](https://rovaughn.github.io/2015-2-9.html)</small>
 
-+ browser history backup mechanism
++ add security check for SCM(personal or other sensetive info)
 
-+ command with the same name exist in alias/function/script, which one will actually response the call(predefined-order or related to the source-sequence)?
++ backup browser history
+ 1. <small>easy to search</small>
+ 2. <small>pre or post process</small>
+
++ bootstrap-mechanism for the whole setup
+ 1. <small>more automation</small>
+ 2. <small>clean and easily use</small>
+ 3. <small>easily to extend</small>
+
++ command with the same name exist in alias/function/script, which one will actually response the call(predefined-order or depends on the source-sequence)?
  1. <small>[alias-vs-functions-vs-scripts](http://unix.stackexchange.com/questions/4023/aliases-vs-functions-vs-scripts)</small>
 
 + coding style
