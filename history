@@ -1,0 +1,14 @@
+#1451283523
+git status
+#1451283526
+git add .
+#1451283533
+rm sh/history 
+#1451283535
+git status
+#1451283543
+rm sh/plugin/history
+#1451283544
+git status
+#1451283553
+git add .

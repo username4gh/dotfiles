@@ -10,7 +10,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
         else
             if [[ "$(_check_variant "$HISTORY_REPO")" == 1 ]]; then
                 (git clone "$HISTORY_REPO" "$HOME/repo/my-history" \
-                    && ln -s "$HOME/repo/bash_history_git/.bash_history.archive" ~/.bash_history.archive)
+                    && ln -s "$HOME/repo/my-history/.bash_history.archive" ~/.bash_history.archive)
             fi
         fi
     }
