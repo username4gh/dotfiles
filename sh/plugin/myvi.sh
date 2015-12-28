@@ -26,5 +26,9 @@ _my_vi_compile_YouCompileMe() {
 if [[ "$(_check_command nvim)" == 1 ]]; then
     alias vi='nvim'
 elif [[ "$(_check_command vim)" == 1 ]]; then
-    alias vi='_my_vi'
+    if [[ "$(_check_os)" == 'Darwin' ]];then
+        alias vi='_my_vi'
+    else 
+        alias vi='vim'
+    fi
 fi
