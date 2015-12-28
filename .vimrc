@@ -35,6 +35,7 @@ Plugin 'tomasr/molokai'
 Plugin 'tpope/vim-abolish'
 Plugin 'vim-scripts/JSON.vim'
 Plugin 'tpope/vim-surround'
+Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'vim-scripts/YankRing.vim'
 

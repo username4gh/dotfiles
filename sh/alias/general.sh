@@ -11,12 +11,6 @@ if [[ $(_check_command dircolors) == 1 ]]; then
     alias egrep='egrep --color=auto'
 fi
 
-if [[ $(_check_command nvim) == 1 ]]; then
-    alias vi='nvim'
-elif [[ $(_check_command vim) == 1 ]]; then
-    alias vi='vim'
-fi
-
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'

@@ -8,6 +8,14 @@ case $- in
     *) return;;
 esac
 
+function update_terminal_cwd () 
+{ 
+    local SEARCH=' ';
+    local REPLACE='%20';
+    local PWD_URL="file://$HOSTNAME${PWD//$SEARCH/$REPLACE}";
+    printf '\e]7;%s\a' "$PWD_URL"
+}
+
 # despite there are some issue with bash-it, but still the price to maintain a brand new config with
 # at least the same quality is too high, so my approach is trying to build sth based on it.
 

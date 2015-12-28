@@ -1,7 +1,5 @@
 log
-bash/custom
-bash/custom/
-zsh/custom
-zsh/custom/
+sh/custom
+sh/custom/
 codes
 .mrconfig

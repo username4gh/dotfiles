@@ -29,7 +29,7 @@ _myrepos_info() {
     done < <(find "$HOME/repo" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
-_myrepos_register_all() {
+myrepos_register_all() {
     if [[ -f "$HOME/repo/my-i3/.mrconfig" ]];then
         rm "$HOME/repo/my-i3/.mrconfig"
     fi

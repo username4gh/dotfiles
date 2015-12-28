@@ -1,5 +1,4 @@
 #! /bin/bash
-
 if [[ ! -d "$HOME/repo/pyenv" ]]; then
     echo "newly installed pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
     git clone 'https://github.com/yyuu/pyenv' "$HOME/repo/pyenv"
