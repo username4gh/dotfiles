@@ -124,17 +124,6 @@ do
 done
 unset file_type
 
-# custom
-CUSTOM="${BASH_IT}/custom/*.bash"
-for config_file in $CUSTOM
-do
-  if [ -e "${config_file}" ]; then
-    source $config_file
-  fi
-done
-unset CUSTOM
-unset config_file
-
 export MY_CURRENT_SHELL='bash'
 # integration with my own stuff with bash-it
 if [[ -f "$HOME/repo/my-i3/sh/init.sh" ]];then

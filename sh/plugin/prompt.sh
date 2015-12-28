@@ -271,9 +271,5 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     unset color_prompt force_color_prompt
 
     # make `pwd` as iterm2 tab title
-    if [[ "$PROMPT_COMMAND" != '' ]];then
-        PROMPT_COMMAND+='echo -ne "\033]0;${PWD##*/}\007";'
-    else
-        PROMPT_COMMAND='echo -ne "\033]0;{PWD##*/}\007";'
-    fi
+    PROMPT_COMMAND+='echo -ne "\033]0;${PWD##*/}\007";'
 fi
