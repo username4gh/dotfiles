@@ -24,11 +24,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     HISTSIZE=1000
     HISTFILESIZE=2000
     # append to the history file, don't overwrite it
-    if [[ "$PROMPT_COMMAND" != '' ]];then
-        PROMPT_COMMAND="$PROMPT_COMMAND; history -a; history -n;"
-    else
-        PROMPT_COMMAND="history -a; history -n;"
-    fi
+    PROMPT_COMMAND+=" history -a history -n "
     shopt -s histappend
     export HISTCONTROL=ignoreboth
     export HISTIGNORE="[   ]*:&:bg:cd:fg:exit:ls:history"
