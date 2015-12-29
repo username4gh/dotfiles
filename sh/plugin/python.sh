@@ -46,13 +46,23 @@ _python_pip_upgrade_all() {
     done < <(pip list --outdated)
 }
 
-if [[ "$(_check_command 'howdoi')" == 0 ]];then
-    if [[ "$(_check_os)" == 'Linux' ]];then
-        echo "apt-get install libxml2-dev libxslt-dev"
+_python_check_pyenv() {
+    if [[ "$(pyenv versions | grep '*' | grep -Po '(?<=\*\ ).*?(?=\ \()')" == 'system' ]];then 
+        echo 0
+    else
+        echo 1
     fi
-    echo "pip install howdoi"
-fi
+}
 
-if [[ "$(_check_command 'pypw')" == 0 ]];then
-    echo "pip install pypw"
+if [[ "$(_python_check_pyenv)" == 1 ]];then
+    if [[ "$(_check_command 'howdoi')" == 0 ]];then
+        if [[ "$(_check_os)" == 'Linux' ]];then
+            echo "apt-get install libxml2-dev libxslt-dev"
+        fi
+        echo "pip : howdoi is not installed!"
+    fi
+
+    if [[ "$(_check_command 'pypw')" == 0 ]];then
+        echo "pip : pypw is not installed!"
+    fi
 fi
