@@ -42,5 +42,7 @@ alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^
 alias meminfo='free -m -l -t'
 
 # Reload the shell (i.e. invoke as a login shell)
-alias myreload="exec $SHELL -l"
+if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    alias src="exec $SHELL -l"
+fi
 
