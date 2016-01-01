@@ -37,25 +37,12 @@ _python_pip_upgrade_all() {
     echo "Searching for outdated packages ..."
 
     local item
-    local name
-    local t
 
-    while IFS= read -r item; do
-        name=$("${item%\(*}" | tr --delete ' ')
-
-        t=$(pip show "$name" | tr --delete "[:space:]")
-
-        if [ -n "$t" ]; then
-            echo "Upgrading $name"
-            if [ "$1" == 'user' ]; then
-                pip install --upgrade --user "$name"
-            else
-                pip install --upgrade "$name"
-            fi
-        else
-            echo "$t"
-        fi
-    done < <(pip list --outdated)
+    while IFS= read -r item; 
+    do
+        echo "Upgrading $item"
+        pip install --upgrade "$item"
+    done < <(pip list --outdated | grep -Po '(?<=^).*?(?=\ \()')
 }
 
 _python_check_pyenv() {
