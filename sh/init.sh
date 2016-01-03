@@ -40,7 +40,7 @@ _myload_sh_files $MY_SH 'internal'
 _myload_sh_files $MY_SH 'path'
 _myload_sh_files $MY_SH 'function'
 _myload_sh_files $MY_SH 'alias'
-_myload_sh_files $MY_SH 'plugin'
+_myload_sh_files $MY_SH 'module'
 _myload_sh_files $MY_SH 'custom'
 
 # check the window size after each command and, if necessary,

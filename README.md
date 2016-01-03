@@ -11,10 +11,10 @@
  3. <small>both local & ssh</small>
 
 # Pre-arrangement
-+ internal -> path -> (function - alias) -> plugin -> custom
++ internal -> path -> (function - alias) -> module -> custom
  1. <small>internal (shell-builtin command & pre-installed program(as less as i can, BSD vs GNU))</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
- 3. <small>plugin (least dependence between each other)</small>
+ 3. <small>module (least dependence between each other)</small>
 
 + functions with prefix '_' are used either internally or cautiously
 
