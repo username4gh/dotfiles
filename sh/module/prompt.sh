@@ -1,8 +1,6 @@
 #! /bin/bash
 if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
 
-    SCM_CHECK=${SCM_CHECK:=true}
-
     SCM_PROMPT_DIRTY=' ✗'
     SCM_PROMPT_CLEAN=' ✓'
     SCM_PROMPT_PREFIX=' |'
@@ -36,9 +34,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     SCM_NONE_CHAR='○'
 
     _scm() {
-        if [[ "$SCM_CHECK" = false ]]; then 
-            SCM=$SCM_NONE
-        elif [[ -f .git/HEAD ]]; then 
+        if [[ -f .git/HEAD ]]; then 
             SCM=$SCM_GIT
         elif which git &> /dev/null && [[ -n "$(git rev-parse --is-inside-work-tree 2> /dev/null)" ]]; then 
             SCM=$SCM_GIT
@@ -70,41 +66,61 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     }
 
     _git_prompt_vars() {
-        local details=''
+        local details
+        details=''
+
         SCM_STATE=${GIT_PROMPT_CLEAN:-$SCM_PROMPT_CLEAN}
-        if [[ "$(git config --get bash-it.hide-status)" != "1" ]]; then
-            [[ "${SCM_GIT_IGNORE_UNTRACKED}" = "true" ]] && local git_status_flags='-uno'
-            local status="$(git status -b --porcelain ${git_status_flags} 2> /dev/null || \
-                git status --porcelain ${git_status_flags} 2> /dev/null)"
-            if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(grep -v ^# <<< "${status}")" ]]; then
-                SCM_DIRTY=1
-                if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
-                    local untracked_count="$(egrep -c '^\?\? .+' <<< "${status}")"
-                    local unstaged_count="$(egrep -c '^.[^ ?#] .+' <<< "${status}")"
-                    local staged_count="$(egrep -c '^[^ ?#]. .+' <<< "${status}")"
-                    [[ "${staged_count}" -gt 0 ]] && details+=" ${SCM_GIT_STAGED_CHAR}${staged_count}" && SCM_DIRTY=3
-                    [[ "${unstaged_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNSTAGED_CHAR}${unstaged_count}" && SCM_DIRTY=2
-                    [[ "${untracked_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNTRACKED_CHAR}${untracked_count}" && SCM_DIRTY=1
-                fi
-                SCM_STATE=${GIT_PROMPT_DIRTY:-$SCM_PROMPT_DIRTY}
+        local git_status_flags
+        [[ "${SCM_GIT_IGNORE_UNTRACKED}" = "true" ]] && git_status_flags='-uno'
+
+        local status
+        status="$(git status -b --porcelain ${git_status_flags} 2> /dev/null || git status --porcelain ${git_status_flags} 2> /dev/null)"
+
+        if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(grep -Pv '^#' <<< "${status}")" ]]; then
+            SCM_DIRTY=1
+            if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
+                local untracked_count
+                unstaged_count="$(egrep -c '^\?\? .+' <<< "${status}")"
+
+                local unstaged_count
+                unstaged_count="$(egrep -c '^.[^ ?#] .+' <<< "${status}")"
+
+                local staged_count
+                staged_count="$(egrep -c '^[^ ?#]. .+' <<< "${status}")"
+                [[ "${staged_count}" -gt 0 ]] && details+=" ${SCM_GIT_STAGED_CHAR}${staged_count}" && SCM_DIRTY=3
+                [[ "${unstaged_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNSTAGED_CHAR}${unstaged_count}" && SCM_DIRTY=2
+                [[ "${untracked_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNTRACKED_CHAR}${untracked_count}" && SCM_DIRTY=1
             fi
+            SCM_STATE=${GIT_PROMPT_DIRTY:-$SCM_PROMPT_DIRTY}
         fi
 
         SCM_CHANGE=$(git rev-parse --short HEAD 2>/dev/null)
 
-        local ref=$(git symbolic-ref -q HEAD 2> /dev/null)
+        local ref
+        ref=$(git symbolic-ref -q HEAD 2> /dev/null)
+
         if [[ -n "$ref" ]]; then
             SCM_BRANCH=${SCM_BRANCH_PREFIX}${ref#refs/heads/}
-            local tracking_info="$(grep "${SCM_BRANCH}\.\.\." <<< "${status}")"
+            local tracking_info
+            tracking_info="$(grep "${SCM_BRANCH}\.\.\." <<< "${status}")"
+
             if [[ -n "${tracking_info}" ]]; then
-                [[ "${tracking_info}" =~ .+\[gone\]$ ]] && local branch_gone="true"
+                local branch_gone
+                [[ "${tracking_info}" =~ .+\[gone\]$ ]] && branch_gone="true"
+
                 tracking_info=${tracking_info#\#\# ${SCM_BRANCH}...}
                 tracking_info=${tracking_info% [*}
-                local remote_name=${tracking_info%%/*}
-                local remote_branch=${tracking_info#${remote_name}/}
-                local remote_info=""
-                local num_remotes=$(git remote | wc -l 2> /dev/null)
-                [[ "${SCM_BRANCH}" = "${remote_branch}" ]] && local same_branch_name=true
+                local remote_name
+                remote_name=${tracking_info%%/*}
+                local remote_branch
+                remote_branch=${tracking_info#${remote_name}/}
+                local remote_info
+                remote_info=""
+                local num_remotes
+                num_remotes=$(git remote | wc -l 2> /dev/null)
+
+                local same_branch_name
+                [[ "${SCM_BRANCH}" = "${remote_branch}" ]] && same_branch_name=true
                 if ([[ "${SCM_GIT_SHOW_REMOTE_INFO}" = "auto" ]] && [[ "${num_remotes}" -ge 2 ]]) || [[ "${SCM_GIT_SHOW_REMOTE_INFO}" = "true" ]]; then
                     remote_info="${remote_name}"
                     [[ "${same_branch_name}" != "true" ]] && remote_info+="/${remote_branch}"
@@ -122,7 +138,9 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
             fi
             SCM_GIT_DETACHED="false"
         else
-            local detached_prefix=""
+            local detached_prefix
+            detached_prefix=""
+
             ref=$(git describe --tags --exact-match 2> /dev/null)
             if [[ -n "$ref" ]]; then
                 detached_prefix=${SCM_TAG_PREFIX}
@@ -136,12 +154,17 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
             SCM_GIT_DETACHED="true"
         fi
 
-        local ahead_re='.+ahead ([0-9]+).+'
-        local behind_re='.+behind ([0-9]+).+'
+        local ahead_re
+        ahead_re='.+ahead ([0-9]+).+'
+
+        local behind_re
+        behind_re='.+behind ([0-9]+).+'
         [[ "${status}" =~ ${ahead_re} ]] && SCM_BRANCH+=" ${SCM_GIT_AHEAD_CHAR}${BASH_REMATCH[1]}"
         [[ "${status}" =~ ${behind_re} ]] && SCM_BRANCH+=" ${SCM_GIT_BEHIND_CHAR}${BASH_REMATCH[1]}"
 
-        local stash_count="$(git stash list 2> /dev/null | wc -l | tr -d ' ')"
+        local stash_count
+        stash_count="$(git stash list 2> /dev/null | wc -l | tr -d ' ')"
+
         [[ "${stash_count}" -gt 0 ]] && SCM_BRANCH+=" {${stash_count}}"
 
         SCM_BRANCH+=${details}
@@ -172,7 +195,8 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     # - .hg is located in ~/Projects/Foo/.hg
     # - get_hg_root starts at ~/Projects/Foo/Bar and sees that there is no .hg directory, so then it goes into ~/Projects/Foo
     _get_hg_root() {
-        local CURRENT_DIR=$(pwd)
+        local CURRENT_DIR
+        CURRENT_DIR=$(pwd)
 
         while [ "$CURRENT_DIR" != "/" ]; do
             if [ -d "$CURRENT_DIR/.hg" ]; then

@@ -4,15 +4,15 @@ export PATH="$GOROOT/bin:$PATH"
 export GOPATH="$HOME/go"
 export PATH="$GOPATH/bin:$PATH"
 
-_go_latest_mac() {
+_go_latest_url_mac() {
     local url
-    url=$(curl -s https://golang.org/dl/ | grep -Po "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | grep -v "src"| grep -i "tar" | grep -i "darwin" | head -1)
+    url=$(curl -s https://golang.org/dl/ | grep -Po "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | grep -v "src"| grep -i "tar.gz" | grep -i "darwin" | head -1)
     echo $url
 }
 
-_go_latest_linux() {
+_go_latest_url_linux() {
     local url
-    url=$(curl -s https://golang.org/dl/ | grep -Po "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | grep -v "src"| grep -i "tar" | grep -i "linux" | head -1)
+    url=$(curl -s https://golang.org/dl/ | grep -Po "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | grep -v "src"| grep -i "tar.gz" | grep -i "linux" | head -1)
     echo $url
 }
 
