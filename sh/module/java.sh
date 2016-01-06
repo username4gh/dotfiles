@@ -12,10 +12,6 @@ _java_8_url_linux() {
     echo $url
 }
 
-_java_init() {
-    echo "_java_init test"
-}
-
 if [[ "$(_check_os)" == "Linux" ]];then
     export JDK_PATH="$MY_BIN/jdk1.7.0_80"
     export JAVA_HOME="$MY_BIN/jdk1.7.0_80"

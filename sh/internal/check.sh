@@ -4,7 +4,7 @@
 
 _check_variant() {
     if [[ "$#" == 1 ]];then
-        if [[ -v "$1" ]]; then
+        if [[ -z "$1" ]]; then
             echo 0;
         else
             echo 1;
