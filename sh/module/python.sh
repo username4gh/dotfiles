@@ -1,12 +1,12 @@
 #! /bin/bash
-if [[ ! -d "$HOME/repo/pyenv" ]]; then
+if [[ ! -d "$MY_REPO/pyenv" ]]; then
     echo "newly installed pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
-    git clone 'https://github.com/yyuu/pyenv' "$HOME/repo/pyenv"
+    git clone 'https://github.com/yyuu/pyenv' "$MY_REPO/pyenv"
 fi
 
-export PYENV_ROOT="$HOME/repo/pyenv"
+export PYENV_ROOT="$MY_REPO/pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-export PYTHONSTARTUP="$HOME/repo/my-i3/.pythonstartup.py"
+export PYTHONSTARTUP="$MY_REPO/my-i3/.pythonstartup.py"
 
 if [[ "$(_check_variant "$MY_CURRENT_SHELL")" == 1 ]];then
     if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then

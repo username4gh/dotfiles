@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
-export PATH="$HOME/bin:$PATH"
+export PATH="$MY_BIN:$PATH"
 
-export PATH="$MY_CONFIG/script:$PATH"
+export PATH="$MY_I3/script:$PATH"

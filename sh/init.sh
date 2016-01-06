@@ -8,12 +8,18 @@ case $- in
     *) return;;
 esac
 
-export MY_CONFIG="$HOME/repo/my-i3"
+if [[ ! -d "$HOME/bin" ]];then
+    mkdir -p "$HOME/bin"
+fi
 
-export MY_SH="$MY_CONFIG/sh"
+export MY_BIN="$HOME/bin"
+export MY_REPO="$HOME/repo"
+export MY_I3="$MY_REPO/my-i3"
+
+export MY_SH="$MY_I3/sh"
 
 _my_sh_log() {
-    local LOG_DIR="$MY_CONFIG/log"
+    local LOG_DIR="$MY_I3/log"
     if [[ -d "$LOG_DIR" ]]; then
         echo "$(date +%Y-%m-%d-%H-%M) $1" >> $LOG_DIR/sh.log
     fi
@@ -23,7 +29,7 @@ _myload_sh_files() {
     local directory="$1"
 
     local subdirectory="$2"
-    
+
     local fullPath="${directory}/${subdirectory}"
 
     if [[ -d "$fullPath" ]];then

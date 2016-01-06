@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$HOME/repo/xkcdpass" ]];then
-    git clone https://github.com/danielmcgraw/xkcdpass "$HOME/repo/xkcdpass"
+if [[ ! -d "$MY_REPO/xkcdpass" ]];then
+    git clone https://github.com/danielmcgraw/xkcdpass "$MY_REPO/xkcdpass"
 fi
 
-export PATH="$HOME/repo/xkcdpass:$PATH"
+export PATH="$MY_REPO/xkcdpass:$PATH"

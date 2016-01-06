@@ -6,6 +6,6 @@ _ack_latest_url() {
     echo "http://beyondgrep.com/ack-$latest_version_code-single-file"
 }
 
-if [[ ! -f "$HOME/bin/ack" ]];then
+if [[ ! -f "$MY_BIN/ack" ]];then
     curl -s "$_ack_latest_url" > ~/bin/ack && test -z ~/bin/ack || chmod 0755 ~/bin/ack 
 fi

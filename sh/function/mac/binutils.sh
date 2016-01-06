@@ -14,9 +14,9 @@ _binutils_nm(){
     binutils=$(find ~/bin -maxdepth 1 -type d  | grep -P 'binutils-.*')
 
     if [[ "$#" == 0 ]];then
-        (export PATH="$HOME/bin/binutils-2.25/binutils:$PATH"; $binutils/binutils/nm-new)
+        (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/nm-new)
     else
-        (export PATH="$HOME/bin/binutils-2.25/binutils:$PATH"; $binutils/binutils/nm-new "$@")
+        (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/nm-new "$@")
     fi
 }
 
@@ -26,8 +26,8 @@ _binutils_readelf(){
     binutils=$(find ~/bin -maxdepth 1 -type d  | grep -P 'binutils-.*')
 
     if [[ "$#" == 0 ]];then
-        (export PATH="$HOME/bin/binutils-2.25/binutils:$PATH"; $binutils/binutils/readelf)
+        (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/readelf)
     else
-        (export PATH="$HOME/bin/binutils-2.25/binutils:$PATH"; $binutils/binutils/readelf "$@")
+        (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/readelf "$@")
     fi
 }

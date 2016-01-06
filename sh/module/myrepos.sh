@@ -1,16 +1,16 @@
 #! /bin/sh
 
-if [[ ! -d "$HOME/repo/myrepos" ]];then
-    git clone https://github.com/joeyh/myrepos "$HOME/repo/myrepos"
+if [[ ! -d "$MY_REPO/myrepos" ]];then
+    git clone https://github.com/joeyh/myrepos "$MY_REPO/myrepos"
 fi
 
 if [[ ! -f "$HOME/.mrconfig" ]];then
-    if [[ -f "$HOME/repo/my-i3/.mrconfig" ]];then
-        ln -s "$HOME/repo/my-i3/.mrconfig" "$HOME/"
+    if [[ -f "$MY_REPO/my-i3/.mrconfig" ]];then
+        ln -s "$MY_REPO/my-i3/.mrconfig" "$HOME/"
     fi
 fi
 
-export PATH="$HOME/repo/myrepos:$PATH"
+export PATH="$MY_REPO/myrepos:$PATH"
 
 _myrepos_get_remote_url() {
     (cd "$1";
@@ -26,12 +26,12 @@ _myrepos_info() {
         if [[ -d "$file/.git" ]];then
             _myrepos_get_remote_url "$file"
         fi
-    done < <(find "$HOME/repo" -mindepth 1 -maxdepth 1 -type d -print0)
+    done < <(find "$MY_REPO" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
 myrepos_register_all() {
-    if [[ -f "$HOME/repo/my-i3/.mrconfig" ]];then
-        rm "$HOME/repo/my-i3/.mrconfig"
+    if [[ -f "$MY_REPO/my-i3/.mrconfig" ]];then
+        rm "$MY_REPO/my-i3/.mrconfig"
     fi
 
     local file
@@ -40,10 +40,10 @@ myrepos_register_all() {
         echo "$file"
         if [[ -d "$file/.git" ]];then
             url=$(_myrepos_get_remote_url "$file")
-            echo "[${file/#$HOME\//}]" >> "$HOME/repo/my-i3/.mrconfig" \
-                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$HOME/repo/my-i3/.mrconfig"
+            echo "[${file/#$HOME\//}]" >> "$MY_REPO/my-i3/.mrconfig" \
+                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$MY_REPO/my-i3/.mrconfig"
         fi
-    done < <(find "$HOME/repo" -mindepth 1 -maxdepth 1 -type d -print0)
+    done < <(find "$MY_REPO" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
 alias mr='mr -d ~'

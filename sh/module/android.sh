@@ -20,15 +20,15 @@ _android_gradle_latest_url() {
     echo "https://services.gradle.org/distributions/gradle-$latest_version_code-all.zip"
 }
 
-export PATH="$HOME/bin/apache-ant-$(_module_config_read 'android' 'ant')/bin:$PATH"
-export PATH="$HOME/bin/apache-maven-3.3.3/bin:$PATH"
-export PATH="$HOME/bin/gradle-2.9/bin:$PATH"
-export PATH="$HOME/bin/jd_gui:$PATH"
+export PATH="$MY_BIN/apache-ant-$(_module_config_read 'android' 'ant')/bin:$PATH"
+export PATH="$MY_BIN/apache-maven-3.3.3/bin:$PATH"
+export PATH="$MY_BIN/gradle-2.9/bin:$PATH"
+export PATH="$MY_BIN/jd_gui:$PATH"
 
 # android-related
-export ANDROID_HOME="$HOME/bin/sdk"
-export ANDROID_SDK="$HOME/bin/sdk"
-export ANDROID_NDK="$HOME/bin/android-ndk-r10e"
+export ANDROID_HOME="$MY_BIN/sdk"
+export ANDROID_SDK="$MY_BIN/sdk"
+export ANDROID_NDK="$MY_BIN/android-ndk-r10e"
 export PATH="$ANDROID_NDK:$PATH"
 export PATH="$ANDROID_SDK/tools:$PATH"
 export PATH="$ANDROID_SDK/build-tools/23.0.2:$PATH"
@@ -54,7 +54,7 @@ _android_apktool_jar(){
 }
 
 # apktool
-if [[ ! -f "$HOME/bin/apktool" ]];then
-    wget -c https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool -O "$HOME/bin/apktool"
-    wget -c "$(_android_apktool_jar)" -O "$HOME/bin/apktool.jar"
+if [[ ! -f "$MY_BIN/apktool" ]];then
+    wget -c https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool -O "$MY_BIN/apktool"
+    wget -c "$(_android_apktool_jar)" -O "$MY_BIN/apktool.jar"
 fi

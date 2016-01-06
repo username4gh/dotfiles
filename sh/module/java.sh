@@ -17,7 +17,7 @@ _java_init() {
 }
 
 if [[ "$(_check_os)" == "Linux" ]];then
-    export JDK_PATH="$HOME/bin/jdk1.7.0_80"
-    export JAVA_HOME="$HOME/bin/jdk1.7.0_80"
+    export JDK_PATH="$MY_BIN/jdk1.7.0_80"
+    export JAVA_HOME="$MY_BIN/jdk1.7.0_80"
     export PATH="$JDK_PATH/bin:$PATH"
 fi

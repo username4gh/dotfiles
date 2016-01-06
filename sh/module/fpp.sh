@@ -1,7 +1,7 @@
 #! /bin/bash
 
-if [[ ! -d "$HOME/repo/PathPicker" ]];then
-    git clone 'https://github.com/facebook/PathPicker' "$HOME/repo/PathPicker"
+if [[ ! -d "$MY_REPO/PathPicker" ]];then
+    git clone 'https://github.com/facebook/PathPicker' "$MY_REPO/PathPicker"
 fi
 
-export PATH="$HOME/repo/PathPicker:$PATH"
+export PATH="$MY_REPO/PathPicker:$PATH"

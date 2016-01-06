@@ -6,4 +6,4 @@ _scala_latest_url() {
     echo "http://downloads.typesafe.com/scala/$latest_version_code/scala-$latest_version_code.tgz"
 }
 
-export PATH="$HOME/bin/scala-$(_module_config_read 'scala' 'scala')/bin:$PATH"
+export PATH="$MY_BIN/scala-$(_module_config_read 'scala' 'scala')/bin:$PATH"

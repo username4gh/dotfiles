@@ -1,5 +1,5 @@
 #! /bin/bash
-export GOROOT="$HOME/bin/go"
+export GOROOT="$MY_BIN/go"
 export PATH="$GOROOT/bin:$PATH"
 export GOPATH="$HOME/go"
 export PATH="$GOPATH/bin:$PATH"
@@ -16,12 +16,12 @@ _go_latest_url_linux() {
     echo $url
 }
 
-if [[ ! -d "$HOME/bin/go" ]]; then
-    mkdir -p "$HOME/bin/go"
+if [[ ! -d "$MY_BIN/go" ]]; then
+    mkdir -p "$MY_BIN/go"
     if [[ "$(_check_os)" == "Darwin" ]];then
-        wget -c "$(_go_latest_mac)" -P "$HOME/bin/"
+        wget -c "$(_go_latest_mac)" -P "$MY_BIN/"
     elif [[ "$(_check_os)" == "Linux" ]]; then
-        wget -c "$(_go_latest_linux)" -P "$HOME/bin"
+        wget -c "$(_go_latest_linux)" -P "$MY_BIN"
     fi
 fi
 

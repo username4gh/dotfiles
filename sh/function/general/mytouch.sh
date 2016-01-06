@@ -3,7 +3,7 @@
 #Description touch with snippet support
 
 mytouch(){
-    local MY_SNIPPET_DIR="$MY_CONFIG/snippet"
+    local MY_SNIPPET_DIR="$MY_I3/snippet"
     if [[ "$1" = '--help' ]];then
         echo "Usage: mytouch [full file name]"
     else

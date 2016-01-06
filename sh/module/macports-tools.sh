@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 if [[ "$(_check_os)" == "Darwin" ]]; then
-    if [[ ! -d "$HOME/repo/macports-tools" ]];then
-        git clone https://github.com/vasi/macports-tools "$HOME/repo/macports-tools"
+    if [[ ! -d "$MY_REPO/macports-tools" ]];then
+        git clone https://github.com/vasi/macports-tools "$MY_REPO/macports-tools"
     fi
 
-    export PATH="$HOME/repo/macports-tools:$PATH"
+    export PATH="$MY_REPO/macports-tools:$PATH"
 fi
