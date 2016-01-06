@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
-# some pre-defined variants might come in handy
-# MY_I3 root dir of this `dotfiles`
-# MY_BASH_CONFIG root dir of this `bash_config`
-
-#Description 
+if [[ "$(_check_command)" == 'Linux' ]];then
+    alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p"
+    alias meminfo='free -m -l -t'
+fi
