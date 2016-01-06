@@ -38,6 +38,7 @@ _myload_sh_files() {
 
 _myload_sh_files $MY_SH 'internal'
 _myload_sh_files $MY_SH 'path'
+_myload_sh_files $MY_SH 'mechanism'
 _myload_sh_files $MY_SH 'function'
 _myload_sh_files $MY_SH 'alias'
 _myload_sh_files $MY_SH 'module'

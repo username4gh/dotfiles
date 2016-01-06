@@ -1,25 +1,41 @@
 #! /usr/bin/env bash
 
 _file_path() {
-    FILE=$1
-    FILEPATH=${FILE%/*};
-    echo $FILEPATH
+    if [[ "$#" == 1 ]];then
+        local FILE=$1
+        local FILEPATH=${FILE%/*};
+        echo $FILEPATH
+    else
+        echo "_file_path error"
+    fi
 }
 
 _file_name() {
-    FILE=$1
-    FILENAME=${FILE##*/};
-    echo $FILENAME
+    if [[ "$#" == 1 ]];then
+        local FILE=$1;
+        local FILENAME=${FILE##*/};
+        echo $FILENAME
+    else 
+        echo "_file_name error"
+    fi
 }
 
 _file_name_noext() {
-    FILE=$1
-    NOEXT=${FILENAME%\.*};
-    echo $NOEXT
+    if [[ "$#" == 1 ]];then
+        local FILE_NO_PATH=${1##*/};
+        local NOEXT=${FILE_NO_PATH%\.*};
+        echo $NOEXT
+    else
+        echo "_file_name_noext error"
+    fi
 }
 
 _file_ext(){
-    FILE=$1
-    EXT=${FILE##*.}
-    echo $EXT
+    if [[ "$#" == 1 ]];then
+        local FILE_NO_PATH=${1##*/};
+        local EXT=${FILE_NO_PATH##*.}
+        echo $EXT
+    else
+        echo "_file_ext error"
+    fi
 }

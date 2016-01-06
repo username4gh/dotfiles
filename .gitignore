@@ -3,3 +3,4 @@ sh/custom
 sh/custom/
 codes
 .mrconfig
+sh/module/conf.d

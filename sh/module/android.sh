@@ -2,21 +2,25 @@
 _android_ant_latest_url() {
     local latest_version_code
     latest_version_code=$(curl -s http://ant.apache.org/bindownload.cgi| grep -Po '(?<=Apache\ Ant\ ).*?(?=\ is\ the\ best\ available\ version)')
+    _module_config_write 'android' 'ant' $latest_version_code
     echo "http://mirrors.noc.im/apache//ant/binaries/apache-ant-$latest_version_code-bin.tar.gz"
 }
 
 _android_maven_latest_url(){
     local latest_version_code
     latest_version_code=$(curl -s http://maven.apache.org/download.cgi | grep -Po '(?<=Apache\ Maven\ ).*?(?=\ is\ the\ latest\ release\ and\ recommended\ version\ for\ all\ users\.)')
+    _module_config_write 'android' 'maven' $latest_version_code
     echo "http://mirrors.hust.edu.cn/apache/maven/maven-3/$latest_version_code/binaries/apache-maven-$latest_version_code-bin.tar.gz"
 }
 
 _android_gradle_latest_url() {
     local latest_version_code
     latest_version_code=$(curl -s http://gradle.org/gradle-download/ | grep -Po '(?<=The\ latest\ release of\ Gradle\ is\ version).*?(?=,\ released\ on)' | grep -Po '(?<=\<strong\>).*?(?=\<\/strong\>)')
+    _module_config_write 'android' 'gradle' $latest_version_code
     echo "https://services.gradle.org/distributions/gradle-$latest_version_code-all.zip"
 }
-export PATH="$HOME/bin/apache-ant-1.9.6/bin:$PATH"
+
+export PATH="$HOME/bin/apache-ant-$(_module_config_read 'android' 'ant')/bin:$PATH"
 export PATH="$HOME/bin/apache-maven-3.3.3/bin:$PATH"
 export PATH="$HOME/bin/gradle-2.9/bin:$PATH"
 export PATH="$HOME/bin/jd_gui:$PATH"
