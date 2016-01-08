@@ -3,18 +3,23 @@
 
 + Keep necessary notes
  1. <small>meaningfull name</small>
- 2. <small>reference url</small>
+ 2. <small>reference</small>
 
-+ Compatibility & LightWeight (so i had to ditch my beloved emacs)
- 1. <small>support Darwin & ubuntu</small>
- 2. <small>support zsh & bash</small>
- 3. <small>both local & ssh</small>
++ Compatibility & LightWeight (so i had to ditch my beloved emacs) & cut-dependency
+ 1. <small>darwin & ubuntu</small>
+ 	 - <small>replace grep with ack</small>
+ 2. <small>zsh & bash</small>
+ 3. <small>local & ssh</small>
+ 4. <small>prefer pre-installed software</small>
+ 		- <small>use curl rather than wget</small>
 
 # Pre-arrangement
-+ internal -> path -> (function - alias) -> module -> custom
++ internal -> path -> mechanism -> (function - alias) -> module -> custom
  1. <small>internal (shell-builtin command & pre-installed program(as less as i can, BSD vs GNU))</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
- 3. <small>module (least dependence between each other)</small>
+    	- try subshell when ```export PATH``` is needed, only keep necessary 'PATH' exported([Global Variables Are Bad](http://c2.com/cgi/wiki?GlobalVariablesAreBad))
+ 3. <small>mechanism (basic setup for downstream stuff)</small>
+ 4. <small>module (least dependence between each other)</small>
 
 + functions with prefix '_' are used either internally or cautiously
 

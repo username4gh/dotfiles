@@ -7,7 +7,7 @@ _bootstrap() {
     while IFS= read -r item;
     do
         method="_$(_file_name_noext $item)_init"
-        result=$(grep -Po "$method\(\)" $item)
+        result=$(ack -o "$method\(\)" $item)
         if [[ -n "$result" ]];then
             $method
         fi

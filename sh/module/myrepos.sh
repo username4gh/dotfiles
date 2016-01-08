@@ -15,7 +15,7 @@ export PATH="$MY_REPO/myrepos:$PATH"
 _myrepos_get_remote_url() {
     (cd "$1";
     local url;
-    url=$(git-info | grep 'remote.origin.url=' | sed "s/remote.origin.url=//g") ;
+    url=$(git-info | ack 'remote.origin.url=' | sed "s/remote.origin.url=//g") ;
     echo "$url")
 }
 

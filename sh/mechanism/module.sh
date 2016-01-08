@@ -6,7 +6,7 @@ _module_config_read() {
     # $1 --> module name
     # $2 --> variant name
     if [[ -f "$MY_MODULE_CONFIG/$1.conf" ]];then
-        echo $(cat "$MY_MODULE_CONFIG/$1.conf" | grep -i "$2" | grep -Po '(?<=\]).*?(?=$)')
+        echo $(cat "$MY_MODULE_CONFIG/$1.conf" | ack -i "$2" | ack -o '(?<=\]).*?(?=$)')
     fi
 }
 

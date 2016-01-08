@@ -11,7 +11,7 @@ _myvi() {
 }
 
 _myvi_compile_YouCompileMe() {
-    if [[ "$(port select --list python | grep active | grep -Po '(?<=^).*?(?=\()')" == 'none' ]];then
+    if [[ "$(port select --list python | ack active | ack -o '(?<=^).*?(?=\()')" == 'none' ]];then
         echo "please do 'sudo port select --set python python27'";
     else
         (cd "$HOME/.vim/bundle/YouCompleteMe";

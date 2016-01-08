@@ -10,6 +10,6 @@ fi
 
 _sdkman_groovy_jsoup() {
     local url
-    url=$(curl -s http://jsoup.org/news/ | grep "/news/release" | grep -Po "(?<=href=\").*?(?=\">)" | head -1 | grep -Po "(?<=/news/release-).*")
+    url=$(curl -s http://jsoup.org/news/ | ack "/news/release" | ack -o "(?<=href=\").*?(?=\">)" | head -1 | ack -o "(?<=/news/release-).*")
     echo $url
 }

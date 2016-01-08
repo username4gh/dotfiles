@@ -2,13 +2,13 @@
 
 _java_7_url_linux() {
     local url
-    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | grep -Po "(?<=<a\ href=\").*?(?=\">)" | grep x64.tar.gz | uniq -d | grep 7u)"
+    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | ack -o "(?<=<a\ href=\").*?(?=\">)" | ack x64.tar.gz | uniq -d | ack 7u)"
     echo $url
 }
 
 _java_8_url_linux() {
     local url
-    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | grep -Po "(?<=<a\ href=\").*?(?=\">)" | grep x64.tar.gz | uniq -d | grep 8u)"
+    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | ack -o "(?<=<a\ href=\").*?(?=\">)" | ack x64.tar.gz | uniq -d | ack 8u)"
     echo $url
 }
 

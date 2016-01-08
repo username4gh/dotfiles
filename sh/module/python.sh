@@ -30,7 +30,7 @@ _python_pip_uninstall_all() {
         if [[ "$item" != 'pip' ]] && [[ "$item" != 'setuptools' ]] && [[ "$item" != 'lxml' ]];then
             pip uninstall -y "$item"
         fi
-    done < <(pip list | grep -Po '(?<=^).*?(?=\ \()')
+    done < <(pip list | ack -o '(?<=^).*?(?=\ \()')
 }
 
 _python_pip_upgrade_all() {
@@ -42,11 +42,11 @@ _python_pip_upgrade_all() {
     do
         echo "Upgrading $item"
         pip install --upgrade "$item"
-    done < <(pip list --outdated | grep -Po '(?<=^).*?(?=\ \()')
+    done < <(pip list --outdated | ack -o '(?<=^).*?(?=\ \()')
 }
 
 _python_check_pyenv() {
-    if [[ "$(pyenv versions | grep '*' | grep -Po '(?<=\*\ ).*?(?=\ \()')" == 'system' ]];then 
+    if [[ "$(pyenv versions | ack '^\*' | ack -o '(?<=\*\ ).*?(?=\ \()')" == 'system' ]];then 
         echo 0
     else
         echo 1
