@@ -4,9 +4,19 @@
 # https://github.com/Valloric/YouCompleteMe/issues/8
 _myvi() {
     if [[ "$#" == 0 ]];then
-        (unset PATH; export PATH="/opt/local/bin:/opt/local/sbin:$PATH";export PATH="/opt/local/libexec/gnubin:$PATH"; /opt/local/bin/vim)
+        (unset PATH;
+        export PATH="/usr/bin";
+        export PATH="/opt/local/bin:$PATH";
+        export PATH="/opt/local/sbin:$PATH";
+        export PATH="/opt/local/libexec/gnubin:$PATH";
+        vim)
     else
-        (unset PATH; export PATH="/opt/local/bin:/opt/local/sbin:$PATH";export PATH="/opt/local/libexec/gnubin:$PATH"; /opt/local/bin/vim "$@")
+        (unset PATH; 
+        export PATH="/usr/bin";
+        export PATH="/opt/local/bin:$PATH";
+        export PATH="/opt/local/sbin:$PATH";
+        export PATH="/opt/local/libexec/gnubin:$PATH";
+        vim "$@")
     fi
 }
 
@@ -16,9 +26,10 @@ _myvi_compile_YouCompileMe() {
     else
         (cd "$HOME/.vim/bundle/YouCompleteMe";
         unset PATH;
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin";
-        export PATH="/opt/local/bin:/opt/local/sbin:$PATH";
-        export PATH="/opt/local/libexec/gnubin:$PATH"; 
+        export PATH="/opt/local/bin:$PATH"
+        export PATH="/opt/local/sbin:$PATH"
+        export PATH="/opt/local/libexec/gnubin:$PATH"
+
         python ./install.py)
     fi
 }

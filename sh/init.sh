@@ -22,6 +22,8 @@ export MY_I3="$MY_REPO/my-i3"
 # level-3 directory setup
 export MY_SH="$MY_I3/sh"
 
+export MY_SH_MODULE="$MY_SH/module"
+
 _my_sh_log() {
     if [[ "$#" == 1 ]];then
         local LOG_DIR="$MY_I3/log"

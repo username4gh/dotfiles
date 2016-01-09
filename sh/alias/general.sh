@@ -31,4 +31,3 @@ alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^
 if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     alias src="exec $SHELL -l"
 fi
-
