@@ -39,3 +39,11 @@ _file_ext(){
         echo "_file_ext error"
     fi
 }
+
+_file_name_from_url() {
+    if [[ "$#" == 1 ]];then
+        echo "${1##*/}"
+    else
+        echo "_file_name_from_url error"
+    fi
+}
