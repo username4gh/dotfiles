@@ -12,15 +12,20 @@ export PATH="$ANDROID_SDK/tools:$PATH"
 export PATH="$ANDROID_SDK/build-tools/23.0.2:$PATH"
 export PATH="$ANDROID_SDK/platform-tools:$PATH"
 
-# cscope
-if [[ -d "$ANDROID_NDK" ]];then
-    if [[ ! -d "$HOME/cscope_db" ]]; then
-        mkdir -vp "$HOME/cscope_db/ndk"
-        echo "mkdir cscope_db/ndk"
+_android_cscope() {
+    local ndk_version
 
-        (find "$ANDROID_NDK/platforms/android-16/arch-arm/usr/include/" -name '*.[ch]' > "$HOME/cscope_db/ndk/cscope.files" \
-            && cd "$HOME/cscope_db/ndk" \
+    ndk_version=$(_conf_read ANDROID_NDK_VERSION)
+
+    if [[ -d "$ANDROID_NDK" ]];then
+        if [[ ! -d "$HOME/cscope_db" ]]; then
+            mkdir -vp "$HOME/cscope_db/ndk/$ndk_version"
+            echo "mkdir cscope_db/ndk/$ndk_version"
+        fi
+
+        (find "$ANDROID_NDK/platforms/$ndk_version/arch-arm/usr/include/" -name '*.[ch]' > "$HOME/cscope_db/ndk/$ndk_version/cscope.files" \
+            && cd "$HOME/cscope_db/ndk/$ndk_version" \
             && cscope -bvq)
     fi
-fi
-export CSCOPE_DB="$HOME/cscope_db/ndk/cscope.out"
+}
+export CSCOPE_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/cscope.out"

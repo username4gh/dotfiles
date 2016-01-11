@@ -6,10 +6,10 @@ _android_apktool_jar_url(){
     echo $url
 }
 
-_android_apktool() {
+_android_apktool_init() {
     if [[ ! -f "$MY_BIN/apktool" ]];then
-        curl -C - https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool > "$MY_BIN/apktool"
-
+        curl -C - https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/osx/apktool > "$MY_BIN/apktool" \
+        && chmod 0755 "$MY_BIN/apktool"
     fi
 
     if [[ ! -f "$MY_BIN/apktool.jar" ]];then

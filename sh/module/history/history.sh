@@ -1,16 +1,18 @@
 #! /bin/bash
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
+    export MY_HISTORY_DIR="$MY_REPO/my-history"
+
     _save_history() {
-        if [[ "$(_check_dir "$MY_REPO/my-history")" == 1 ]]; then
+        if [[ "$(_check_dir "$MY_HISTORY_DIR")" == 1 ]]; then
             # there is a threshold for history file, so it might cause 'git command' not always 
             # return true
-            (cd "$MY_REPO/my-history" \
+            (cd "$MY_HISTORY_DIR" \
                 && git add . \
                 && git commit -am save)
         else
             if [[ "$(_check_variant "$HISTORY_REPO")" == 1 ]]; then
-                (git clone "$HISTORY_REPO" "$MY_REPO/my-history" \
-                    && ln -s "$MY_REPO/my-history/.bash_history.archive" ~/.bash_history.archive)
+                (git clone "$HISTORY_REPO" "$MY_HISTORY_DIR" \
+                    && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive)
             fi
         fi
     }
