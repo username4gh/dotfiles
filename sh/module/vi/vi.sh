@@ -2,7 +2,7 @@
 
 # in order to keep pyenv and YouCompleteMe both work
 # https://github.com/Valloric/YouCompleteMe/issues/8
-_myvi() {
+_vi() {
     if [[ "$#" == 0 ]];then
         (unset PATH;
         export PATH="/usr/bin";
@@ -24,7 +24,7 @@ if [[ "$(_check_command nvim)" == 1 ]]; then
     alias vi='nvim'
 elif [[ "$(_check_command vim)" == 1 ]]; then
     if [[ "$(_check_os)" == 'Darwin' ]];then
-        alias vi='_myvi'
+        alias vi='_vi'
     else
         alias vi='vim'
     fi

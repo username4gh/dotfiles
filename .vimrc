@@ -16,7 +16,6 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 
-Plugin 'ajh17/VimCompletesMe'
 Plugin 'bling/vim-airline'
 Plugin 'bling/vim-bufferline'
 Plugin 'derekwyatt/vim-scala'

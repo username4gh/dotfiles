@@ -1,4 +1,4 @@
-_myvi_compile_YouCompileMe() {
+_vi_compile_YouCompileMe() {
     if [[ "$(_check_os)" == 'Darwin' ]];then
         echo "check https://github.com/Valloric/YouCompleteMe/issues/8"
         if [[ "$(port select --list python | ack active | ack -o '(?<=^).*?(?=\()')" == 'none' ]];then
@@ -23,7 +23,7 @@ _myvi_compile_YouCompileMe() {
     fi
 }
 
-_myvi_init() {
+_vi_init() {
     if [[ ! -h "$HOME/.vimrc" ]];then
         if [[ -f "$HOME/.vimrc" ]];then
             rm "$HOME/.vimrc"

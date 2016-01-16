@@ -8,10 +8,10 @@ _myload_sh_files $MY_SH_MODULE go
 _myload_sh_files $MY_SH_MODULE history
 _myload_sh_files $MY_SH_MODULE java
 _myload_sh_files $MY_SH_MODULE macports-tools
-_myload_sh_files $MY_SH_MODULE myfzf
-_myload_sh_files $MY_SH_MODULE myrepos
-_myload_sh_files $MY_SH_MODULE mytranslate
-_myload_sh_files $MY_SH_MODULE myvi
+_myload_sh_files $MY_SH_MODULE fzf
+_myload_sh_files $MY_SH_MODULE repos
+_myload_sh_files $MY_SH_MODULE translate
+_myload_sh_files $MY_SH_MODULE vi
 _myload_sh_files $MY_SH_MODULE nvm
 _myload_sh_files $MY_SH_MODULE prompt
 _myload_sh_files $MY_SH_MODULE python
