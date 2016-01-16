@@ -39,9 +39,6 @@
  2. <small>clean and easily use</small>
  3. <small>easily to extend</small>
 
-+ command with the same name exist in alias/function/script, which one will actually response the call(predefined-order or depends on the source-sequence)?
- 1. <small>[alias-vs-functions-vs-scripts](http://unix.stackexchange.com/questions/4023/aliases-vs-functions-vs-scripts)</small>
-
 + coding style
  1. <small>[cleansing code](http://bencane.com/2014/06/06/8-tips-for-creating-better-bash-scripts/)</small>
 

@@ -2,7 +2,7 @@
 
 #Description touch with snippet support
 
-mytouch(){
+_touch(){
     local MY_SNIPPET_DIR="$MY_I3/snippet"
     if [[ "$1" = '--help' ]];then
         echo "Usage: mytouch [full file name]"
@@ -14,3 +14,5 @@ mytouch(){
         fi
     fi
 }
+
+alias touch='_touch'
