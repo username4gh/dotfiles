@@ -80,7 +80,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
             SCM_DIRTY=1
             if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
                 local untracked_count
-                unstaged_count="$(egrep -c '^\?\? .+' <<< "${status}")"
+                untracked_count="$(egrep -c '^\?\? .+' <<< "${status}")"
 
                 local unstaged_count
                 unstaged_count="$(egrep -c '^.[^ ?#] .+' <<< "${status}")"
