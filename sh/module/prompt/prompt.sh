@@ -76,17 +76,18 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         local status
         status="$(git status -b --porcelain ${git_status_flags} 2> /dev/null || git status --porcelain ${git_status_flags} 2> /dev/null)"
 
-        if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(grep -v '^#' <<< "${status}")" ]]; then
+        if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(s -v '^#' <<< "${status}")" ]]; then
             SCM_DIRTY=1
             if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
                 local untracked_count
-                untracked_count="$(egrep -c '^\?\? .+' <<< "${status}")"
+                untracked_count="$(s -c '^\?\? .+' <<< "${status}")"
 
                 local unstaged_count
-                unstaged_count="$(egrep -c '^.[^ ?#] .+' <<< "${status}")"
+                unstaged_count="$(s -c '^.[^ ?#] .+' <<< "${status}")"
 
                 local staged_count
-                staged_count="$(egrep -c '^[^ ?#]. .+' <<< "${status}")"
+                staged_count="$(s -c '^[^ ?#]. .+' <<< "${status}")"
+
                 [[ "${staged_count}" -gt 0 ]] && details+=" ${SCM_GIT_STAGED_CHAR}${staged_count}" && SCM_DIRTY=3
                 [[ "${unstaged_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNSTAGED_CHAR}${unstaged_count}" && SCM_DIRTY=2
                 [[ "${untracked_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNTRACKED_CHAR}${untracked_count}" && SCM_DIRTY=1
@@ -102,7 +103,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         if [[ -n "$ref" ]]; then
             SCM_BRANCH=${SCM_BRANCH_PREFIX}${ref#refs/heads/}
             local tracking_info
-            tracking_info="$(grep "${SCM_BRANCH}\.\.\." <<< "${status}")"
+            tracking_info="$(s "${SCM_BRANCH}\.\.\." <<< "${status}")"
 
             if [[ -n "${tracking_info}" ]]; then
                 local branch_gone
@@ -225,14 +226,14 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
             # Mercurial holds it's current branch in .hg/branch file
             SCM_BRANCH=$(cat "$HG_ROOT/branch")
         else
-            SCM_BRANCH=$(hg summary 2> /dev/null | grep branch: | awk '{print $2}')
+            SCM_BRANCH=$(hg summary 2> /dev/null | s branch: | awk '{print $2}')
         fi
 
         if [ -f "$HG_ROOT/dirstate" ]; then
             # Mercurial holds various information about the working directory in .hg/dirstate file. More on http://mercurial.selenic.com/wiki/DirState
             SCM_CHANGE=$(hexdump -n 10 -e '1/1 "%02x"' "$HG_ROOT/dirstate" | cut -c-12)
         else
-            SCM_CHANGE=$(hg summary 2> /dev/null | grep parent: | awk '{print $2}')
+            SCM_CHANGE=$(hg summary 2> /dev/null | s parent: | awk '{print $2}')
         fi
     }
 
