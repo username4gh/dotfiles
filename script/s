@@ -70,7 +70,7 @@ class ContentMatcher(object):
             self._findstrlen = len(self._findstr)
 
     def matcher(self, fileobj):
-       for lineno, line in enumerate(fileobj, 1):
+        for lineno, line in enumerate(fileobj, 1):
             # Iterate over all matches of the pattern in the line,
             # noting each matching column range.
             if self._findstr:
@@ -140,7 +140,7 @@ class DefaultOutputFormatter(OutputFormatter):
     def emit_matching_line(self, matchresult):
         # Emit the chunk before the first matching chunk
         line = matchresult.matching_line
-        
+
         if not self.only_matching:
             self.emit_line(line)
         else:
@@ -149,7 +149,7 @@ class DefaultOutputFormatter(OutputFormatter):
                 # for multiple match in same line, just split them by space, unless i get some better ideas
                 self.emit(' ')
             self.emit_line()
-                
+
     def emit(self, str):
         """ Write the string to the stream.
         """
