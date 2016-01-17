@@ -7,7 +7,6 @@
 
 + Compatibility & LightWeight (so i had to ditch my beloved emacs) & cut-dependency
  1. <small>darwin & ubuntu</small>
- 	 - <small>replace grep with ack</small>
  2. <small>zsh & bash</small>
  3. <small>local & ssh</small>
  4. <small>prefer pre-installed software</small>
