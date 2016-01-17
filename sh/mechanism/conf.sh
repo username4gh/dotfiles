@@ -4,7 +4,7 @@ _conf_read() {
     # $1 --> variant name
     if [[ "$#" == 1 ]];then
         if [[ -f "$MY_SH/.conf" ]];then
-            echo $(cat "$MY_SH/.conf" | ack -i "$1" | ack -o '(?<=\]).*?(?=$)')
+            echo $(cat "$MY_SH/.conf" | s -i "$1" | s -o '(?<=\]).*?(?=$)')
         fi
     else
         echo "_conf_read error"

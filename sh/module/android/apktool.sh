@@ -2,7 +2,7 @@
 
 _android_apktool_jar_url(){
     local url
-    url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | ack -o "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
+    url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | s -o "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
     echo $url
 }
 

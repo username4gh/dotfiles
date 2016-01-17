@@ -44,7 +44,7 @@ py() {
 }
 
 _python_check_pyenv() {
-    if [[ "$(pyenv versions | ack '^\*' | ack -o '(?<=\*\ ).*?(?=\ \()')" == 'system' ]];then 
+    if [[ "$(pyenv versions | s '^\*' | s -o '(?<=\*\ ).*?(?=\ \()')" == 'system' ]];then 
         echo 0
     else
         echo 1

@@ -9,7 +9,7 @@ _python_pip_uninstall_all() {
         if [[ "$item" != 'pip' ]] && [[ "$item" != 'setuptools' ]] && [[ "$item" != 'lxml' ]];then
             pip uninstall -y "$item"
         fi
-    done < <(pip list | ack -o '(?<=^).*?(?=\ \()')
+    done < <(pip list | s -o '(?<=^).*?(?=\ \()')
 }
 
 _python_pip_upgrade_all() {
@@ -21,7 +21,7 @@ _python_pip_upgrade_all() {
     do
         echo "Upgrading $item"
         pip install --upgrade "$item"
-    done < <(pip list --outdated | ack -o '(?<=^).*?(?=\ \()')
+    done < <(pip list --outdated | s -o '(?<=^).*?(?=\ \()')
 }
 
 _python_pip_check_package() {

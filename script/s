@@ -90,11 +90,16 @@ class ContentMatcher(object):
                 yield MatchResult(line, lineno, col_ranges)
 
     def inverted_matcher(self, fileobj):
+        nmatch = 0
+        max_match_count = sys.maxsize
         for lineno, line in enumerate(fileobj, 1):
             # Invert match: only return lines that don't match the
             # pattern anywhere
             if not self._search(line):
                 yield MatchResult(line, lineno, [])
+                nmatch += 1
+                if nmatch >= max_match_count:
+                    break
 
     def _pattern_is_simple(self, pattern):
         """ A "simple" pattern that can be matched with str.find and doesn't
@@ -138,26 +143,25 @@ class DefaultOutputFormatter(OutputFormatter):
         self.output_stream = output_stream or sys.stdout
 
     def emit_matching_line(self, matchresult):
-        first_match_range = matchresult.matching_column_ranges[0]
-
         # Emit the chunk before the first matching chunk
         line = matchresult.matching_line
-
+        
         if not self.only_matching:
             self.emit_line(line)
         else:
             for i, (match_start, match_end) in enumerate(matchresult.matching_column_ranges):
                 self.emit(line[match_start:match_end])
-                # for multiple match in same line, just split them by space, unless i get some better idea
+                # for multiple match in same line, just split them by space, unless i get some better ideas
                 self.emit(' ')
+            self.emit_line()
                 
     def emit(self, str):
         """ Write the string to the stream.
         """
-        self.output_stream.write(tostring(str))
+        self.output_stream.write(tostring(str).strip())
 
     def emit_line(self, line=''):
-        self.emit(line + '\n')
+        self.output_stream.write(tostring(line).strip() + '\n')
 
 class OptionParser(optparse.OptionParser):
     """Option parser that separates using --version from using invalid options.
@@ -251,7 +255,6 @@ def _run(pattern=None,
     try:
         fileobj = sys.stdin
         matches = list(matcher.match_file(fileobj))
-
         if matches:
             match_found =True
 
