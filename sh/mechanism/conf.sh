@@ -7,7 +7,7 @@ _conf_read() {
             echo $(cat "$MY_SH/.conf" | s -i "$1" | s -o '(?<=\]).*?(?=$)')
         fi
     else
-        echo "_conf_read error"
+        echo "Usage: _conf_read key"
     fi
 }
 
@@ -21,6 +21,6 @@ _conf_write() {
         fi
         echo "[$1]$2" >> $MY_SH/.conf
     else
-        echo "_conf_write error"
+        echo "Usage: _conf_write key value"
     fi
 }

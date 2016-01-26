@@ -11,6 +11,6 @@ _module_init() {
             echo '_myload_sh_files $MY_SH_MODULE '$(_dir_basename $item) >> "$MY_SH_MODULE/init.sh"; 
         done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
     else
-        echo "_module_init error"
+        echo "Usage: _module_init"
     fi
 }

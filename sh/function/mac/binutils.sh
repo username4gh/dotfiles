@@ -2,7 +2,7 @@
 
 _binutils_latest() {
     local BINUTILS
-    BINUTILS=$(curl -s http://ftp.gnu.org/gnu/binutils/ | grep -P 'binutils-.*\.tar\.gz' | grep -v 'patch' | grep -Po '(?<=gz\"\>).*(?=\.tar\.gz\<\/a)' | sort -rV | head -1)
+    BINUTILS=$(curl -s http://ftp.gnu.org/gnu/binutils/ | s 'binutils-.*\.tar\.gz' | s -v 'patch' | s -o '(?<=gz\"\>).*(?=\.tar\.gz\<\/a)' | sort -rV | head -1)
     echo "http://ftp.gnu.org/gnu/binutils/$BINUTILS.tar.gz"
 }
 
@@ -11,7 +11,7 @@ _binutils_latest() {
 _binutils_nm(){
     local binutils
 
-    binutils=$(find ~/bin -maxdepth 1 -type d  | grep -P 'binutils-.*')
+    binutils=$(find ~/bin -maxdepth 1 -type d  | s 'binutils-.*')
 
     if [[ "$#" == 0 ]];then
         (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/nm-new)
@@ -23,7 +23,7 @@ _binutils_nm(){
 _binutils_readelf(){
     local binutils
 
-    binutils=$(find ~/bin -maxdepth 1 -type d  | grep -P 'binutils-.*')
+    binutils=$(find ~/bin -maxdepth 1 -type d  | s 'binutils-.*')
 
     if [[ "$#" == 0 ]];then
         (export PATH="$MY_BIN/binutils-2.25/binutils:$PATH"; $binutils/binutils/readelf)

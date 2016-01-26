@@ -15,7 +15,7 @@ _bootstrap_module() {
             fi
         done < <(find "$MY_SH_MODULE/$1" -mindepth 1 -maxdepth 1 -type f -name "$1\_init.sh")
     else
-        echo "_bootstrap_module error"
+        echo "Usage: _bootstrap_module name"
     fi
 }
 
@@ -28,7 +28,7 @@ _bootstrap_modules() {
             _bootstrap_module $(_dir_basename $item)
         done < <(find "$MY_SH/module" -mindepth 1 -maxdepth 1 -type d)
     else
-        echo "_bootstrap_modules error"
+        echo "Usage: _bootstrap_modules"
     fi
 }
 
