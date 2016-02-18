@@ -26,6 +26,7 @@
 # TODO & Question & Reference
 + backup shell-command-history to github with encryption
  1. <small>[How to write a new git protocol](https://rovaughn.github.io/2015-2-9.html)</small>
+ 2. <small>[blackbox](https://github.com/StackExchange/blackbox)</small>
 
 + add security check for SCM(personal or other sensetive info)
 

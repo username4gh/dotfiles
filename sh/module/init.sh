@@ -9,12 +9,9 @@ _myload_sh_files $MY_SH_MODULE go
 _myload_sh_files $MY_SH_MODULE history
 _myload_sh_files $MY_SH_MODULE java
 _myload_sh_files $MY_SH_MODULE macports-tools
-_myload_sh_files $MY_SH_MODULE nvm
 _myload_sh_files $MY_SH_MODULE prompt
 _myload_sh_files $MY_SH_MODULE python
 _myload_sh_files $MY_SH_MODULE repos
-_myload_sh_files $MY_SH_MODULE scala
-_myload_sh_files $MY_SH_MODULE sdkman
 _myload_sh_files $MY_SH_MODULE translate
 _myload_sh_files $MY_SH_MODULE vi
 _myload_sh_files $MY_SH_MODULE vundle
