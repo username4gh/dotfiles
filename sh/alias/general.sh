@@ -13,6 +13,8 @@ fi
 
 alias makescript="fc -rnl | head -1 >"
 
+alias rm='rm -v'
+
 # System info
 alias cmount="mount | column -t"
 

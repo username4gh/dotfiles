@@ -46,7 +46,7 @@ filetype plugin indent on
 " colorscheme
 colorscheme molokai
 
-" AirLine
+" bling/vim-airline
 let g:airline_theme = 'badwolf'
 
 " default Leader key is \"
@@ -56,12 +56,22 @@ let g:airline_theme = 'badwolf'
 
 :noremap <C-F11> :cs add $CSCOPE_DB<CR>
 
+" Raimondi/delimitMate
 " indent after press enter key"
 let delimitMate_expand_cr=1
 
+" scrooloose/nerdtree
 let NERDTreeShowHidden=1
 let g:nerdtree_tabs_open_on_gui_startup=0
 :map <Leader>n <plug>NERDTreeTabsToggle<CR>
+
+" terryma/vim-multiple-cursors
+let g:multi_cursor_use_default_mapping=0
+" Default mapping
+let g:multi_cursor_prev_key='<C-h>'
+let g:multi_cursor_next_key='<C-j>'
+let g:multi_cursor_skip_key='<C-k>'
+let g:multi_cursor_quit_key='<Esc>'
 
 " basic editor-stuff
 if filereadable(expand("$HOME/repo/my-i3/vim/base.vim"))
