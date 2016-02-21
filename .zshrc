@@ -50,7 +50,7 @@ HIST_STAMPS="mm/dd/yyyy"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(command-not-found dirhistory git git-extras zsh_reload)
+plugins=(zsh_reload)
 
 source $ZSH/oh-my-zsh.sh
 

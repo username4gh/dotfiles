@@ -77,3 +77,9 @@ let g:multi_cursor_quit_key='<Esc>'
 if filereadable(expand("$HOME/repo/my-i3/vim/base.vim"))
     :so $HOME/repo/my-i3/vim/base.vim
 endif
+
+let g:loaded_python_provider = 1
+let g:loaded_python3_provider = 1
+let g:python_host_skip_check = 1
+let g:python3_host_skip_check = 1
+let g:python_host_prog = '/opt/local/bin/python'

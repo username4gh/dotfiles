@@ -5,4 +5,4 @@ _android_gradle_latest_url() {
     echo "https://services.gradle.org/distributions/gradle-$latest_version_code-all.zip"
 }
 
-export PATH="$MY_BIN/gradle-2.9/bin:$PATH"
+export PATH="$MY_BIN/gradle-2.11/bin:$PATH"
