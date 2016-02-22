@@ -24,7 +24,7 @@ _repos_info() {
     while IFS= read -r -d '' file
     do
         if [[ -d "$file/.git" ]];then
-            _myrepos_get_remote_url "$file"
+            _repos_get_remote_url "$file"
         fi
     done < <(find "$MY_REPO" -mindepth 1 -maxdepth 1 -type d -print0)
 }
@@ -39,7 +39,7 @@ repos_register_all() {
     do
         echo "$file"
         if [[ -d "$file/.git" ]];then
-            url=$(_myrepos_get_remote_url "$file")
+            url=$(_repos_get_remote_url "$file")
             echo "[${file/#$HOME\//}]" >> "$MY_REPO/my-i3/.mrconfig" \
                 && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$MY_REPO/my-i3/.mrconfig"
         fi
