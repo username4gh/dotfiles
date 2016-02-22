@@ -1,6 +1,7 @@
 _myload_sh_files $MY_SH_MODULE android
 _myload_sh_files $MY_SH_MODULE c
 _myload_sh_files $MY_SH_MODULE cabal
+_myload_sh_files $MY_SH_MODULE compleat
 _myload_sh_files $MY_SH_MODULE enchancd
 _myload_sh_files $MY_SH_MODULE flatbuffers
 _myload_sh_files $MY_SH_MODULE fpp
