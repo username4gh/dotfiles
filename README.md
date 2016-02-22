@@ -3,7 +3,7 @@
 
 + Keep necessary notes
  1. <small>meaningfull name</small>
- 2. <small>reference</small>
+ 2. <small>comment with reference</small>
 
 + Compatibility & LightWeight (so i had to ditch my beloved emacs) & cut-dependency
  1. <small>darwin & ubuntu</small>
@@ -34,10 +34,10 @@
  1. <small>easy to search</small>
  2. <small>pre or post process</small>
 
-+ bootstrap-mechanism for the whole setup
++ bootstrap-mechanism for the whole setup process
  1. <small>more automation</small>
- 2. <small>clean and easily use</small>
- 3. <small>easily to extend</small>
+ 2. <small>clean and easy to use</small>
+ 3. <small>easy to extend</small>
 
 + coding style
  1. <small>[cleansing code](http://bencane.com/2014/06/06/8-tips-for-creating-better-bash-scripts/)</small>
