@@ -3,7 +3,8 @@ filetype off
 
 " Cscope
 if empty(glob("~/.vim/plugin/cscope_maps.vim"))
-    silent execute '!wget -c http://cscope.sourceforge.net/cscope_maps.vim -P ~/.vim/plugin/'
+    silent execute '!mkdir -p ~/.vim/plugin'
+    silent execute '!curl -L -C - http://cscope.sourceforge.net/cscope_maps.vim -o ~/.vim/plugin/cscope_maps.vim'
 endif
 
 if empty(glob("~/.vim/bundle/Vundle.vim"))

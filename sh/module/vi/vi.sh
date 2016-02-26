@@ -5,14 +5,16 @@
 _vi() {
     if [[ "$#" == 0 ]];then
         (unset PATH;
-        export PATH="/usr/bin";
+        export PATH="/bin"
+        export PATH="/usr/bin:$PATH";
         export PATH="/opt/local/bin:$PATH";
         export PATH="/opt/local/sbin:$PATH";
         export PATH="/opt/local/libexec/gnubin:$PATH";
         vim)
     else
         (unset PATH;
-        export PATH="/usr/bin";
+        export PATH="/bin"
+        export PATH="/usr/bin:$PATH";
         export PATH="/opt/local/bin:$PATH";
         export PATH="/opt/local/sbin:$PATH";
         export PATH="/opt/local/libexec/gnubin:$PATH";
