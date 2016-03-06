@@ -4,5 +4,6 @@ sh/custom/
 codes
 .mrconfig
 sh/module/conf.d
+sh/module/init.sh
 sh/.conf
 sh/.conf.tmp

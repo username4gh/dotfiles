@@ -1,6 +1,6 @@
 #! /bin/bash
 
-py() {
+virtual_pyenv() {
     # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/
     if [[ "$#" -le 0 ]];then
         echo "Usage: $0 command [arg1, arg2, ...]" >&2;
