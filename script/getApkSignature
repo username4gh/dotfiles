@@ -1,0 +1,54 @@
+#!/bin/bash
+get_signature() {
+    path=$(jar tf "$1" | grep RSA)
+    jar xf $1 $path
+    keytool -printcert -file $path
+    rm -r $path
+}
+
+if [[ "$#" -lt 1 ]];then
+    echo "Usage:" $(basename $0)
+    exit
+fi
+
+mypath=$(pwd)
+filepath=""
+if [ -d .temp_for_certificate ]
+then
+    echo ".temp_for_certificate is exist,remove it first!"
+    exit
+fi
+
+mkdir .temp_for_certificate
+cd .temp_for_certificate
+count=0
+while [ -n "$1" ]  
+do  
+    if [ $(expr substr "$1" 1 1) = "/" ]
+    then
+        filepath="$1"
+    else
+        filepath="$mypath/$1"
+    fi
+    if [ -d $filepath ]
+    then
+        all_apk=$(find $filepath -name "*.apk")
+        for apk_path in $all_apk
+        do
+            count=$[$count+1]
+            echo "(#$count) $(basename "$apk_path"):"
+            filepath=$apk_path
+            get_signature "$filepath"
+            echo "-----------------------------------------------------------"
+        done
+    else
+        count=$[$count+1]
+        echo "(#$count) $(basename "$1"):"
+        get_signature "$filepath"
+        echo "-----------------------------------------------------------"
+    fi
+    shift
+done  
+cd ..
+rm -r .temp_for_certificate
+echo "done!"
