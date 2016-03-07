@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/Users/zhangjihan/.sdkman"
+export SDKMAN_DIR="$HOME/.sdkman"
 
 if [[ "$(_check_command 'unzip')" == 1 ]];then
     if [[ ! -d "$HOME/.sdkman" ]]; then
@@ -24,7 +24,7 @@ virtual_sdkman() {
         return;
     fi
 
-    ([[ -s "/Users/zhangjihan/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/zhangjihan/.sdkman/bin/sdkman-init.sh"
+    ([[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
     command=$1;
 
