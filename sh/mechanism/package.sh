@@ -8,10 +8,14 @@ _package_init() {
             mkdir -p "$MY_SH_MODULE/$1/src"
 
             echo '#! /usr/bin/env bash' >> "$MY_SH_MODULE/$1/init.sh"
+            echo "" >> "$MY_SH_MODULE/$1/init.sh"
+
             if [[ "$2" == 'n' ]];then
                 echo 'if [[ '$(whoami)' == 'root' ]];then' >> "$MY_SH_MODULE/$1/init.sh"
             fi
+
             echo '_myload_sh_files $MY_SH_MODULE/'"$1"' src' >> "$MY_SH_MODULE/$1/init.sh"
+
             if [[ "$2" == 'n' ]];then
                 echo 'fi' >> "$MY_SH_MODULE/$1/init.sh"
             fi
@@ -20,7 +24,7 @@ _package_init() {
         fi
     else
         echo "Usage: _package_init package_name (y|n)"
-        echo ""
+        echo "(y|n) for whether this package work under root or not"
     fi
 }
 
