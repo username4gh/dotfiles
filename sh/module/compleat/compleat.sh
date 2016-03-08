@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+if [[ ! -d "$MY_REPO/compleat" ]];then
+    git clone 'https://github.com/mbrubeck/compleat' "$MY_REPO/compleat"
+fi
+
 export PATH="$HOME/repo/compleat/dist/build/compleat:$PATH"
 
 if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then
