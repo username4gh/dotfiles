@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-_module_init() {
+_modules_init() {
     if [[ "$#" == 0 ]];then
         if [[ -f "$MY_SH_MODULE/init.sh" ]];then
             rm -v "$MY_SH_MODULE/init.sh"
