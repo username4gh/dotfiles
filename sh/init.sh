@@ -52,7 +52,7 @@ _myload_sh_files() {
         fi
         unset -v file
     else
-        echo "Usage: _myload_sh_files directory subdirectory"
+        echo "Usage: _myload_sh_files baseDirectoryPath subDirectoryName"
     fi
 }
 
