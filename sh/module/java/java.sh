@@ -13,7 +13,7 @@ _java_8_url_linux() {
 }
 
 if [[ "$(_check_os)" == "Linux" ]];then
-    export JDK_PATH="$MY_BIN/jdk1.7.0_80"
-    export JAVA_HOME="$MY_BIN/jdk1.7.0_80"
+    export JDK_PATH="$(_autodetect_bin "jdk1\..*")"
+    export JAVA_HOME="$(_autodetect_bin "jdk1\..*")"
     export PATH="$JDK_PATH/bin:$PATH"
 fi
