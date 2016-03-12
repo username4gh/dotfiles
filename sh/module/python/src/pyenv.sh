@@ -8,7 +8,7 @@ virtual_pyenv() {
     fi
 
     if [[ ! -d "$MY_REPO/pyenv" ]]; then
-        echo "newly installed pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
+        echo "first time of installing pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
         git clone 'https://github.com/yyuu/pyenv' "$MY_REPO/pyenv"
     fi
 

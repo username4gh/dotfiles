@@ -12,7 +12,7 @@ if [[ $(_check_command 'dircolors') == 1 ]]; then
 fi
 
 alias makescript="fc -rnl | head -1 >"
-
+alias ls='ls -F'
 alias rm='rm -v'
 
 # System info

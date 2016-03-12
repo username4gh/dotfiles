@@ -35,7 +35,7 @@ _my_sh_log() {
     fi
 }
 
-_myload_sh_files() {
+_my_load_sh_files() {
     if [[ "$#" == 2 ]];then
         local directory="$1"
 
@@ -52,17 +52,17 @@ _myload_sh_files() {
         fi
         unset -v file
     else
-        echo "Usage: _myload_sh_files baseDirectoryPath subDirectoryName"
+        echo "Usage: _my_load_sh_files baseDirectoryPath subDirectoryName"
     fi
 }
 
-_myload_sh_files $MY_SH 'internal'
-_myload_sh_files $MY_SH 'path'
-_myload_sh_files $MY_SH 'mechanism'
-_myload_sh_files $MY_SH 'function'
-_myload_sh_files $MY_SH 'alias'
-_myload_sh_files $MY_SH 'module'
-_myload_sh_files $MY_SH 'custom'
+_my_load_sh_files $MY_SH 'internal'
+_my_load_sh_files $MY_SH 'path'
+_my_load_sh_files $MY_SH 'mechanism'
+_my_load_sh_files $MY_SH 'function'
+_my_load_sh_files $MY_SH 'alias'
+_my_load_sh_files $MY_SH 'module'
+_my_load_sh_files $MY_SH 'custom'
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.

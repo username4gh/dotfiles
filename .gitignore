@@ -7,3 +7,6 @@ sh/module/conf.d
 sh/module/init.sh
 sh/.conf
 sh/.conf.tmp
+
+node_modules
+package.json
