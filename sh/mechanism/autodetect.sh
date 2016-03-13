@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 _autodetect_bin() {
-    if [[ "$#" == 2 ]];then
+    if [[ "$#" == 1 ]];then
         local path
         path=$(ls -F $MY_BIN | s "$1" | tail -1)
         echo $MY_BIN/$path
