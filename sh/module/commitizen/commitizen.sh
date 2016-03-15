@@ -1,11 +1,13 @@
 #! /usr/bin/env bash
 
 _commitizen_fix_package_json() {
-    if [[ "$#" == 0 ]];then
-        if [[ ! -d "$MY_REPO/cz-cli" ]];then
-            git clone https://github.com/commitizen/cz-cli "$MY_REPO/cz-cli"
+    if [[ ! -f "./package.json" ]];then
+        if [[ "$#" == 0 ]];then
+            if [[ ! -d "$MY_REPO/cz-cli" ]];then
+                git clone https://github.com/commitizen/cz-cli "$MY_REPO/cz-cli"
+            fi
+            cp "$MY_REPO/cz-cli/package.json" ./
         fi
-        cp "$MY_REPO/cz-cli/package.json" ./
     fi
 }
 
