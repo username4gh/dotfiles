@@ -10,5 +10,6 @@ _commitizen_fix_package_json() {
 }
 
 _commitizen_init() {
+    _commitizen_fix_package_json
     commitizen init cz-conventional-changelog --save-dev --save-exact --force
 }
