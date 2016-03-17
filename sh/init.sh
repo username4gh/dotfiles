@@ -28,7 +28,7 @@ _my_sh_log() {
     if [[ "$#" == 1 ]];then
         local LOG_DIR="$MY_I3/log"
         if [[ -d "$LOG_DIR" ]]; then
-            echo "$(date +%Y-%m-%d-%H-%M) $1" >> $LOG_DIR/sh.log
+            echo "$(date +%Y-%m-%d-%H-%M-%S) $1" >> $LOG_DIR/sh.log
         fi
     else
         echo "Usage: _my_sh_log content"
