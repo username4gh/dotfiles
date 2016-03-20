@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-_package_init() {
+my_package_init() {
     if [[ "$#" == 2 ]];then
         local current_dir=$(pwd)
         if [[ "$current_dir" == "$MY_SH_MODULE" ]];then
@@ -27,4 +27,3 @@ _package_init() {
         echo "(y|n) for whether this package work under root or not"
     fi
 }
-

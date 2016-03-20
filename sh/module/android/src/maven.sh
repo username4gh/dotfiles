@@ -5,4 +5,4 @@ _android_maven_latest_url(){
     echo "http://mirrors.hust.edu.cn/apache/maven/maven-3/$latest_version_code/binaries/apache-maven-$latest_version_code-bin.tar.gz"
 }
 
-export PATH="$MY_BIN/apache-maven-3.3.3/bin:$PATH"
+export PATH="$(_autodetect_bin 'apache-maven-.*')/bin:$PATH"

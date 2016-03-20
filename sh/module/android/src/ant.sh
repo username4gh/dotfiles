@@ -7,4 +7,4 @@ _android_ant_latest_url() {
     echo "http://mirrors.noc.im/apache//ant/binaries/apache-ant-$latest_version_code-bin.tar.gz"
 }
 
-export PATH="$MY_BIN/apache-ant-$(_conf_read 'ant')/bin:$PATH"
+export PATH="$(_autodetect_bin 'apache-ant-.*')/bin:$PATH"

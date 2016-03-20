@@ -5,7 +5,7 @@ export PATH="$MY_BIN/jd_gui:$PATH"
 # android-related
 export ANDROID_HOME="$MY_BIN/sdk"
 export ANDROID_SDK="$MY_BIN/sdk"
-export ANDROID_NDK="$MY_BIN/android-ndk-r10e"
+export ANDROID_NDK="$ANDROID_SDK/ndk-bundle"
 
 export PATH="$ANDROID_NDK:$PATH"
 export PATH="$ANDROID_SDK/tools:$PATH"

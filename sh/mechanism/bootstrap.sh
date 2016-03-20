@@ -32,6 +32,16 @@ _bootstrap_modules() {
     fi
 }
 
-_bootstrap() {
-    _bootstrap_modules
+my_bootstrap() {
+    local useage='Usage:my_bootstrap option \n help:show this help message \n init:do actual init process \n'
+    if [[ "$#" == 0 ]];then
+        if  [[ "$1" == 'init' ]];then
+            _bootstrap_modules
+        fi
+        if [[ "$1" == 'help' ]];then
+            printf "$useage"
+        fi
+    else
+        printf "$useage"
+    fi
 }
