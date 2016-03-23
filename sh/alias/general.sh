@@ -2,7 +2,6 @@
 
 alias makescript="fc -rnl | head -1 >"
 alias ls='ls -F'
-alias rm='rm -v'
 
 # System info
 alias cmount="mount | column -t"

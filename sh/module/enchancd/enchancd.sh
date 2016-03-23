@@ -5,6 +5,6 @@ if [[ ! -d "$MY_REPO/enhancd" ]];then
 fi
 
 export ENHANCD_COMMAND=ecd
-export ENHANCD_FILTER="myfzf"
+export ENHANCD_FILTER="fzf"
 
 source "$MY_REPO/enhancd/enhancd.sh"
