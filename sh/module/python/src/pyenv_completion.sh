@@ -2,7 +2,7 @@
 
 _virtual_pyenv_complete () {
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local enable_disable_args="alias plugin completion"
+    local enable_disable_args="pip pyenv pypw"
     COMPREPLY=( $(compgen -W "${enable_disable_args}" -- ${cur}) )
 }
 
