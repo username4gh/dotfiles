@@ -6,4 +6,4 @@ _virtual_sdkman_complete () {
     COMPREPLY=( $(compgen -W "${enable_disable_args}" -- ${cur}) )
 }
 
-complete -F _virtual_sdk_complete virtual_sdkman
+complete -F _virtual_sdkman_complete virtual_sdkman
