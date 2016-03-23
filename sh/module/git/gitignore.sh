@@ -18,3 +18,15 @@ my_git_ignore_init() {
         echo "Usage: my_git_ignore_init template"
     fi
 }
+
+_my_git_ignore_init_complete() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local available_things=$(for f in $(ls -1 $MY_REPO/gitignore/*.gitignore);
+    do
+        basename $f | cut -d '.' -f1
+    done)
+
+    COMPREPLY=( $(compgen -W "${available_things}" -- ${cur}) )
+}
+
+complete -F _my_git_ignore_init_complete my_git_ignore_init
