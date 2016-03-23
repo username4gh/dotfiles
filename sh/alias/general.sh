@@ -1,16 +1,5 @@
 #! /bin/bash
 
-# enable color support of ls and also add handy aliases
-if [[ $(_check_command 'dircolors') == 1 ]]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
 alias makescript="fc -rnl | head -1 >"
 alias ls='ls -F'
 alias rm='rm -v'
