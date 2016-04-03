@@ -11,10 +11,10 @@ my_package_init() {
             echo "" >> "$MY_SH_MODULE/$1/init.sh"
 
             if [[ "$2" == 'n' ]];then
-                echo 'if [[ '$(whoami)' == 'root' ]];then' >> "$MY_SH_MODULE/$1/init.sh"
+                echo 'if [[ $(whoami) != root ]];then' >> "$MY_SH_MODULE/$1/init.sh"
             fi
 
-            echo '_my_load_sh_files $MY_SH_MODULE/'"$1"' src' >> "$MY_SH_MODULE/$1/init.sh"
+            echo ' _my_load_sh_files $MY_SH_MODULE/'"$1" 'src' >> "$MY_SH_MODULE/$1/init.sh"
 
             if [[ "$2" == 'n' ]];then
                 echo 'fi' >> "$MY_SH_MODULE/$1/init.sh"
