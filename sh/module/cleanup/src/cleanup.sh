@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-my_cleanup() {
+_cleanup_caches() {
     #user cache file
     echo "cleaning user cache file from ~/Library/Caches"
     rm -rf ~/Library/Caches/*
@@ -41,3 +41,4 @@ my_cleanup() {
     done
     echo "done cleaning for application caches"
 }
+
