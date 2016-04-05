@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 md5gen() {
     if [[ "$#" -gt 0 ]];then
         echo -n $1 | md5sum

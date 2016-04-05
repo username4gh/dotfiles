@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 my_touch() {
     if [[ "$#" == 1 ]];then

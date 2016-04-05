@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _android_ant_latest_url() {
     local latest_version_code

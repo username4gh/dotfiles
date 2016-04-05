@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ ! -d "$MY_REPO/dex-method-counts" ]];then
     git clone https://github.com/mihaip/dex-method-counts "$MY_REPO/dex-method-counts"

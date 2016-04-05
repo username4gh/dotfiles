@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # in order to keep pyenv and YouCompleteMe both work
 # https://github.com/Valloric/YouCompleteMe/issues/8

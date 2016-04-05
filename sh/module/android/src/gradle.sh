@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _android_gradle_latest_version_url() {
     local latest_version_code

@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _sdkman_groovy_jsoup() {
     local url

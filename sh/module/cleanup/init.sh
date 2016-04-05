@@ -1,3 +1,3 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
  _my_load_sh_files $MY_SH_MODULE/cleanup src

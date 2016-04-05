@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # UTF-8-encode a string of Unicode symbols
 escape() {

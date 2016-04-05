@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _bootstrap_module() {
     if [[ "$#" == 1 ]];then

@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _file_path() {
     if [[ "$#" == 1 ]];then

@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # Show all the names (CNs and SANs) listed in the SSL certificate
 # for a given domain

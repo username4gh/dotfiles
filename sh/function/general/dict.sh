@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # http://www.commandlinefu.com/commands/browse
 dict() { 

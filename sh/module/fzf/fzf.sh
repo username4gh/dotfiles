@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 #Description wrapper for fzf
 if [[ ! -d "$HOME/.fzf" ]];then

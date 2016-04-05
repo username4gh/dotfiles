@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 #Description clean up gitlab backups, only save the newest one
 

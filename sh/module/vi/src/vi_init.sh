@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 my_vi_compile_YouCompileMe() {
     if [[ "$(_check_os)" == 'Darwin' ]];then

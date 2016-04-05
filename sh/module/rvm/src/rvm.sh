@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ ! -d "$HOME/.rvm/bin" ]];then
     curl -sSL https://get.rvm.io | bash -s stable --autolibs=enabled

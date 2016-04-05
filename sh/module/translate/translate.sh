@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 if [[ ! -d "$MY_REPO/translate-shell" ]];then
     git clone https://github.com/soimort/translate-shell "$MY_REPO/translate-shell"
 fi

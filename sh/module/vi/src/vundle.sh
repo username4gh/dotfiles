@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # https://github.com/VundleVim/Vundle.vim/issues/599
 # https://github.com/VundleVim/Vundle.vim/issues/639

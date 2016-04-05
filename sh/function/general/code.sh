@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # some pre-defined variants might come in handy
 # MY_I3 root dir of this `dotfiles`

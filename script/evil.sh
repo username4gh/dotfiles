@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # evil.sh — http://mths.be/evil.sh
 
 # Set `rm` as the default editor

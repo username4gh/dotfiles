@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 # http://zourbuth.com/tools/woeid/
 yahoo_weather() {

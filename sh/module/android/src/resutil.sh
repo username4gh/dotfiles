@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 my_android_info() {
     if [[ "$#" == 0 ]];then

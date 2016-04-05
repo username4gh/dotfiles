@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ "$(_check_command)" == 'Linux' ]];then
     alias intercept="sudo strace -ff -e trace=write -e write=1,2 -p"

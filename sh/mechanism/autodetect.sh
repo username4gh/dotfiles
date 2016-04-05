@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _autodetect_bin() {
     if [[ "$#" == 1 ]];then

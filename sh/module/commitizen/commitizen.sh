@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _commitizen_fix_package_json() {
     if [[ ! -f "./package.json" ]];then

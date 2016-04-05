@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 my_package_init() {
     if [[ "$#" == 2 ]];then
@@ -7,7 +7,7 @@ my_package_init() {
             mkdir -p "$MY_SH_MODULE/$1"
             mkdir -p "$MY_SH_MODULE/$1/src"
 
-            echo '#! /usr/bin/env bash' >> "$MY_SH_MODULE/$1/init.sh"
+            echo '#! /usr/bin/env sh' >> "$MY_SH_MODULE/$1/init.sh"
             echo "" >> "$MY_SH_MODULE/$1/init.sh"
 
             if [[ "$2" == 'n' ]];then

@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ ! -d "$MY_REPO/enhancd" ]];then
 	git clone https://github.com/b4b4r07/enhancd "$MY_REPO/enhancd"

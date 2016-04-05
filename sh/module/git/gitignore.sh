@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ ! -d "$MY_REPO/gitignore" ]];then
     git clone https://github.com/github/gitignore "$MY_REPO/gitignore"

@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ ! -d "$MY_REPO/neofetch" ]];then
     git clone https://github.com/dylanaraps/neofetch "$MY_REPO/neofetch"

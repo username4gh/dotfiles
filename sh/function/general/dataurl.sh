@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 dataurl() {
     local mimeType=$(file -b --mime-type "$1");

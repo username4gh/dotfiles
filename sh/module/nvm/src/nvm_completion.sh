@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 _virtual_nvm_complete () {
     local cur="${COMP_WORDS[COMP_CWORD]}"

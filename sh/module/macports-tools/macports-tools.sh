@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 if [[ "$(_check_os)" == "Darwin" ]]; then
     if [[ ! -d "$MY_REPO/macports-tools" ]];then

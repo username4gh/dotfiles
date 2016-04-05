@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env sh
 
 my_modules_init() {
     if [[ "$#" == 0 ]];then
