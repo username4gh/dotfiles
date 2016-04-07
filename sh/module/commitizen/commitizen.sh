@@ -11,7 +11,17 @@ _commitizen_fix_package_json() {
     fi
 }
 
+_commitizen_deal_with_gitignore() {
+    if [[ -f ".gitignore" ]];then
+        if [[ "$(cat ./.gitignore | s node_modules)" == '' && "$(cat ./.gitignore | s package.json)" == '' ]];then
+            echo 'node_modules' >> ./.gitignore
+            echo 'package.json' >> ./.gitignore
+        fi
+    fi
+}
+
 commitizen_init() {
+    _commitizen_deal_with_gitignore
     _commitizen_fix_package_json
     commitizen init cz-conventional-changelog --save-dev --save-exact --force
 }
