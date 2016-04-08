@@ -21,7 +21,11 @@ _commitizen_deal_with_gitignore() {
 }
 
 commitizen_init() {
-    _commitizen_deal_with_gitignore
-    _commitizen_fix_package_json
-    commitizen init cz-conventional-changelog --save-dev --save-exact --force
+    if [[ -d './.git' ]];then
+        _commitizen_deal_with_gitignore
+        _commitizen_fix_package_json
+        commitizen init cz-conventional-changelog --save-dev --save-exact --force
+    else
+        echo "Usage:commitizen_init must be used under the git-repo root"
+    fi
 }

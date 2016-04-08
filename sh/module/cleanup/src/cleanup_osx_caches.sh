@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-_cleanup_caches() {
+_cleanup_osx_caches() {
     #user cache file
     echo "cleaning user cache file from ~/Library/Caches"
     rm -rf ~/Library/Caches/*
@@ -33,12 +33,11 @@ _cleanup_caches() {
     echo "done cleaning from /Users/Feng/Pictures/iPhoto Library/iPod Photo Cache"
     #application caches
     echo "cleaning application caches"
-    for x in $(ls ~/Library/Containers/) 
-    do 
+    for x in $(ls ~/Library/Containers/)
+    do
         echo "cleaning ~/Libarary/Containers/$x/Data/Library/Caches"
         rm -rf ~/Library/Containers/$x/Data/Library/Caches/*
         echo "done cleaning ~/Library/Containers/$x/Data/Library/Caches"
     done
     echo "done cleaning for application caches"
 }
-
