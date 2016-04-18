@@ -1,4 +1,5 @@
 #! /bin/bash
+
 if [[ "$(_check_os)" == "Linux" ]];then
     if ! shopt -oq posix; then
         if [[ -f /usr/share/bash-completion/bash_completion ]]; then

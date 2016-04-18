@@ -8,10 +8,10 @@ _gitignore_merge() {
     if [[ "$#" == 2 ]];then
         mv ./.gitignore ./.gitignore.previous
         cat $1 >> ./.gitignore.previous
-        $MY_SH_MODULE/git/src/gitignore_merger -i ./.gitignore.previous -o ./.gitignore
+        $MY_SH_MODULE/git/src/gitignore_merger.py -i ./.gitignore.previous -o ./.gitignore
         rm ./.gitignore.previous
     else
-        echo "Usage: _gitignore_merge srcfile targetfile"
+        echo "Usage: _gitignore_merge.py srcfile targetfile"
     fi
 }
 
