@@ -1,9 +1,11 @@
 #! /usr/bin/env sh
 
-_virtual_nvm_complete () {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local enable_disable_args="commitizen_init git-cz npm"
-    COMPREPLY=( $(compgen -W "${enable_disable_args}" -- ${cur}) )
-}
+if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    _virtual_nvm_complete () {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local enable_disable_args="commitizen_init git-cz npm"
+        COMPREPLY=( $(compgen -W "${enable_disable_args}" -- ${cur}) )
+    }
 
-complete -F _virtual_nvm_complete virtual_nvm
+    complete -F _virtual_nvm_complete virtual_nvm
+fi

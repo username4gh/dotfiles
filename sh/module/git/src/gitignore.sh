@@ -15,16 +15,6 @@ _gitignore_merge() {
     fi
 }
 
-_gitignore_init_complete() {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local available_things=$(for f in $(ls -1 $MY_REPO/gitignore/*.gitignore);
-    do
-        basename $f | cut -d '.' -f1
-    done)
-
-    COMPREPLY=( $(compgen -W "${available_things}" -- ${cur}) )
-}
-
 my_git_ignore_init() {
     if [[ ! -d "$(pwd)/.git" ]];then
         echo "my_git_ignore_init can only be used in the root dir of a git repo"
@@ -42,4 +32,16 @@ my_git_ignore_init() {
     fi
 }
 
-complete -F _gitignore_init_complete my_git_ignore_init
+if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    _gitignore_init_complete() {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local available_things=$(for f in $(ls -1 $MY_REPO/gitignore/*.gitignore);
+        do
+            basename $f | cut -d '.' -f1
+        done)
+
+        COMPREPLY=( $(compgen -W "${available_things}" -- ${cur}) )
+    }
+
+    complete -F _gitignore_init_complete my_git_ignore_init
+fi
