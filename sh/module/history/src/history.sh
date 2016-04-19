@@ -1,26 +1,26 @@
 #! /bin/bash
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
-    export MY_HISTORY_DIR="$MY_REPO/my-history"
+    export MY_HISTORY_DIR="$MY_REPO/my-history-dir"
 
     _save_history() {
         if [[ "$(_check_dir "$MY_HISTORY_DIR")" == 1 ]]; then
-            # there is a threshold for history file, so it might cause 'git command' not always 
+            # there is a threshold for history file, so it might cause 'git command' not always
             # return true
             (cd "$MY_HISTORY_DIR" \
                 && git add . \
                 && git commit -am save)
         else
-            if [[ "$(_check_variant "$HISTORY_REPO")" == 1 ]]; then
-                (git clone "$HISTORY_REPO" "$MY_HISTORY_DIR" \
-                    && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive)
-            fi
+            echo 'please enter the git address of history repo'
+            read history_git_address
+            git clone "$history_git_address" "$MY_HISTORY_DIR" \
+                && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive
         fi
     }
 
     # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
     # HISTSIZE is the number of lines or commands that are stored in memory in a history list while your bash session is ongoing.
 
-    # HISTFILESIZE is the number of lines or commands that (a) are allowed in the history file at startup time of a session, 
+    # HISTFILESIZE is the number of lines or commands that (a) are allowed in the history file at startup time of a session,
     # and (b) are stored in the history file at the end of your bash session for use in future sessions.
 
     HISTSIZE=1000
