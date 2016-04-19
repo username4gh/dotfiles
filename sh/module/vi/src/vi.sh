@@ -23,11 +23,11 @@ _vi() {
 }
 
 if [[ "$(_check_command nvim)" == 1 ]]; then
-    alias vi='nvim'
+    alias vim='nvim'
 elif [[ "$(_check_command vim)" == 1 ]]; then
     if [[ "$(_check_os)" == 'Darwin' ]];then
-        alias vi='_vi'
+        alias vim='_vi'
     else
-        alias vi='vim'
+        alias vim='vim'
     fi
 fi
