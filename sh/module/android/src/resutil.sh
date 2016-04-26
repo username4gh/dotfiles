@@ -17,7 +17,7 @@ my_android_imgcopy(){
         local FILE_NO_PATH=${1##*/};
         local NOEXT=${FILE_NO_PATH%\.*};
         local EXT=${FILE_NO_PATH##*.}
-        if [[ "$2/drawable-mdpi/$NOEXT.$EXT" || "$2/drawable-xhdpi/$NOEXT.$EXT" || "$2/drawable-xxhdpi/$NOEXT.$EXT" ]];then
+        if [[ -f "$2/drawable-mdpi/$NOEXT.$EXT" || -f "$2/drawable-xhdpi/$NOEXT.$EXT" || -f "$2/drawable-xxhdpi/$NOEXT.$EXT" ]];then
             echo "$NOEXT.$EXT already exist, plz enter an alternative name"
             read alternative
             cp -vi $FILEPATH/$NOEXT.$EXT $2/drawable-mdpi/$alternative.$EXT
@@ -29,6 +29,6 @@ my_android_imgcopy(){
             cp -vi $FILEPATH/$NOEXT@3x.$EXT $2/drawable-xxhdpi/$NOEXT.$EXT
         fi
     else
-        echo "Usage: my_android_imgcopy imgfile(1x) target-res-dir"
+        echo "Usage: my_android_imgcopy imgfile(1x) target-project-res-dir"
     fi
 }
