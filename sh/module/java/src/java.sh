@@ -8,7 +8,7 @@ _java_7_url_linux() {
 
 _java_8_url_linux() {
     local url
-    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | s 8u)"
+    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | uniq -u | s 8u)"
     echo $url
 }
 

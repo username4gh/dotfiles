@@ -1,10 +1,10 @@
 #! /bin/bash
 
-_mycleanup_macports_step1() {
+_cleanup_macports_step1() {
     sudo port -fp uninstall installed
 }
 
-_mycleanup_macports_step2() {
+_cleanup_macports_step2() {
     sudo rm -rf \
     /opt/local \
     /Applications/DarwinPorts \

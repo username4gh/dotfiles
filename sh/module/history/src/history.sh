@@ -12,8 +12,9 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
         else
             echo 'please enter the git address of history repo'
             read history_git_address
-            git clone "$history_git_address" "$MY_HISTORY_DIR" \
-                && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive
+            if [[ "$history_git_address" != '' ]];then
+                git clone "$history_git_address" "$MY_HISTORY_DIR" && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive
+            fi
         fi
     }
 
