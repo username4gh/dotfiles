@@ -1,8 +1,10 @@
 #! /usr/bin/env sh
 
-if [[ ! -d "$HOME/.rvm/bin" ]];then
-    curl -sSL https://get.rvm.io | bash -s stable --autolibs=enabled
-fi
+_rvm_init() {
+    if [[ ! -d "$HOME/.rvm/bin" ]];then
+        curl -sSL https://get.rvm.io | bash -s stable --autolibs=enabled
+    fi
+}
 
 virtual_rvm() {
     # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/

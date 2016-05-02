@@ -1,5 +1,11 @@
 #! /usr/bin/env sh
 
+_conf_list() {
+    if [[ -f "$MY_SH/.conf" ]];then
+        cat "$MY_SH/.conf"
+    fi
+}
+
 _conf_read() {
     # $1 --> variant name
     if [[ "$#" == 1 ]];then
@@ -16,7 +22,7 @@ _conf_write() {
     # $2 --> variant value
     if [[ "$#" == 2 ]];then
         if [[ -f "$MY_SH/.conf" ]];then
-            # delete old record
+            # delete old record, we need the gnu sed to achieve it
             sed -e "/\[$1\]/d" -i.tmp $MY_SH/.conf
         fi
         echo "[$1]$2" >> $MY_SH/.conf

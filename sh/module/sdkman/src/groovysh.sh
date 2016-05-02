@@ -1,11 +1,31 @@
 #! /usr/bin/env sh
 
-_sdkman_groovy_jsoup() {
-    local url
-    url=$(curl -s http://jsoup.org/news/ | s "/news/release" | s -o "(?<=href=\").*?(?=\">)" | head -1 | s -o "(?<=/news/release-).*")
-    echo $url
+my_groovysh() {
+    if [[ ! -f "$HOME/.groovy/groovysh.profile" ]];then
+        cp "$MY_I3/groovysh.profile" "$HOME/.groovy/"
+    fi
+
+    local JSOUP_JAR="$(ls -a | s 'jsoup-.*?.jar')"
+    if [[ -f "$JSOUP_JAR" ]];then
+        groovysh -cp "$JSOUP_JAR"
+    fi
 }
 
-my_groovysh() {
-    groovysh -cp "$HOME/.groovy/jsoup-1.8.3.jar"
+_latest_jsoup_version_code() {
+    local latest_version_code
+    latest_version_code=$(curl -s https://jsoup.org/news/ | s "/news/release" | s -o "(?<=href=\").*?(?=\">)" | head -1 | s -o "(?<=/news/release-).*")
+    echo $latest_version_code
+}
+
+_sdkman_jsoup_url(){
+    echo "https://jsoup.org/packages/jsoup-$(_latest_jsoup_version_code).jar"
+}
+
+_sdkman_download_jsoup() {
+    local url="$(_sdkman_jsoup_url)"
+    curl "$url" -o "$HOME/.groovy/$(_file_name_from_url $url)"
+}
+
+_sdkman_groovy_init() {
+    _sdkman_download_jsoup
 }

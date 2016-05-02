@@ -5,8 +5,6 @@ _dir_basename() {
         if [[ -d "$1" ]];then
             echo "${1##*/}"
         fi
-    else
-        echo "_dir_basename error"
     fi
 }
 
@@ -15,7 +13,5 @@ _dir_parentname() {
         if [[ -d "$1" ]];then
             echo "${1%/*}"
         fi
-    else
-        echo "_dir_parentname error"
     fi
 }

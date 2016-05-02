@@ -1,6 +1,6 @@
 #! /bin/bash
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
-    export MY_HISTORY_DIR="$MY_REPO/my-history-dir"
+    export MY_HISTORY_DIR="$MY_REPO/my-history"
 
     _save_history() {
         if [[ "$(_check_dir "$MY_HISTORY_DIR")" == 1 ]]; then
@@ -11,9 +11,9 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
                 && git commit -am save)
         else
             echo 'please enter the git address of history repo'
-            read history_git_address
-            if [[ "$history_git_address" != '' ]];then
-                git clone "$history_git_address" "$MY_HISTORY_DIR" && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive
+            read history_repo_address
+            if [[ "$history_repo_address" != '' ]];then
+                git clone "$history_repo_address" "$MY_HISTORY_DIR" && ln -s "$MY_HISTORY_DIR/.bash_history.archive" ~/.bash_history.archive
             fi
         fi
     }
@@ -47,4 +47,8 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
             && mv ~/.bash_history.tmp$$ ~/.bash_history \
             && _save_history
     fi
+
+    _history_backup() {
+        cat ~/.bash_history >> ~/.bash_history.archive
+    }
 fi

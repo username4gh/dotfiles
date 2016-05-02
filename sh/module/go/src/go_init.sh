@@ -1,4 +1,18 @@
-_go_init() {
+#! /usr/bin/env sh
+
+_go_latest_url_mac() {
+    local url
+    url=$(curl -s https://golang.org/dl/ | s -o "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | s -v "src"| s -i "tar.gz" | s -i "darwin" | head -1)
+    echo $url
+}
+
+_go_latest_url_linux() {
+    local url
+    url=$(curl -s https://golang.org/dl/ | s -o "(?<=<td\ class=\"filename\"><a\ class=\"download\"\ href=\").*?(?=\">)" | s -v "src"| s -i "tar.gz" | s -i "linux" | head -1)
+    echo $url
+}
+
+_go_path_init() {
     if [[ ! -d "$MY_BIN/go" ]]; then
         mkdir -p "$MY_BIN/go"
     fi
@@ -6,7 +20,9 @@ _go_init() {
     if [[ ! -d "$HOME/go" ]];then
         mkdir -p "$HOME/go"
     fi
+}
 
+_go_bin_init() {
     local fileUrl
     local fileName
 
@@ -26,4 +42,9 @@ _go_init() {
 
         curl -L -C - "$fileUrl" -o "$MY_BIN/$fileName" && cd $MY_BIN && tar -xf $fileName)
     fi
+}
+
+_go_init() {
+    _go_path_init
+    _go_bin_init
 }

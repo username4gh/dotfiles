@@ -1,7 +1,6 @@
 #! /usr/bin/env sh
 
 #Description clean up gitlab backups, only save the newest one
-
 _cleanup_gitlab_backups() {
     echo "GITLAB_BACKUPS_DIR=/var/opt/gitlab/backups"
 
