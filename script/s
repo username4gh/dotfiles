@@ -100,7 +100,8 @@ class ContentMatcher(object):
         """ A "simple" pattern that can be matched with str.find and doesn't
             require a regex engine.
         """
-        return bool(re.match('[\w_]+$', tostring(pattern)))
+        #return bool(re.match('[\w_]+$', tostring(pattern)))
+        return False
 
     def _create_regex(self,
             pattern,
@@ -131,24 +132,22 @@ class OutputFormatter(object):
 
 class DefaultOutputFormatter(OutputFormatter):
     def __init__(self,
-            only_matching=False, 
+            only_matching=False,
             output_stream=None):
         self.only_matching = only_matching
 
         self.output_stream = output_stream or sys.stdout
 
     def emit_matching_line(self, matchresult):
-        # Emit the chunk before the first matching chunk
         line = matchresult.matching_line
 
         if not self.only_matching:
             self.emit_line(line)
         else:
+            # while only_matching we print out all matches line by line, even when multiple matches
+            # in the same line, we just split it with '\n'
             for i, (match_start, match_end) in enumerate(matchresult.matching_column_ranges):
-                self.emit(line[match_start:match_end])
-                # for multiple match in same line, just split them by space, unless i get some better ideas
-                self.emit(' ')
-            self.emit_line()
+                self.emit_line(line[match_start:match_end])
 
     def emit(self, str):
         """ Write the string to the stream.
@@ -253,7 +252,7 @@ def _run(pattern=None,
         if matches:
             match_found =True
 
-            if count: 
+            if count:
                 output_formatter.emit(str(len(matches)))
             else:
                 for match in matches:
