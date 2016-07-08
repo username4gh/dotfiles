@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+import sys
+
+def _run():
+    try:
+        fileobj = sys.stdin
+        lines = list(fileobj)
+        for line in lines:
+            line_str = str(line)
+            index = line_str.rfind('/')
+            sys.stdout.write(line_str[:index] + '\n')
+    except (OSError, IOError):
+        pass
+
+def main(argv=sys.argv):
+    try:
+        _run()
+    except Exception as err:
+        print('<<unexpected error: %s>>' % err)
+        return 2
+
+sys.exit(main())

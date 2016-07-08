@@ -1,0 +1,105 @@
+#!/bin/sh
+
+#Author Haccmann
+#simple server status check sh script
+
+Colors() {
+LGre="\033[92m";
+LCya="\033[96m";
+LRed="\033[91m";
+Magn="\033[35m";
+Reset="\033[0m";
+}
+
+
+ping_response(){
+echo "\n$Reset[[ ping ]]"
+ip=`ping -c 1 $target 2>/dev/null | grep icmp* | wc -l`
+if [ $ip -eq 1 ]; then
+	echo "[+] Ping response > ${LGre}[+]$LCya $target ${LGre}is up${LGre}"
+else
+	echo "[!] Ping response > ${LRed}[-]$LCya $target ${LRed}looks down"
+fi
+}
+
+
+curl_response(){
+echo "\n$Reset[[ curl ]]$Magn $prox $Reset"
+curlres=`http_proxy=$proxy $pro curl -c 1 -s --head --request GET "$ip" "$target" 2>/dev/null | grep "HTTP/1.1" | awk '{print $1}' | wc -l`
+curlres1=`http_proxy=$proxy $pro curl -s --head --request GET "$ip" "$target" 2>/dev/null | grep "HTTP/1.1"`
+	if [ "$curlres" -eq 1 ]; then
+		echo "[+] HTTP response > ${LGre}[+]$LCya $target ${LGre}responded with $curlres1\n$Reset"
+	else 
+		echo "[!] HTTP response > ${LRed}[-]$LCya $target ${LRed} is not responding\n$Reset"
+	fi
+}
+
+
+nmap_response(){
+echo "[[ nmap ]]$Magn $proxx $Reset"
+port=`$pro nmap -sT -PN -n -p 80 "$ip" $target  2>/dev/null | grep "/tcp open"`
+if [ $? -ne 0 ]; then
+	echo "[!] Port response > ${LRed}[-] Warning! > No TCP connection$Reset\n"
+		else
+	echo "[+] Port response > $LGre[+] ${LCya}$target ${LGre}connected on port 80$Reset\n"
+fi
+}
+
+
+wget_response(){
+echo "[[ wget ]]$Magn $prox $Reset"
+echo "[!] All response codes > "${LGre}`http_proxy=$proxy $pro wget --spider -S $ip $target 2>&1 | grep "HTTP/1.1" | awk '{print $2}'`
+}
+
+
+tor_resolve(){
+site=$target 
+num=`echo $site |  awk 'BEGIN{FS="."} {print NF}'`
+if [ $num = 2 ] || [ $num = 3 ]; then
+ip=`tor-resolve $target`
+fi
+}
+
+
+status_check_title() {
+cat <<"EOT"
+ _____  ______ _____             __                __    
+|  |  ||      |  |  |     .----.|  |--.-----.----.|  |--.
+|__    |  --  |__    |    |  __||     |  -__|  __||    < 
+   |__||______|  |__|     |____||__|__|_____|____||__|__|
+                                                         
+usage:  ip/domain [options]
+	
+	> ip/domain
+	> ip/domain --pchain+tor
+	> ip/domain --proxy <PROXYIP:PROXYPORT>
+
+EOT
+}
+
+status_check_title
+
+Colors;
+echo -n "Enter IP or domain to check > $LCya"
+read target p proxy
+
+if [ "$p" = "--proxy" ];then
+	prox="[[Proxified]]"
+	curl_response
+	wget_response
+else
+	if [ "$p" = "--pchain+tor" ]; then
+		pro='proxychains'
+		prox="[[Proxychains+Tor]]"
+		proxx="[[Proxychains+Tor]]"
+		tor_resolve
+		curl_response
+		nmap_response
+		wget_response
+	else
+		ping_response
+		curl_response
+		nmap_response
+		wget_response
+	fi
+fi

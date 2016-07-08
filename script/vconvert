@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+SINGLE_MODE=1
+BATCH_MODE=2
+
+#Convert Setup
+vidres=640x360
+vbitrate=640k
+
+
+show_help(){
+    cat <<EOF
+Usage: convert opt1 opt2 opt3 -- maximum three options
+Options:
+while opt1 == 1 then this batch work in single mode
+      opt2 -- input file
+      opt3 -- output file
+
+while opt1 == 2 then we are in the batch mode
+      opt2 -- input dir
+      opt3 -- output dir
+EOF
+    exit 0
+}
+
+die_unknown(){
+    echo "Unknown option \"$1\"."
+    echo "See $0 --help for available options."
+    exit 1
+}
+
+if [ $# -gt 3 ]; then
+    echo "error: more than 3 options has been used"
+    exit 1
+elif test "$1" != '--help' && test $1 -eq $SINGLE_MODE ]]; then
+    echo "single"
+    ffmpeg -i $2 \
+        -vcodec h264 -r 30 -s $vidres -b:v $vbitrate \
+	    -strict -2 -y $
+elif test "$1" != '--help' &&  test 1 -eq $BATCH_MODE ]]; then
+    echo "batch"
+    cd $2
+    for f in *.*
+    do 
+        ffmpeg -i "$f" -vcodec h264 \
+            -r 30 -s $vidres -b:v $vbitrate \
+            -strict -2 -y $3/${f%.*}.mp4
+    done
+elif [[ $1 == '--help' || $1 == '' ]]; then
+    show_help
+else
+    die_unknown $1
+fi

@@ -1,0 +1,2 @@
+ffmpeg -i $1 -vcodec h264 -acodec aac -s 1920x1080 -b:v 15000k -filter:v "movie=/path/of/watermark_right.png [watermark];[in][watermark] overlay=main_w-overlay_w-0:0 [out]" -strict -2 ${1%.*}_1080_right_watermarked.mp4
+ffmpeg -i $1 -vcodec h264 -acodec aac -s 1920x1080 -b:v 15000k -filter:v "movie=/path/of/watermark_left.png [watermark];[in][watermark] overlay=0:0 [out]" -strict -2 ${1%.*}_1080_left_watermarked.mp4

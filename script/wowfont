@@ -1,0 +1,12 @@
+#! /bin/bash
+
+array=(ARHei.TTF ARIALN.TTF ARKai_C.TTF ARKai_T.TTF FRIZQT_.TTF FZBWJW.TTF FZLBJW.TTF FZXHJW.TTF FZXHLJW.TTF)
+
+size=${#array[@]}
+
+for ((i = 0; i < size; i++));
+do
+    echo "${array[$i]}"
+    cp "$1" "${array[$i]}";
+done
+

@@ -1,0 +1,5 @@
+Host            --alias
+HostName        --IP or DNS
+Port            22
+User            --UserName
+IdentityFile    --PWD or Key_File

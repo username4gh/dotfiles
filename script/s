@@ -1,0 +1,312 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+import atexit
+import collections
+from collections import namedtuple
+import optparse
+import os
+import re
+import sys
+
+PY3 = sys.version_info[0] == 3
+
+identity_func = lambda x: x
+
+if PY3:
+    from io import StringIO
+    def str2bytes(s):
+        return s.encode('utf-8')
+    def int2byte(i):
+        return bytes((i,))
+    def bytes2str(b):
+        return b.decode('utf-8')
+else:
+    from StringIO import StringIO
+    str2bytes = identity_func
+    int2byte = chr
+    bytes2str = identity_func
+
+def tostring(b):
+    """ Convert the given bytes or string object to string
+    """
+    if isinstance(b, bytes):
+        return bytes2str(b)
+    else:
+        return b
+
+MatchResult = namedtuple('MatchResult', ' '.join([
+    'matching_line',
+    'matching_lineno',
+    'matching_column_ranges']))
+
+class ContentMatcher(object):
+    def __init__(self,
+            pattern,
+            ignore_case=False,
+            whole_words=False,
+            literal_pattern=False,
+            invert_match=False,
+            only_matching=False):
+        self.regex = self._create_regex(pattern,
+                ignore_case=ignore_case,
+                whole_words=whole_words,
+                literal_pattern=literal_pattern)
+        if invert_match:
+            self.match_file = self.inverted_matcher
+        else:
+            self.match_file = self.matcher
+
+        # Cache frequently used attributes for faster access
+        self._finditer = self.regex.finditer
+        self._search = self.regex.search
+
+        # Optimize a common case: searching for a simple non-regex string.
+        # In this case, we don't need regex matching - using str.find is
+        # faster.
+        self._findstr = None
+        if (not ignore_case and not whole_words and self._pattern_is_simple(pattern)):
+            self._findstr = pattern
+            self._findstrlen = len(self._findstr)
+
+    def matcher(self, fileobj):
+        for lineno, line in enumerate(fileobj, 1):
+            # Iterate over all matches of the pattern in the line,
+            # noting each matching column range.
+            if self._findstr:
+                # Make the common case faster: there's no match in this line, so
+                # bail out ASAP.
+                i = line.find(self._findstr, 0)
+                if i == -1:
+                    continue
+                col_ranges = []
+                while i >= 0:
+                    startnext = i + self._findstrlen
+                    col_ranges.append((i, startnext))
+                    i = line.find(self._findstr, startnext)
+            else:
+                col_ranges = [mo.span() for mo in self._finditer(line) if mo]
+            if col_ranges:
+                yield MatchResult(line, lineno, col_ranges)
+
+    def inverted_matcher(self, fileobj):
+        for lineno, line in enumerate(fileobj, 1):
+            # Invert match: only return lines that don't match the
+            # pattern anywhere
+            if not self._search(line):
+                yield MatchResult(line, lineno, [])
+
+    def _pattern_is_simple(self, pattern):
+        """ A "simple" pattern that can be matched with str.find and doesn't
+            require a regex engine.
+        """
+        #return bool(re.match('[\w_]+$', tostring(pattern)))
+        return False
+
+    def _create_regex(self,
+            pattern,
+            ignore_case=False,
+            whole_words=False,
+            literal_pattern=False):
+        """ Utility for creating the compiled regex from pattern and options.
+        """
+        if literal_pattern:
+            pattern = re.escape(pattern)
+        if whole_words:
+            b = r'\b' if isinstance(pattern, str) else br'\b'
+            pattern = b + pattern + b
+        regex = re.compile(pattern, re.I if ignore_case else 0)
+        return regex
+
+class OutputFormatter(object):
+    """ This is an abstract interface, to be implemented by output formatting
+        classes. Individual methods that must be implemented are documented
+        below. Note that some have default implementations (i.e. do not raise
+        NotImplementedError)
+    """
+    def emit_matching_line(self, matchresult):
+        """ Called to emit a matching line, with a matchresult.MatchResult
+            object.
+        """
+        raise NotImplementedError()
+
+class DefaultOutputFormatter(OutputFormatter):
+    def __init__(self,
+            only_matching=False,
+            output_stream=None):
+        self.only_matching = only_matching
+
+        self.output_stream = output_stream or sys.stdout
+
+    def emit_matching_line(self, matchresult):
+        line = matchresult.matching_line
+
+        if not self.only_matching:
+            self.emit_line(line)
+        else:
+            # while only_matching we print out all matches line by line, even when multiple matches
+            # in the same line, we just split it with '\n'
+            for i, (match_start, match_end) in enumerate(matchresult.matching_column_ranges):
+                self.emit_line(line[match_start:match_end])
+
+    def emit(self, str):
+        """ Write the string to the stream.
+        """
+        self.output_stream.write(tostring(str).strip())
+
+    def emit_line(self, line=''):
+        self.output_stream.write(tostring(line).strip() + '\n')
+
+class OptionParser(optparse.OptionParser):
+    """Option parser that separates using --version from using invalid options.
+
+       By default optparse uses SystemExit with both. This parser uses custom
+       VersionPrinted exception with --version.
+    """
+
+    def print_version(self, file=None):
+        optparse.OptionParser.print_version(self, file)
+        raise VersionPrinted()
+
+
+class VersionPrinted(Exception):
+    pass
+
+def parse_cmdline(cmdline_args):
+    """ Parse the list of command-line options and arguments and return a
+        triple: options, args, parser -- the first two being the result of
+        OptionParser.parse_args, and the third the parser object itself.`
+    """
+    optparser = OptionParser(
+            usage='usage: %prog [options] <pattern>',
+            description='Grep like tool but only accept stdin',
+            prog='s',
+            add_help_option=False) # -h is a real option
+
+    optparser.add_option('-h', '--help',
+            action='store_true', dest='help',
+            help='Display this information')
+
+    group_searching = optparse.OptionGroup(optparser, 'Regexp selection and interpretation')
+    group_searching.add_option('-i', '--ignore-case',
+            action='store_true', dest='ignore_case', default=False,
+            help='Ignore case distinctions in the pattern')
+    group_searching.add_option('-w', '--word-regexp',
+            action='store_true', dest='word_regexp', default=False,
+            help='Force the pattern to match only whole words')
+    group_searching.add_option('-l', '--literal',
+            action='store_true', dest='literal', default=False,
+            help='Quote all metacharacters; the pattern is literal')
+    optparser.add_option_group(group_searching)
+
+    group_miscellaneous = optparse.OptionGroup(optparser, 'Miscellaneous')
+    group_miscellaneous.add_option('-v', '--invert-match',
+            action='store_true', dest='invert_match', default=False,
+            help='Invert match: show non-matching lines')
+    optparser.add_option_group(group_miscellaneous)
+
+    group_output = optparse.OptionGroup(optparser, 'Output control')
+    group_output.add_option('-c', '--count',
+            action='store_true', dest='count', default=False,
+            help='print only a count of matching lines')
+    group_output.add_option('-o', '--only-matching',
+            action='store_true', dest='only_matching', default=False,
+            help='show only the part of a line matching PATTERN')
+    optparser.add_option_group(group_output)
+
+    options, args = optparser.parse_args(cmdline_args)
+    return options, args, optparser
+
+def _run(pattern=None,
+        output_formatter=None,
+        ignore_case=False,
+        whole_words=False,
+        literal_pattern=False,
+        invert_match=False,
+        count=False,
+        only_matching=False):
+    """ Returns True if a match was found, False otherwise. """
+
+    # Set up a default output formatter, if none is provided
+    if output_formatter is None:
+        output_formatter = DefaultOutputFormatter(only_matching)
+
+        # Set up the content matcher
+    if pattern is None:
+        pattern = b''
+    else:
+        pattern = str2bytes(pattern)
+
+    matcher = ContentMatcher(pattern=pattern,
+            ignore_case=ignore_case,
+            whole_words=whole_words,
+            literal_pattern=literal_pattern,
+            invert_match=invert_match,
+            only_matching=only_matching)
+
+    match_found = False
+
+    try:
+        fileobj = sys.stdin
+        matches = list(matcher.match_file(fileobj))
+        if matches:
+            match_found =True
+
+            if count:
+                output_formatter.emit(str(len(matches)))
+            else:
+                for match in matches:
+                    output_formatter.emit_matching_line(match)
+        else:
+            if count:
+                output_formatter.emit('0')
+    except (OSError, IOError):
+        pass
+
+    return match_found
+
+def main(argv=sys.argv, output_formatter=None):
+    """
+        argv:
+            Program arguments, similar to sys.argv
+
+        output_formatter:
+            An OutputFormatter object to emit output to. Set to None for
+            the default.
+
+        return:
+            Return code to be used when exiting to system.
+            0: Match found or help/version printed. 1: No match. 2: Error.
+    """
+    try:
+        options, args, optparser = parse_cmdline(argv[1:])
+    except VersionPrinted:
+        return 0
+    except SystemExit:
+        return 2
+
+    if (len(args) == 0) or options.help:
+        optparser.print_help()
+        return 0
+
+    pattern = args[0]
+
+    try:
+        match_found = _run(pattern=pattern,
+                output_formatter=output_formatter,
+                ignore_case=options.ignore_case,
+                whole_words=options.word_regexp,
+                literal_pattern=options.literal,
+                invert_match=options.invert_match,
+                count=options.count,
+                only_matching=options.only_matching)
+    except KeyboardInterrupt:
+        print('<<interrupted - exiting>>')
+        return 2
+    except Exception as err:
+        print('<<unexpected error: %s>>' % err)
+        return 2
+    else:
+        return 0 if match_found else 1
+
+sys.exit(main())

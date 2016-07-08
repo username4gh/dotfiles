@@ -1,0 +1,7 @@
+"LDPI should be 36 x 36."
+"MDPI should be 48 x 48."
+"TVDPI should be 64 x 64."
+"HDPI should be 72 x 72."
+"XHDPI should be 96 x 96."
+"XXHDPI should be 144 x 144."
+"XXXHDPI should be 192 x 192."

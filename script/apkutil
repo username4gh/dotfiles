@@ -1,0 +1,197 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+import optparse
+import os
+import pickle
+import shutil
+import sys
+
+def _readChannelfile(filename):
+    channelList = []
+    f = file(filename)
+    while True:
+        line = f.readline().strip('\n')
+        if len(line) == 0:
+            break
+        else:
+            channelList.append(line);
+    f.close()
+    return channelList
+
+def _backUpManifest():
+    if os.path.exists('./AndroidManifest.xml'):
+        os.remove('./AndroidManifest.xml')
+    manifestPath = './temp/AndroidManifest.xml'
+    shutil.copyfile(manifestPath, './AndroidManifest.xml')
+
+def _modifyChannel(keystore, storepass, alianame, easyName, value):
+    tempXML = ''
+    f = file('./AndroidManifest.xml')
+    for line in f:
+        if line.find('channel_value') > 0:
+            line = line.replace('channel_value', value)
+        tempXML += line
+    f.close()
+
+    output = open('./temp/AndroidManifest.xml', 'w')
+    output.write(tempXML)
+    output.close()
+
+    easyName_str = str(easyName)
+    easyName_real = easyName[easyName_str.rindex('/') + 1:]
+    unsignApk = r'./bin/%s_%s_unsigned.apk'% (easyName_real, value)
+    cmdPack = r'java -jar ~/bin/apktool.jar b -o %s temp'% (unsignApk)
+    os.system(cmdPack)
+
+    unsignedjar = r'./bin/%s_%s_unsigned.apk'% (easyName_real, value)
+    signed_unalignedjar = r'./bin/%s_%s_signed_unaligned.apk'% (easyName_real, value)
+    signed_alignedjar = r'./bin/%s_%s.apk'% (easyName_real, value)
+    cmd_sign = r'jarsigner -verbose -keystore %s -storepass %s -signedjar %s %s %s'% (keystore, storepass, signed_unalignedjar, unsignedjar, alianame)
+    cmd_align = r'zipalign -v 4 %s %s' % (signed_unalignedjar, signed_alignedjar)
+    os.system(cmd_sign)
+    os.remove(unsignedjar)
+    os.system(cmd_align)
+    os.remove(signed_unalignedjar)
+
+def generateMultipleChannelApk(signingConfig, apkName):
+    #apkName = 'xiugr-android-release-v2-1.0.apk'
+    easyName = apkName.split('.apk')[0]
+
+    output_apk_dir="./bin"
+    if os.path.exists(output_apk_dir):
+        shutil.rmtree(output_apk_dir)
+
+    channelList = _readChannelfile('./channel')
+    print '-------------------- your channel values --------------------'
+    print 'channel list: ', channelList
+    cmdExtract = r'java -jar ~/bin/apktool.jar d -f -s %s -o temp'% (apkName)
+    os.system(cmdExtract)
+
+    _backUpManifest()
+    for channel in channelList:
+        _modifyChannel(signingConfig.keyStore, signingConfig.storePass, signingConfig.aliasName, easyName, channel)
+
+    if os.path.exists('./temp'):
+        shutil.rmtree('./temp')
+    if os.path.exists('./AndroidManifest.xml'):
+        os.remove('./AndroidManifest.xml')
+    print '------------------- Done ------------------------------------'
+
+class SigningConfig():
+    def __init__(self, keystore, storepass, aliasname):
+        self.keyStore = keystore
+        self.storePass = storepass
+        self.aliasName = aliasname
+
+class OptionParser(optparse.OptionParser):
+    """Option parser that separates using --version from using invalid options.
+
+       By default optparse uses SystemExit with both. This parser uses custom
+       VersionPrinted exception with --version.
+    """
+
+    def print_version(self, file=None):
+        optparse.OptionParser.print_version(self, file)
+        raise VersionPrinted()
+
+class VersionPrinted(Exception):
+    pass
+
+def parse_cmdline(cmdline_args):
+    """ Parse the list of command-line options and arguments and return a
+        triple: options, args, parser -- the first two being the result of
+        OptionParser.parse_args, and the third the parser object itself.`
+    """
+    optparser = OptionParser(
+            usage='usage: %prog [options] <pattern>',
+            description='',
+            prog='apkutil.py',
+            add_help_option=False)
+
+    optparser.add_option('--help',
+            action='store_true', dest='help', default=False,
+            help='Display this information')
+    optparser.add_option('-s',
+            action='store_true', dest='setupSigningConfig', default=False,
+            help='setup signing configuration')
+    optparser.add_option('-l', 
+            action='store_true', dest='listSetup', default=False,
+            help='show signingConfig')
+    optparser.add_option('-g', action='store_true', dest='generateApks', default=False,
+            help='Generate Apks')
+
+    group_setup = optparse.OptionGroup(optparser, 'Params for SigningConfig')
+    group_setup.add_option('--keystore', dest='keystore')
+    group_setup.add_option('--storepass', dest='storepass')
+    group_setup.add_option('--aliasname', dest='aliasname')
+    optparser.add_option_group(group_setup)
+
+    options, args = optparser.parse_args(cmdline_args)
+
+    return options, args, optparser
+
+def main(argv=sys.argv):
+    path = './signing.config'
+    try:
+        options, args, optparser = parse_cmdline(argv[1:])
+    except VersionPrinted:
+        return 0
+    except SystemExit:
+        return 2
+
+    if options.help:
+        optparser.print_help()
+        return 0
+
+    if options.setupSigningConfig:
+        if options.keystore is None:
+            print('keystore cannot be null')
+            return 0
+        if options.storepass is None:
+            print('storepass cannot be null')
+            return 0
+        if options.aliasname is None:
+            print('aliasname cannot be null')
+            return 0
+
+        if not os.path.exists(path):
+            try:
+                signingConfig = SigningConfig(options.keystore, options.storepass, options.aliasname)
+                f = open(path, "w")
+                pickle.dump(signingConfig, f)
+                f.close()
+                return 1
+            except Exception as err:
+                print('<<unexpected error: %s>>' % err)
+                return 2
+
+    if options.listSetup:
+        if os.path.exists(path):
+            try:
+                f = open(path, "r")
+                signingConfig = pickle.load(f)
+                f.close()
+                print 'keystore = ' + signingConfig.keyStore
+                print 'storepas = ' + signingConfig.storePass
+                print 'alianame = ' + signingConfig.aliasName
+                return 1
+            except Exception as err:
+                print('<<unexpected error: %s>>' % err)
+                return 2
+
+    if options.generateApks:
+        print args[0]
+        if os.path.exists(path):
+            try:
+                f = open(path, 'r')
+                signingConfig = pickle.load(f)
+                f.close()
+                generateMultipleChannelApk(signingConfig, args[0])
+            except Exception as err:
+                print('<<unexpected error: %s>>' % err)
+                return 2
+        else:
+            print 'plz init an signing.confg first'
+
+sys.exit(main())

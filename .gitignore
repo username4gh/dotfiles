@@ -1,0 +1,14 @@
+
+.mrconfig
+codes
+completion
+log
+node_modules
+node_modules/
+package.json
+sh/.conf
+sh/.conf.tmp
+sh/custom
+sh/custom/
+sh/module/conf.d
+sh/module/init.bash

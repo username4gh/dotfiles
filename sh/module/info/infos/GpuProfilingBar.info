@@ -1,0 +1,13 @@
+# http://stackoverflow.com/questions/33451381/colors-of-profile-gpu-bars-on-android-m
+
+from top to down:
+
+Misc Time
+Swap Buffers
+Command Issue
+Sync
+Draw
+Measure/Layout
+Animation
+Input Handling
+VSync Delay

@@ -1,0 +1,1 @@
+HandBrakeCLI -i "$1" -o ${1%.*}_540.mp4 -X 960 -Y 540 -e x264  -q 22.0 -a 1 -E ffaac -B 160 -6 dpl2 -R Auto -D 0.0 --audio-copy-mask aac,ac3,dtshd,dts,mp3 --audio-fallback ffac3 -f mp4 --loose-anamorphic --modulus 2 -m --x264-preset veryfast --h264-profile high --h264-level 4.1 --vfr -b 1200

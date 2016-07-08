@@ -1,0 +1,6 @@
+{
+    :verbose true
+    :indent 2
+    :hl "en"
+    :tl ["zh"]
+}

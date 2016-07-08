@@ -1,0 +1,2 @@
+CRONTAB=/var/spool/cron/
+GITLAB_BACKUPS_DIR=/var/opt/gitlab/backups
