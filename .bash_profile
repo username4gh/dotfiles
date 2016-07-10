@@ -5,7 +5,7 @@
 # otherwise the rsync will not work
 case $- in
     *i*) ;;
-    *) return;;
+    *) exit;;
 esac
 
 function update_terminal_cwd () 
@@ -39,8 +39,9 @@ _my_bash_it_load_one() {
 _my_bash_it_load_some() {
     file_type=$1
     [ -d "$BASH_IT/$file_type/enabled" ] || mkdir "$BASH_IT/$file_type/enabled"
-    for path in `ls $BASH_IT/${file_type}/available/[^_]*`
+    for path in $BASH_IT/${file_type}/available/[^_]*
     do
+        [[ -e $path ]] || break
         file_name=$(basename "$path")
         while true
         do
@@ -105,7 +106,7 @@ if [ -z "$BASH_IT" ];then
     # Setting $BASH to maintain backwards compatibility
     # TODO: warn users that they should upgrade their .bash_profile
     export BASH_IT=$BASH
-    export BASH=`bash -c 'echo $BASH'`
+    export BASH=$(bash -c 'echo $BASH')
 fi
 
 # Load composure first, so we support function metadata
@@ -115,7 +116,7 @@ source "${BASH_IT}/lib/composure.bash"
 cite _about _param _example _group _author _version
 
 # library(we only need the helpers.bash to use the '.bash_it' stuff)
-source ${BASH_IT}/lib/helpers.bash
+source "${BASH_IT}/lib/helpers.bash"
 
 # Load enabled aliases, completion, plugins
 for file_type in "aliases" "completion" "plugins"
