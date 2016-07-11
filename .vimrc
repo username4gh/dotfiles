@@ -1,7 +1,6 @@
 set nocompatible
 filetype off
 
-" Cscope
 if empty(glob("~/.vim/bundle/Vundle.vim"))
     silent execute '!git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim'
 endif

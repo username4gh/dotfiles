@@ -14,8 +14,10 @@ export PATH="$ANDROID_SDK/platform-tools:$PATH"
 
 _android_cscope() {
     local ndk_version
+    local ndk_include
 
     ndk_version=$(_conf_read ANDROID_NDK_VERSION)
+    ndk_include=$ANDROID_NDK/platforms/$ndk_version/arch-arm/usr/include/
 
     if [[ "$ndk_version" != '' ]];then
         if [[ -d "$ANDROID_NDK" ]];then
@@ -24,21 +26,25 @@ _android_cscope() {
                 echo "mkdir cscope_db/ndk/$ndk_version"
             fi
 
-            (find "$ANDROID_NDK/platforms/$ndk_version/arch-arm/usr/include/" -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > "$HOME/cscope_db/ndk/$ndk_version/cscope.files" \
+            (find "$ndk_include" -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > "$HOME/cscope_db/ndk/$ndk_version/cscope.files" \
                 && cd "$HOME/cscope_db/ndk/$ndk_version" \
-                && cscope -bvq)
+                && cscope -bvq \
+                && cd "$ndk_include" \
+                && ctags -R --links=no --tag-relative=yes --exclude=.svn --exclude=.git --c++-kinds=+p --fields=+iaS --extra=+q -f "$HOME/cscope_db/ndk/$ndk_version/tags")
         fi
     else
         echo 'plz set ANDROID_NDK_VERSION first'
     fi
 
     unset ndk_version
+    unset ndk_include
 }
 
 if [[ "$(_conf_read ANDROID_NDK_VERSION)" == '' ]];then
     echo 'plz set ANDROID_NDK_VERSION first, using _conf_write'
 else
-    export CSCOPE_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/cscope.out"
+    export NDK_INCLUDE_CTAGS_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/tags"
+    export NDK_INCLUDE_CSCOPE_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/cscope.out"
 fi
 
 _android_sign() {

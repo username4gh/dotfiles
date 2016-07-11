@@ -18,7 +18,8 @@ endf
 
 function CSLoad()
     " add the database pointed to by environment variable
-    silent exe 'cs add '. $CSCOPE_DB
+    silent exe 'cs add ' $NDK_INCLUDE_CSCOPE_DB
+    silent exe 'set tags+=' . $NDK_INCLUDE_CTAGS_DB
 
     " add the cscope.out in current directory
     "echo 'Try search: '.getcwd()
