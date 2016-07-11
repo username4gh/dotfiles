@@ -11,7 +11,6 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
             fi
         fi
 
-
         echo 'plz select an exist setup or make a new one'
         echo 'here below list the setups already exists'
         ls -F "$MY_HISTORY_DIR" | grep '/'

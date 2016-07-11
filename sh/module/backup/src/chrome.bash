@@ -8,11 +8,13 @@ _backup_chrome_browsing_history() {
     fi
 }
 
-
-
 if [[ "$(_check_os)" == Darwin ]];then
-    if [[ "$(ymdGapInDays "$(ls $MY_BACKUP_DIR | tail -1)")" -gt 7 ]];then
-        echo "backup chrome browsing history"
-        _backup_chrome_browsing_history "$(_backup_get_dest_dir)/"
+    if [[ -d "$MY_BACKUP_DIR" ]];then
+        if [[ "$(ymdGapInDays "$(ls $MY_BACKUP_DIR | tail -1)")" -gt 7 ]];then
+            echo "backup chrome browsing history"
+            _backup_chrome_browsing_history "$(_backup_get_dest_dir)/"
+        fi
+    else
+        echo "MY_BACKUP_DIR does not exist!!!"
     fi
 fi
