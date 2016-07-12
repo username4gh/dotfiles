@@ -5,7 +5,7 @@
 # otherwise the rsync will not work
 case $- in
     *i*) ;;
-    *) exit;;
+    *) return;; # exit also causing the scp command malfunction
 esac
 
 function update_terminal_cwd () 
