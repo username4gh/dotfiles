@@ -8,14 +8,6 @@ case $- in
     *) return;; # exit also causing the scp command malfunction
 esac
 
-function update_terminal_cwd () 
-{ 
-    local SEARCH=' ';
-    local REPLACE='%20';
-    local PWD_URL="file://$HOSTNAME${PWD//$SEARCH/$REPLACE}";
-    printf '\e]7;%s\a' "$PWD_URL"
-}
-
 # despite there are some issue with bash-it, but still the price to maintain a brand new config with
 # at least the same quality is too high, so my approach is trying to build sth based on it.
 
@@ -121,7 +113,7 @@ source "${BASH_IT}/lib/helpers.bash"
 # Load enabled aliases, completion, plugins
 for file_type in "aliases" "completion" "plugins"
 do
-  _load_bash_it_files $file_type
+    _load_bash_it_files $file_type
 done
 unset file_type
 

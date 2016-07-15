@@ -13,8 +13,4 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
     if [ -f /opt/local/etc/profile.d/bash_completion.sh ]; then
         . /opt/local/etc/profile.d/bash_completion.sh
     fi
-
-    if [[ "$(dscl . -read $HOME UserShell | awk '{print $2}')" == '/bin/bash' ]];then
-      echo "plz change pre-builtin bash to custom-installed bash : sudo dscl . -change $HOME UserShell /bin/bash /opt/local/bin/bash"
-    fi
 fi

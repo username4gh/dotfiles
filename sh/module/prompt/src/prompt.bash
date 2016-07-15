@@ -262,11 +262,6 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         [[ "$SCM" == "$SCM_SVN" ]] && _svn_prompt_info && return
     }
 
-    # set variable identifying the chroot you work in (used in the prompt below)
-    if [[ -z "${debian_chroot:-}" ]] && [[ -r /etc/debian_chroot ]]; then
-        debian_chroot=$(cat /etc/debian_chroot)
-    fi
-
     # set a fancy prompt (non-color, unless we know we "want" color)
     case "$TERM" in
         xterm-color) color_prompt=yes;;
@@ -289,9 +284,9 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     fi
 
     if [[ "$color_prompt" = yes ]]; then
-        PS1="${debian_chroot:+($debian_chroot)}\[\e[00m\]\u@\$(hostname)\[\e[00m\]:\[\e[01;32m\]\w\[\e[00m\]\$(scm_prompt_info '(%s)') \$ "
+        PS1="\e[1m\u\e[0m\a \[\e[01;32m\]\w\[\e[00m\]\$(scm_prompt_info '(%s)') \$ "
     else
-        PS1="${debian_chroot:+($debian_chroot)}\u@\$(hostname):\w\$(scm_prompt_info '(%s)') \$ "
+        PS1="\e[1m\u\e[0m\a w\$(scm_prompt_info '(%s)') \$ "
     fi
     unset color_prompt force_color_prompt
 
