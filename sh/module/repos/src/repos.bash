@@ -15,7 +15,7 @@ export PATH="$MY_REPO/myrepos:$PATH"
 _repos_get_url() {
     (cd "$1";
     local url;
-    url=$(cat .git/config | s 'url = ' | sed "s/url = //g") ;
+    url=$(s -f .git/config 'url = ' | sed "s/url = //g") ;
     echo "$url")
 }
 

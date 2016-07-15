@@ -186,6 +186,9 @@ def parse_cmdline(cmdline_args):
     optparser.add_option('-h', '--help',
             action='store_true', dest='help',
             help='Display this information')
+    optparser.add_option('-f', '--file',
+            action='store', dest='input_file', type='string', default=None,
+            help='input file')
 
     group_searching = optparse.OptionGroup(optparser, 'Regexp selection and interpretation')
     group_searching.add_option('-i', '--ignore-case',
@@ -219,7 +222,8 @@ def parse_cmdline(cmdline_args):
 
 def _run(pattern=None,
         output_formatter=None,
-        ignore_case=False,
+        input_file=None,
+       ignore_case=False,
         whole_words=False,
         literal_pattern=False,
         invert_match=False,
@@ -247,7 +251,11 @@ def _run(pattern=None,
     match_found = False
 
     try:
-        fileobj = sys.stdin
+        if input_file is None:
+            fileobj = sys.stdin
+        else:
+            fileobj = file(input_file)
+
         matches = list(matcher.match_file(fileobj))
         if matches:
             match_found =True
@@ -262,6 +270,8 @@ def _run(pattern=None,
                 output_formatter.emit('0')
     except (OSError, IOError):
         pass
+    finally:
+        fileobj.close()
 
     return match_found
 
@@ -294,6 +304,7 @@ def main(argv=sys.argv, output_formatter=None):
     try:
         match_found = _run(pattern=pattern,
                 output_formatter=output_formatter,
+                input_file=options.input_file,
                 ignore_case=options.ignore_case,
                 whole_words=options.word_regexp,
                 literal_pattern=options.literal,
