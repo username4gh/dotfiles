@@ -5,8 +5,8 @@ if [[ ! -d "$MY_REPO/myrepos" ]];then
 fi
 
 if [[ ! -f "$HOME/.mrconfig" ]];then
-    if [[ -f "$MY_REPO/my-i3/.mrconfig" ]];then
-        ln -s "$MY_REPO/my-i3/.mrconfig" "$HOME/"
+    if [[ -f "$MY_I3/.mrconfig" ]];then
+        ln -s "$MY_I3/.mrconfig" "$HOME/"
     fi
 fi
 
@@ -30,8 +30,8 @@ _repos_info() {
 }
 
 my_repos_register_all() {
-    if [[ -f "$MY_REPO/my-i3/.mrconfig" ]];then
-        rm -v "$MY_REPO/my-i3/.mrconfig"
+    if [[ -f "$MY_I3/.mrconfig" ]];then
+        rm -v "$MY_I3/.mrconfig"
     fi
 
     local file
@@ -40,8 +40,8 @@ my_repos_register_all() {
         echo "$file"
         if [[ -d "$file/.git" ]];then
             url=$(_repos_get_url "$file")
-            echo "[${file/#$HOME\//}]" >> "$MY_REPO/my-i3/.mrconfig" \
-                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$MY_REPO/my-i3/.mrconfig"
+            echo "[${file/#$HOME\//}]" >> "$MY_I3/.mrconfig" \
+                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$MY_I3/.mrconfig"
         fi
     done < <(find "$MY_REPO" -mindepth 1 -maxdepth 1 -type d -print0)
 }

@@ -16,7 +16,7 @@ virtual_pyenv() {
         (
         export PYENV_ROOT="$MY_REPO/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
-        export PYTHONSTARTUP="$MY_REPO/my-i3/.pythonstartup.py";
+        export PYTHONSTARTUP="$MY_I3/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';
         export PATH="$HOME/.local/bin:$PATH";
 
@@ -32,7 +32,7 @@ virtual_pyenv() {
         (
         export PYENV_ROOT="$MY_REPO/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
-        export PYTHONSTARTUP="$MY_REPO/my-i3/.pythonstartup.py";
+        export PYTHONSTARTUP="$MY_I3/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';
         export PATH="$HOME/.local/bin:$PATH";
 

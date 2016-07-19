@@ -41,6 +41,6 @@ my_vi_init() {
             rm "$HOME/.vimrc"
         fi
 
-        ln -s "$MY_REPO/my-i3/.vimrc" "$HOME/.vimrc"
+        ln -s "$MY_I3/.vimrc" "$HOME/.vimrc"
     fi
 }
