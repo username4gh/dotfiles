@@ -32,5 +32,6 @@ my_git_ignore_init() {
     fi
 }
 
-_completion_generate my_git_ignore_init "$MY_REPO/gitignore/*.gitignore"
+_completion_register_generate my_git_ignore_init $MY_REPO/gitignore gitignore
+
 _completion_setup my_git_ignore_init

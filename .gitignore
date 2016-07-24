@@ -1,7 +1,7 @@
 
 .mrconfig
 codes
-completion
+completions
 log
 node_modules
 node_modules/

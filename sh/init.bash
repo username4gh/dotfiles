@@ -62,6 +62,7 @@ _my_load_sh_files $MY_SH 'mechanism'
 _my_load_sh_files $MY_SH 'function'
 _my_load_sh_files $MY_SH 'alias'
 _my_load_sh_files $MY_SH 'module'
+_my_load_sh_files $MY_SH 'completion'
 _my_load_sh_files $MY_SH 'custom'
 
 # check the window size after each command and, if necessary,

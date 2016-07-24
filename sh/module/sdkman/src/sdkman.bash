@@ -27,4 +27,8 @@ virtual_sdkman() {
     $command $*)
 }
 
-_completion_write 'virtual_sdkman' 'sdk'
+_completion_register_write virtual_sdkman groovysh
+_completion_register_write virtual_sdkman my_groovysh
+_completion_register_write virtual_sdkman sdk
+
+_completion_setup virtual_sdkman

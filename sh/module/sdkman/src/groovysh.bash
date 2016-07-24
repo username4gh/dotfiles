@@ -30,7 +30,3 @@ _sdkman_download_jsoup() {
 _sdkman_groovy_init() {
     _sdkman_download_jsoup
 }
-
-_completion_write 'virtual_sdkman' 'groovysh'
-_completion_write 'virtual_sdkman' 'my_groovysh'
-_completion_setup 'virtual_sdkman'

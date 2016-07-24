@@ -13,7 +13,7 @@
  	> <small>eg: use curl rather than wget</small>
 
 # Pre-arrangement
-+ bash script loading-sequence(also the dependency chain): internal -> path -> mechanism -> (function - alias) -> module -> custom
++ bash script loading-sequence(also the dependency chain): internal -> path -> mechanism -> (function - alias) -> module -> completion -> custom
  1. <small>internal (shell-builtin command & pre-installed program(as less as i can, BSD vs GNU))</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
     	- try Sub-Shell when ```export PATH``` is needed, only keep necessary 'PATH' exported([Global Variables Are Bad](http://c2.com/cgi/wiki?GlobalVariablesAreBad))

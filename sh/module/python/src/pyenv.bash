@@ -56,8 +56,9 @@ _python_check_pyenv() {
 }
 
 
-_completion_write 'virtual_pyenv' 'pip'
-_completion_write 'virtual_pyenv' 'pyenv'
-_completion_write 'virtual_pyenv' 'python'
-_completion_write 'virtual_pyenv' 'youtube-dl'
-_completion_setup 'virtual_pyenv'
+_completion_register_write virtual_pyenv pip
+_completion_register_write virtual_pyenv pyenv
+_completion_register_write virtual_pyenv python
+_completion_register_write virtual_pyenv youtube-dl
+
+_completion_setup virtual_pyenv

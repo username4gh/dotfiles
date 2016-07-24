@@ -22,7 +22,8 @@ virtual_nvm() {
     $command $*)
 }
 
+_completion_register_write virtual_nvm commitizen_init
+_completion_register_write virtual_nvm git-cz
+_completion_register_write virtual_nvm npm
+
 _completion_setup virtual_nvm
-_completion_write virtual_nvm commitizen_init
-_completion_write virtual_nvm git-cz
-_completion_write virtual_nvm npm
