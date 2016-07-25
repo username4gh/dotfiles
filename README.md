@@ -1,5 +1,5 @@
 # Guidelines
-+ Don't put any lines in your config files that you don't understand!(Just to reminder myself, I once had done a terrible job to resist the temptation to import third party stuffs that i do not understand)
++ Don't put any lines in your config files that you don't understand!(Just to reminder myself, I once had done a terrible job to resist the temptation to import third party stuffs that i do not fully understand)
 
 + Keep necessary notes
  1. <small>meaning full name</small>
@@ -9,11 +9,15 @@
  1. <small>darwin & ubuntu</small>
  2. <small>zsh & bash</small>
  3. <small>local & ssh</small>
- 4. <small>prefer pre-installed software(intersection of BSD and GNU)</small>
+ 4. <small>prefer pre-installed software(intersection of OSX and Ubuntu)</small>
  	> <small>eg: use curl rather than wget</small>
+ 5. <small>deal with the difference between BSD & GNU program</small>
 
 # Pre-arrangement
-+ bash script loading-sequence(also the dependency chain): internal -> path -> mechanism -> (function - alias) -> module -> completion -> custom
++ bash script loading-sequence(also the dependency chain): 
+
+> internal -> path -> mechanism -> (function - alias) -> module -> custom
+
  1. <small>internal (shell-builtin command & pre-installed program(as less as i can, BSD vs GNU))</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
     	- try Sub-Shell when ```export PATH``` is needed, only keep necessary 'PATH' exported([Global Variables Are Bad](http://c2.com/cgi/wiki?GlobalVariablesAreBad))
@@ -39,6 +43,10 @@
  1. <small>more automation</small>
  2. <small>clean and easy to use</small>
  3. <small>easy to extend</small>
+
++ performance
+ 1. lazy-loading like technique to reduce 'sourcing' overhead
+ 2. global environment variable to avoid repeat-initialization while opening multiple-tab inside item2/terminal
 
 + coding style
  1. <small>[cleansing code](http://bencane.com/2014/06/06/8-tips-for-creating-better-bash-scripts/)</small>
