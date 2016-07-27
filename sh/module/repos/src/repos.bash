@@ -30,8 +30,18 @@ _repos_info() {
 }
 
 my_repos_register_all() {
-    if [[ -f "$MY_I3/.mrconfig" ]];then
-        rm -v "$MY_I3/.mrconfig"
+    local mrconfig_directory
+    local repos_directory
+    if [[ "$#" -eq 0 ]];then
+        mrconfig_directory=$MY_I3
+        repos_directory=$MY_REPO
+    else
+        mrconfig_directory=$1
+        repos_directory=$1
+    fi
+
+    if [[ -f "$mrconfig_directory/.mrconfig" ]];then
+        rm -v "$mrconfig_directory/.mrconfig"
     fi
 
     local file
@@ -40,10 +50,10 @@ my_repos_register_all() {
         echo "$file"
         if [[ -d "$file/.git" ]];then
             url=$(_repos_get_url "$file")
-            echo "[${file/#$HOME\//}]" >> "$MY_I3/.mrconfig" \
-                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$MY_I3/.mrconfig"
+            echo "[${file/#$HOME\//}]" >> "$mrconfig_directory/.mrconfig" \
+                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$mrconfig_directory/.mrconfig"
         fi
-    done < <(find "$MY_REPO" -mindepth 1 -maxdepth 1 -type d -print0)
+    done < <(find "$repos_directory" -mindepth 1 -maxdepth 1 -type d -print0)
 }
 
 _repos_backup() {
@@ -53,5 +63,3 @@ _repos_backup() {
     # then I just copy the updated '.mrconfig' to the backup dir
     cp "$HOME/.mrconfig" "$(_backup_get_dest_dir)/"
 }
-
-alias mr='mr -d ~'
