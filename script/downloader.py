@@ -3,7 +3,7 @@
 
 import re
 import sys
-import urllib2 as ul
+import urllib2
 
 def _name_from_url(url):
     index = url.rfind('/')
@@ -36,7 +36,7 @@ base_url = 'https://www2.eecs.berkeley.edu/Pubs/TechRpts/'
 
 def main(argv=sys.argv):
     #for year in xrange(1973, 2016):
-    result = ul.urlopen(base_url + str(1973))
+    result = urllib2.urlopen(base_url + str(1973))
     _match(result)
 
 sys.exit(main())
