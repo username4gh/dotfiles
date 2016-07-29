@@ -48,7 +48,7 @@
 
 + performance
  1. lazy-loading like technique to reduce 'sourcing' overhead
- 2. global environment variable to avoid repeat-initialization while opening multiple-tab inside item2/terminal
+ 2. <s>global environment variable to avoid repeat-initialization while opening multiple-tab inside iterm2/terminal</s>(open a new tab inside iterm2/terminal will create a new bash process, i might have mis-conjectured something)
 
 + coding style
  1. <small>[cleansing code](http://bencane.com/2014/06/06/8-tips-for-creating-better-bash-scripts/)</small>

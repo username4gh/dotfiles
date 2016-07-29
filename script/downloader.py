@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # coding=UTF-8
 
+import re
 import sys
 import urllib2 as ul
 
@@ -23,7 +24,19 @@ def _download(url):
             break
     return 0
 
+def _match(result):
+    pattern = '(?<=href=\").*?(?=\")'
+    lines = result.readlines()
+    for line in lines:
+        match = re.search(pattern, line)
+        if  match:
+            print match.group()
+
+base_url = 'https://www2.eecs.berkeley.edu/Pubs/TechRpts/'
+
 def main(argv=sys.argv):
-    print _name_from_url('https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-2.pdf')
+    #for year in xrange(1973, 2016):
+    result = ul.urlopen(base_url + str(1973))
+    _match(result)
 
 sys.exit(main())
