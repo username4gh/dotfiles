@@ -44,7 +44,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     export PROMPT_COMMAND="history -a; history -n;${PROMPT_COMMAND}"
     shopt -s histappend
     export HISTCONTROL=ignoreboth:ignoredups
-    export HISTIGNORE="[   ]*:&:bg:cat*:cd*:fg:exit:git*:ls*:hh*:history*:src"
+    export HISTIGNORE="[   ]*:&:bg:cat*:cd*:cp*df:fg:exit:hh*:history*:git*:ls*:mv*:src:z"
     export HISTTIMEFORMAT='%F %T '
 
     # stolen from http://mywiki.wooledge.org/BashFAQ/088
