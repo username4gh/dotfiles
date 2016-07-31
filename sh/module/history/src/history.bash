@@ -32,6 +32,22 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
         fi
     }
 
+    _no_invalid_command_in_history() {
+        # https://blog.dhampir.no/content/avoiding-invalid-commands-in-bash-history
+        local exit_status=$?
+        # If the exit status was 127, the command was not found. Let's remove it from history
+
+        local number=$(history 1 | awk '{print $1}')
+        #number=${number%% *}
+        if [ -n "$number" ]; then
+            if [ $exit_status -eq 127 ] && ([ -z $HISTLASTENTRY ] || [ $HISTLASTENTRY -lt $number ]) ; then
+                history -d $number
+            else
+                HISTLASTENTRY=$number
+            fi
+        fi
+    }
+
     # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
     # HISTSIZE is the number of lines or commands that are stored in memory in a history list while your bash session is ongoing.
 
@@ -41,10 +57,10 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     HISTSIZE=1000
     HISTFILESIZE=2000
     # append to the history file, don't overwrite it
-    export PROMPT_COMMAND="history -a; history -n;${PROMPT_COMMAND}"
+    export PROMPT_COMMAND="_no_invalid_command_in_history;history -a; history -n;${PROMPT_COMMAND}"
     shopt -s histappend
     export HISTCONTROL=ignoreboth:ignoredups
-    export HISTIGNORE="[   ]*:&:bg:cat*:cd*:cp*df:fg:exit:hh*:history*:git*:ls*:mv*:src:z"
+    export HISTIGNORE="_no_invalid_command_in_history:[   ]*:&:bg:cat*:cd*:cp*df:echo*:fg:exit:hh*:history*:git*:ls*:mv*:sbs:src:z"
     export HISTTIMEFORMAT='%F %T '
 
     # stolen from http://mywiki.wooledge.org/BashFAQ/088
