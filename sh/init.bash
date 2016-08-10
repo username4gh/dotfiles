@@ -12,6 +12,9 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
+# reset to avoid issue causing by repeat sourcing
+unset PROMPT_COMMAND
+
 # level-1 directory setup
 export MY_BIN="$HOME/bin"
 export MY_REPO="$HOME/repo"
@@ -22,6 +25,7 @@ export MY_I3="$MY_REPO/my-i3"
 # level-3 directory setup
 export MY_SH="$MY_I3/sh"
 
+# level-4 directory setup
 export MY_SH_MODULE="$MY_SH/module"
 
 _my_sh_log() {
