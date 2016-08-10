@@ -1,18 +1,13 @@
 #! /usr/bin/env bash
 
-# If not running interactively, don't do anything
-# this line has to be placed at this front-pos,
-# otherwise the rsync will not work
-case $- in
-    *i*) ;;
-    *) return;;
-esac
-
 if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
 # reset to avoid issue causing by repeat sourcing
+unset PATH
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+
 unset PROMPT_COMMAND
 
 # level-1 directory setup
