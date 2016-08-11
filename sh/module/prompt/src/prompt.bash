@@ -283,10 +283,11 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         fi
     fi
 
+    # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
     if [[ "$color_prompt" = yes ]]; then
-        PS1="\e[1m\u\e[0m\a \[\e[01;32m\]\w\[\e[00m\]\$(scm_prompt_info '(%s)') \$ "
+        PS1="\u \[\e[01;32m\]\w\[\e[00m\]\$(scm_prompt_info '(%s)') \$ "
     else
-        PS1="\e[1m\u\e[0m\a w\$(scm_prompt_info '(%s)') \$ "
+        PS1="\u \w\$(scm_prompt_info '(%s)') \$ "
     fi
     unset color_prompt force_color_prompt
 
