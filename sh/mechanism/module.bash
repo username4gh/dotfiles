@@ -1,5 +1,22 @@
 #! /usr/bin/env bash
 
+_module_generate_init_bash() {
+    if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
+        echo '#! /usr/bin/env bash' >> "$MY_SH_MODULE/$1/init.bash"
+        echo "" >> "$MY_SH_MODULE/$1/init.bash"
+
+        if [[ "$2" == 'n' ]];then
+            echo 'if [[ $(whoami) != root ]];then' >> "$MY_SH_MODULE/$1/init.bash"
+        fi
+
+        echo ' _my_load_sh_files $MY_SH_MODULE/'"$1" 'src' >> "$MY_SH_MODULE/$1/init.bash"
+
+        if [[ "$2" == 'n' ]];then
+            echo 'fi' >> "$MY_SH_MODULE/$1/init.bash"
+        fi
+    fi
+}
+
 my_modules_init() {
     if [[ "$#" == 0 ]];then
         if [[ -f "$MY_SH_MODULE/init.bash" ]];then
@@ -7,7 +24,7 @@ my_modules_init() {
         fi
 
         echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
-        
+
         while IFS= read -r item;
         do
             echo '_my_load_sh_files $MY_SH_MODULE '$(_dir_basename $item) >> "$MY_SH_MODULE/init.bash";
@@ -23,20 +40,8 @@ my_module_init() {
         if [[ "$current_dir" == "$MY_SH_MODULE" ]];then
             mkdir -p "$MY_SH_MODULE/$1"
             mkdir -p "$MY_SH_MODULE/$1/src"
-            if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
-                echo '#! /usr/bin/env bash' >> "$MY_SH_MODULE/$1/init.bash"
-                echo "" >> "$MY_SH_MODULE/$1/init.bash"
 
-                if [[ "$2" == 'n' ]];then
-                    echo 'if [[ $(whoami) != root ]];then' >> "$MY_SH_MODULE/$1/init.bash"
-                fi
-
-                echo ' _my_load_sh_files $MY_SH_MODULE/'"$1" 'src' >> "$MY_SH_MODULE/$1/init.bash"
-
-                if [[ "$2" == 'n' ]];then
-                    echo 'fi' >> "$MY_SH_MODULE/$1/init.bash"
-                fi
-            fi
+            _module_generate_init_bash $1 $2
         else
             echo "Usage: _package_init can only be used while current_dir is $MY_SH_MODULE"
         fi
