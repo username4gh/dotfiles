@@ -46,11 +46,3 @@ else
     export NDK_INCLUDE_CTAGS_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/tags"
     export NDK_INCLUDE_CSCOPE_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/cscope.out"
 fi
-
-_android_sign() {
-    # http://developer.android.com/intl/ja/tools/publishing/app-signing.html
-    local keystore=$1
-    local apk=$2
-    local alias_name=$3
-    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $keystore $apk $alias_name
-}

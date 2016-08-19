@@ -1,17 +1,5 @@
 #! /usr/bin/env bash
 
-_java_7_url_linux() {
-    local url
-    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | sort | uniq | s 7u)"
-    echo $url
-}
-
-_java_8_url_linux() {
-    local url
-    url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | sort | uniq | s 8u)"
-    echo $url
-}
-
 _java_bin_init() {
     local fileUrl
     local fileName

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-_cr_cs_search() {
+_crutils_cs_search() {
     if [[ "$1" == '--help' ]];then
         echo 'Usage: _cscope_search Num Pattern
         Where num can be one of:
@@ -16,7 +16,7 @@ _cr_cs_search() {
     fi
 }
 
-_cr_cs_generate() {
+_crutils_cs_generate() {
     if [[ -d './.git' ]];then
         echo "cscope -- generate cscope.files"
         find $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'

@@ -1,3 +1,5 @@
 #! /usr/bin/env bash
 
- _my_load_sh_files $MY_SH_MODULE/enchancd src
+if [[ $(whoami) != root ]];then
+    _my_load_sh_files $MY_SH_MODULE/enchancd src
+fi
