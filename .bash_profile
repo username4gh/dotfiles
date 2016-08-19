@@ -15,7 +15,14 @@ esac
 # cause the variant's availability only get checked when acctually being used
 export BASH_IT="$HOME/.bash_it"
 
-_my_bash_it_load_one() {
+# http://mivok.net/2009/09/20/bashfunctionoverrist.html
+_overrideFunction() { 
+    local -r functionBody=$(declare -f $1) 
+    local -r newDefinition="${1}Super ${functionBody#$1}" 
+    eval "$newDefinition" 
+} 
+
+_bash_it_load_one() {
     file_type=$1
     file_to_enable=$2
     [ ! -d "$BASH_IT/$file_type/enabled" ] && mkdir "$BASH_IT/${file_type}/enabled"
@@ -28,7 +35,7 @@ _my_bash_it_load_one() {
     fi
 }
 
-_my_bash_it_load_some() {
+_bash_it_load_some() {
     file_type=$1
     [ -d "$BASH_IT/$file_type/enabled" ] || mkdir "$BASH_IT/$file_type/enabled"
     for path in $BASH_IT/${file_type}/available/[^_]*
@@ -56,22 +63,20 @@ _my_bash_it_load_some() {
 
 # bash-it default config
 if [[ ! -d "$HOME/.bash_it" ]];then
-    pushd "$HOME" \
-        && git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it \
-        || popd;
+    git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it \
 
     if [[ "$1" == "--interactive" ]];then
         for type in "aliases" "plugins" "completion";
         do
             echo -e "\033[0;32mEnabling $type\033[0m"
-            _my_bash_it_load_some $type
+            _bash_it_load_some $type
         done
     else
         echo ""
         echo -e "\033[0;32mEnabling some defaults\033[0m"
-        _my_bash_it_load_one completion bash-it.completion.bash
-        _my_bash_it_load_one plugins alias-completion.plugin.bash
-        _my_bash_It_load_one aliases general.aliases.bash
+        _bash_it_load_one completion bash-it.completion.bash
+        _bash_it_load_one plugins alias-completion.plugin.bash
+        _bash_it_load_one aliases general.aliases.bash
     fi
 
     echo ""
