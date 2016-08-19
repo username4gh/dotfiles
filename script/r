@@ -1,0 +1,76 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+import optparse
+import os
+import sys
+
+class OptionParser(optparse.OptionParser):
+    """Option parser that separates using --version from using invalid options.
+
+       By default optparse uses SystemExit with both. This parser uses custom
+       VersionPrinted exception with --version.
+    """
+
+    def print_version(self, file=None):
+        optparse.OptionParser.print_version(self, file)
+        raise VersionPrinted()
+
+class VersionPrinted(Exception):
+    pass
+
+def parse_cmdline(cmdline_args):
+    """ Parse the list of command-line options and arguments and return a
+        triple: options, args, parser -- the first two being the result of
+        OptionParser.parse_args, and the third the parser object itself.`
+    """
+    optparser = OptionParser(
+            usage='usage: %prog [options] <pattern>',
+            description='',
+            prog='switchEnv.py',
+            add_help_option=False)
+
+    optparser.add_option('--help',
+            action='store_true', dest='help', default=False,
+            help='Display this information')
+
+    optparser.add_option('-i', '--input-file', action='store', dest='input_file', default=None, help='input_feli-file')
+    optparser.add_option('-b', '--before', action='store', dest='before', default=None, help='before')
+    optparser.add_option('-a', '--after', action='store', dest='after', default=None, help='after')
+
+    options, args = optparser.parse_args(cmdline_args)
+
+    return options, args, optparser
+
+
+def main(argv=sys.argv):
+    try:
+        options, args, optparser = parse_cmdline(argv[0:])
+    except VersionPrinted:
+        return 0
+    except SystemExit:
+        return 2
+
+    if (len(args) == 0) or options.help:
+        optparser.print_help()
+        return 0
+
+    _do_replace(options.input_file, options.before, options.after)
+    return 1
+
+def _do_replace(input_file, before, after):
+    if os.path.exists(input_file):
+        f = open(input_file, 'r')
+        lines = f.readlines()
+        f.close()
+        lines_size = len(lines)
+        for line in lines:
+            line_num = lines.index(line)
+            if before in line:
+                lines[line_num] = lines[line_num].replace(before, after)
+        
+        f = open(input_file, 'w')
+        f.writelines(lines)
+        f.close()
+
+sys.exit(main())

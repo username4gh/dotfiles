@@ -2,18 +2,8 @@
 
 _module_generate_init_bash() {
     if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
-        echo '#! /usr/bin/env bash' >> "$MY_SH_MODULE/$1/init.bash"
-        echo "" >> "$MY_SH_MODULE/$1/init.bash"
-
-        if [[ "$2" == 'n' ]];then
-            echo 'if [[ $(whoami) != root ]];then' >> "$MY_SH_MODULE/$1/init.bash"
-        fi
-
-        echo ' _my_load_sh_files $MY_SH_MODULE/'"$1" 'src' >> "$MY_SH_MODULE/$1/init.bash"
-
-        if [[ "$2" == 'n' ]];then
-            echo 'fi' >> "$MY_SH_MODULE/$1/init.bash"
-        fi
+        cp "$MY_SH/mechanism/module.snippet" "$MY_SH_MODULE/$1/init.bash"
+        r -i "$MY_SH_MODULE/$1/init.bash" -b 'module_name' -a "$1"
     fi
 }
 
