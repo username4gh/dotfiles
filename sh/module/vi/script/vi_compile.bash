@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [[ "$(_check_os)" == 'Darwin' ]];then
+if [[ "$(uname -s)" == 'Darwin' ]];then
     echo "check https://github.com/Valloric/YouCompleteMe/issues/8"
     if [[ "$(port select --list python | s active | s -o '(?<=^).*?(?=\()')" == 'none' ]];then
         echo "With Macports, please do 'sudo port select --set python python27'";

@@ -4,12 +4,6 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
-# reset to avoid issue causing by repeat sourcing
-unset PATH
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-
-unset PROMPT_COMMAND
-
 # level-1 directory setup
 export MY_BIN="$HOME/bin"
 export MY_REPO="$HOME/repo"
@@ -18,10 +12,19 @@ export MY_REPO="$HOME/repo"
 export MY_I3="$MY_REPO/my-i3"
 
 # level-3 directory setup
+export MY_SCRIPT="$MY_I3/script"
 export MY_SH="$MY_I3/sh"
 
 # level-4 directory setup
 export MY_SH_MODULE="$MY_SH/module"
+
+# reset to avoid issue causing by repeat sourcing
+unset PATH
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+export PATH="$MY_SCRIPT:$PATH"
+
+unset PROMPT_COMMAND
+
 
 _my_sh_log() {
     if [[ "$#" == 1 ]];then
@@ -45,9 +48,12 @@ _my_load_sh_files() {
         if [[ -d "$fullPath" ]];then
             while IFS= read -r -d '' file
             do
-                _my_sh_log "load $file"
+                # generte cache.bash
+                if [[ "$(echo $file | grep init)" == '' ]];then
+                    echo 'source '"$file" >> "$MY_SH/cache.bash"
+                fi
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file";
-            done < <(find "$fullPath" -maxdepth 1 -name '*.bash' -print0 | sort -du)
+            done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
         fi
         unset -v file
     else
@@ -55,14 +61,18 @@ _my_load_sh_files() {
     fi
 }
 
-_my_load_sh_files $MY_SH 'internal'
-_my_load_sh_files $MY_SH 'path'
-_my_load_sh_files $MY_SH 'mechanism'
-_my_load_sh_files $MY_SH 'function'
-_my_load_sh_files $MY_SH 'alias'
-_my_load_sh_files $MY_SH 'module'
-_my_load_sh_files $MY_SH 'completion'
-_my_load_sh_files $MY_SH 'custom'
+if [[ ! -f "$MY_SH/cache.bash" ]];then
+    _my_load_sh_files $MY_SH 'internal'
+    _my_load_sh_files $MY_SH 'path'
+    _my_load_sh_files $MY_SH 'mechanism'
+    _my_load_sh_files $MY_SH 'function'
+    _my_load_sh_files $MY_SH 'alias'
+    _my_load_sh_files $MY_SH 'module'
+    _my_load_sh_files $MY_SH 'completion'
+    _my_load_sh_files $MY_SH 'custom'
+else
+    source "$MY_SH/cache.bash"
+fi
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
