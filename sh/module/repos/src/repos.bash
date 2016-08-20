@@ -9,11 +9,11 @@ export PATH="$MY_REPO/myrepos:$PATH"
 _repos_get_url() {
     (cd "$1";
     local url;
-    url=$(s -f .git/config 'url = ' | sed "s/url = //g") ;
+    url=$(git config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)') ;
     echo "$url")
 }
 
-my_repos_register_all() {
+repos_register_all() {
     local mrconfig_directory
     local repos_directory
     if [[ "$#" -eq 0 ]];then
