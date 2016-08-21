@@ -33,6 +33,10 @@
  	- prefix '\_' for function only used internally
 	- prefix 'my\_' for function that needed to be exposed to the user
 
++ terminology
+        - when I mention about module in comment/naming or something else, it means someting related to one module
+        - when I mention about modules in comment/naming or something else, it means something related to all modules in a generic way
+        - In another word, module or modules are like scope identifier
 
 # TODO & Question & Reference
 + backup shell-command-history to github with encryption

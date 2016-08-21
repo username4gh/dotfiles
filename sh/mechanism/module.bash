@@ -9,6 +9,7 @@ _module_generate_init_bash() {
 
 my_modules_init() {
     if [[ "$#" == 0 ]];then
+        # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
         if [[ -f "$MY_SH/cache.bash" ]];then
             rm "$MY_SH/cache.bash"
         fi

@@ -21,6 +21,7 @@ export MY_SH_MODULE="$MY_SH/module"
 # reset to avoid issue causing by repeat sourcing
 unset PATH
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+
 export PATH="$MY_SCRIPT:$PATH"
 
 unset PROMPT_COMMAND
@@ -37,6 +38,13 @@ _sh_log() {
     fi
 }
 
+_gen_cache() {
+    # generate cache.bash, for cache.bash, those 'init.bash' just useless
+    if [[ "$(echo $1 | grep init)" == '' ]];then
+        echo 'source '"$1" >> "$MY_SH/cache.bash"
+    fi
+}
+
 _load_sh_files() {
     if [[ "$#" == 2 ]];then
         local directory="$1"
@@ -48,10 +56,8 @@ _load_sh_files() {
         if [[ -d "$fullPath" ]];then
             while IFS= read -r -d '' file
             do
-                # generte cache.bash
-                if [[ "$(echo $file | grep init)" == '' ]];then
-                    echo 'source '"$file" >> "$MY_SH/cache.bash"
-                fi
+                _gen_cache "$file"
+
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file";
             done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
         fi
