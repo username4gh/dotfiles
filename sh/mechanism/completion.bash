@@ -52,7 +52,7 @@ _completion_register_write(){
     return
 }
 
-_completion_register_generate() {    
+_completion_register_generate() {
     return
 }
 
@@ -71,7 +71,7 @@ _completion_setup() {
     fi
 }
 
-my_completion_generate() {
+completion_generate() {
     while IFS= read -r item
     do
         # deal with _completion_register_write
@@ -79,7 +79,7 @@ my_completion_generate() {
         do
             completion_target=$(echo "$line" | awk '{print $2}')
             completion_word=$(echo "$line" | awk '{print $3}')
-            _completion_write $completion_target $completion_word 
+            _completion_write $completion_target $completion_word
         done < <(s -f $item _completion_register_write)
 
         # deal with _completion_register_generate
@@ -94,4 +94,3 @@ my_completion_generate() {
         done < <(s -f $item _completion_register_generate)
     done < <(find "$MY_SH_MODULE" -type f -iname *.bash)
 }
-

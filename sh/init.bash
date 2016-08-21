@@ -26,18 +26,18 @@ export PATH="$MY_SCRIPT:$PATH"
 unset PROMPT_COMMAND
 
 
-_my_sh_log() {
+_sh_log() {
     if [[ "$#" == 1 ]];then
         local LOG_DIR="$MY_I3/log"
         if [[ -d "$LOG_DIR" ]]; then
             echo "$(date +%Y-%m-%d-%H-%M-%S) $1" >> $LOG_DIR/sh.log
         fi
     else
-        echo "Usage: _my_sh_log content"
+        echo "Usage: _sh_log content"
     fi
 }
 
-_my_load_sh_files() {
+_load_sh_files() {
     if [[ "$#" == 2 ]];then
         local directory="$1"
 
@@ -57,19 +57,19 @@ _my_load_sh_files() {
         fi
         unset -v file
     else
-        echo "Usage: _my_load_sh_files baseDirectoryPath subDirectoryName"
+        echo "Usage: _load_sh_files baseDirectoryPath subDirectoryName"
     fi
 }
 
 if [[ ! -f "$MY_SH/cache.bash" ]];then
-    _my_load_sh_files $MY_SH 'internal'
-    _my_load_sh_files $MY_SH 'path'
-    _my_load_sh_files $MY_SH 'mechanism'
-    _my_load_sh_files $MY_SH 'function'
-    _my_load_sh_files $MY_SH 'alias'
-    _my_load_sh_files $MY_SH 'module'
-    _my_load_sh_files $MY_SH 'completion'
-    _my_load_sh_files $MY_SH 'custom'
+    _load_sh_files $MY_SH 'internal'
+    _load_sh_files $MY_SH 'path'
+    _load_sh_files $MY_SH 'mechanism'
+    _load_sh_files $MY_SH 'function'
+    _load_sh_files $MY_SH 'alias'
+    _load_sh_files $MY_SH 'module'
+    _load_sh_files $MY_SH 'completion'
+    _load_sh_files $MY_SH 'custom'
 else
     source "$MY_SH/cache.bash"
 fi
