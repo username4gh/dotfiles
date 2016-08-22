@@ -5,15 +5,17 @@
  1. <small>meaningfull name</small>
  2. <small>comment & reference</small>
 
-+ Compatibility & Lightweight (So i had to ditch my beloved emacs) & Cut-dependency
++ Compatibility & Light-weight (So i had to ditch my beloved emacs) & less-dependency
  1. <small>darwin & ubuntu</small>
- 2. <small>zsh & bash</small>
+ 2. <s><small>zsh & bash</small></s>(I'am really busy now and will stay the same for a long time, i just not able to continue doing this, so bash only)
  3. <small>local & ssh</small>
  4. <small>prefer pre-installed software(intersection of OSX and Ubuntu)</small>
  	
- 		- <small>eg: use curl rather than wget</small>
+ 		- <small>use curl rather than wget(because as to OSX, wget is not a built-in)</small>
  	
  5. <small>deal with the difference between BSD & GNU program</small>
+
+      - <small>use python script to replace some of these programs in order to reduce the impact causing by these differences (between go python ruby and javascript, only python is supported by both OS in default)</small>
 
 # Pre-arrangement
 + bash script loading-sequence(also the dependency chain): 
@@ -27,8 +29,14 @@
  4. <small>module (least dependence between each other, dependency autonomy)</small>
  5. <small>no external dependence for executable script</small>
 
-+ functions with prefix '_' are used either internally or cautiously
++ naming convention:
+ 	- prefix '\_' for function only used internally
+	- prefix 'my\_' for function that needed to be exposed to the user
 
++ terminology
+        - when I mention about module in comment/naming or something else, it means someting related to one module
+        - when I mention about modules in comment/naming or something else, it means something related to all modules in a generic way
+        - In another word, module or modules are like scope identifier
 
 # TODO & Question & Reference
 + backup shell-command-history to github with encryption
@@ -48,7 +56,10 @@
 
 + performance
  1. lazy-loading like technique to reduce 'sourcing' overhead
- 2. caching source-chain to boost later bootstrap process (reducing usage of function like '_my_load_sh_files')
+
+  		- prefer script over function
+
+ 2. caching source-chain to boost later bootstrap process (reducing usage of function like '_load_sh_files')
  3. <s>global environment variable to avoid repeat-initialization while opening multiple-tab inside iterm2/terminal</s>(open a new tab inside iterm2/terminal will create a new bash process, i might have mis-conjectured something)
 
 + coding style

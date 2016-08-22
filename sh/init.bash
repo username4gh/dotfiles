@@ -21,23 +21,31 @@ export MY_SH_MODULE="$MY_SH/module"
 # reset to avoid issue causing by repeat sourcing
 unset PATH
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+
 export PATH="$MY_SCRIPT:$PATH"
 
 unset PROMPT_COMMAND
 
 
-_my_sh_log() {
+_sh_log() {
     if [[ "$#" == 1 ]];then
         local LOG_DIR="$MY_I3/log"
         if [[ -d "$LOG_DIR" ]]; then
             echo "$(date +%Y-%m-%d-%H-%M-%S) $1" >> $LOG_DIR/sh.log
         fi
     else
-        echo "Usage: _my_sh_log content"
+        echo "Usage: _sh_log content"
     fi
 }
 
-_my_load_sh_files() {
+_gen_cache() {
+    # generate cache.bash, for cache.bash, those 'init.bash' just useless
+    if [[ "$(echo $1 | grep init)" == '' ]];then
+        echo 'source '"$1" >> "$MY_SH/cache.bash"
+    fi
+}
+
+_load_sh_files() {
     if [[ "$#" == 2 ]];then
         local directory="$1"
 
@@ -48,28 +56,26 @@ _my_load_sh_files() {
         if [[ -d "$fullPath" ]];then
             while IFS= read -r -d '' file
             do
-                # generte cache.bash
-                if [[ "$(echo $file | grep init)" == '' ]];then
-                    echo 'source '"$file" >> "$MY_SH/cache.bash"
-                fi
+                _gen_cache "$file"
+
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file";
             done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
         fi
         unset -v file
     else
-        echo "Usage: _my_load_sh_files baseDirectoryPath subDirectoryName"
+        echo "Usage: _load_sh_files baseDirectoryPath subDirectoryName"
     fi
 }
 
 if [[ ! -f "$MY_SH/cache.bash" ]];then
-    _my_load_sh_files $MY_SH 'internal'
-    _my_load_sh_files $MY_SH 'path'
-    _my_load_sh_files $MY_SH 'mechanism'
-    _my_load_sh_files $MY_SH 'function'
-    _my_load_sh_files $MY_SH 'alias'
-    _my_load_sh_files $MY_SH 'module'
-    _my_load_sh_files $MY_SH 'completion'
-    _my_load_sh_files $MY_SH 'custom'
+    _load_sh_files $MY_SH 'internal'
+    _load_sh_files $MY_SH 'path'
+    _load_sh_files $MY_SH 'mechanism'
+    _load_sh_files $MY_SH 'function'
+    _load_sh_files $MY_SH 'alias'
+    _load_sh_files $MY_SH 'module'
+    _load_sh_files $MY_SH 'completion'
+    _load_sh_files $MY_SH 'custom'
 else
     source "$MY_SH/cache.bash"
 fi
