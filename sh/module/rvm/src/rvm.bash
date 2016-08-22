@@ -25,6 +25,7 @@ virtual_rvm() {
 
 _completion_register_write virtual_rvm alfi
 _completion_register_write virtual_rvm gem
+_completion_register_write virtual_rvm pod
 _completion_register_write virtual_rvm rvm
 
 _completion_setup virtual_rvm
