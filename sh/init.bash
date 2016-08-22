@@ -42,6 +42,10 @@ _gen_cache() {
     # generate cache.bash, for cache.bash, those 'init.bash' just useless
     if [[ "$(echo $1 | grep init)" == '' ]];then
         echo 'source '"$1" >> "$MY_SH/cache.bash"
+    else
+        if [[ "$(cat "$1" | grep 'export PATH')" != '' ]];then
+            echo "$(cat "$1" | grep 'export PATH')" >> "$MY_SH/cache.bash"
+        fi
     fi
 }
 
