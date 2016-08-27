@@ -6,4 +6,12 @@ if [[ "$(_check_os)" == 'Darwin' ]];then
     fi
 
     export PATH="$MY_REPO/m-cli:$PATH"
+
+    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+        source "$MY_REPO/m-cli/completion/bash/m"
+    fi
+
+    if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then
+        source "$MY_REPO/m-cli/completion/zsh/m"
+    fi
 fi
