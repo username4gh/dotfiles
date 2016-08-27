@@ -5,12 +5,12 @@ export MY_SH_COMPLETIONS="$MY_I3/completions"
 _completion_read() {
     if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         # $1 --> variant name
-        if [[ "$#" == 1 ]];then
+        if [[ "$#" -eq 1 ]];then
             if [[ -f "$MY_SH_COMPLETIONS/$1.completion" ]];then
                 cat "$MY_SH_COMPLETIONS/$1.completion"
             fi
         else
-            echo "Usage: _completion_read parent"
+            echo "Usage: _completion_read completion_file_name"
         fi
     fi
 }
@@ -19,19 +19,33 @@ _completion_write() {
     if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         # $1 --> variant name
         # $2 --> variant value
-        if [[ "$#" == 2 ]];then
-            if [[ ! -d "$MY_SH_COMPLETIONS" ]];then
-                mkdir -p "$MY_SH_COMPLETIONS"
-            fi
+        if [[ ! -d "$MY_SH_COMPLETIONS" ]];then
+            mkdir -p "$MY_SH_COMPLETIONS"
+        fi
 
-            if [[ -f "$MY_SH_COMPLETIONS/$1.completion" ]];then
+        if [[ "$#" -gt 1 ]];then
+            local size=$#
+            local max_index=$((size-1))
+            local args=($@)
+
+            local name
+            for ((i = 0; i < max_index; i++))
+            do
+                if [[ $i -eq $((size-2)) ]];then
+                    name+=${args[$i]}
+                else
+                    name+=${args[$i]}_
+                fi
+            done
+
+            if [[ -f "$MY_SH_COMPLETIONS/$name.completion" ]];then
                 # delete old record, we need the gnu sed to achieve it
-                sed -e "/$2/d" -i.tmp "$MY_SH_COMPLETIONS/$1.completion"
+                sed -e "/${args[$max_index]}/d" -i.tmp "$MY_SH_COMPLETIONS/$name.completion"
             fi
 
-            echo "$2" >> "$MY_SH_COMPLETIONS/$1.completion"
+            echo "${args[$max_index]}" >> "$MY_SH_COMPLETIONS/$name.completion"
         else
-            echo "Usage: _completion_write parent child"
+            echo "Usage: _completion_write parent child grandchild"
         fi
     fi
 }
@@ -59,7 +73,22 @@ _completion_register_generate() {
 _completion_complete () {
     if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         local cur="${COMP_WORDS[COMP_CWORD]}"
-        local completion_args="$(_completion_read $1)"
+
+        local size=$COMP_CWORD
+        local max_index=$((size-1))
+        local args=($COMP_LINE)
+
+        local name
+        for ((i = 0; i < size; i++))
+        do
+           if [[ $i -eq $max_index ]];then
+               name+=${args[$i]}
+           else
+               name+=${args[$i]}_
+           fi
+        done
+
+        local completion_args="$(_completion_read $name)"
         COMPREPLY=( $(compgen -W "${completion_args}" -- ${cur}) )
     fi
 }
@@ -77,10 +106,9 @@ completion_generate() {
         # deal with _completion_register_write
         while IFS= read -r line
         do
-            completion_target=$(echo "$line" | awk '{print $2}')
-            completion_word=$(echo "$line" | awk '{print $3}')
-            _completion_write $completion_target $completion_word
-        done < <(s -f $item _completion_register_write)
+            completion_args=$(echo "$line" | cut -d ' ' -f2-)
+            _completion_write $completion_args
+        done < <(s -f $item '_completion_register_write')
 
         # deal with _completion_register_generate
         while IFS= read -r line
@@ -92,5 +120,6 @@ completion_generate() {
             completion_pattern="${array[3]}"
             _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
         done < <(s -f $item _completion_register_generate)
-    done < <(find "$MY_SH_MODULE" -type f -iname *.bash)
+        # filtered out some irrelevant files to boost performance
+    done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
 }
