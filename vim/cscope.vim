@@ -1,7 +1,8 @@
 " Helper function to quickly generate cscope.out
 function CSBuild()
+    let s:CURDIR = getcwd()
     while (getcwd() != '/')
-        if filereadable("./.git/config")
+        if isdirectory("./.git")
             " because I want to place the generated cscope.* file under the '.git', so
             " here I need to make sure the /tmp/.cs_db contains the full path of each
             " file
@@ -14,6 +15,7 @@ function CSBuild()
         endif
         silent cd ..
     endwhile
+    silent exe 'cd ' . s:CURDIR
 endf
 
 function CSLoad()
@@ -21,8 +23,6 @@ function CSLoad()
     silent exe 'cs add ' $NDK_INCLUDE_CSCOPE_DB
     silent exe 'set tags+=' . $NDK_INCLUDE_CTAGS_DB
 
-    " add the cscope.out in current directory
-    "echo 'Try search: '.getcwd()
     let s:CURDIR = getcwd()
     while (getcwd() != '/')
         "echo 'Try search: '.getcwd()
@@ -39,12 +39,13 @@ function CSLoad()
         silent cd ..
     endwhile
 
-    silent exe 'cd '. s:CURDIR
+    silent exe 'cd ' . s:CURDIR
 endf
 
 function CSDelete()
+    let s:CURDIR = getcwd()
     while (getcwd() != '/')
-        if filereadable("./.git/config")
+        if isdirectory("./.git")
             silent !rm $PWD/.git/cscope.*
             silent !rm $PWD/.git/tags
 
@@ -55,6 +56,7 @@ function CSDelete()
         endif
         silent cd ..
     endwhile
+    silent exe 'cd ' . s:CURDIR
 endf
 
 " This tests to see if vim was configured with the '--enable-cscope' option
