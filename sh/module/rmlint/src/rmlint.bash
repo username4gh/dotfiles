@@ -5,7 +5,7 @@ if [[ ! -d "$MY_REPO/rmlint" ]];then
 fi
 
 if [[ "$(_check_command scons)" == 0 ]];then
-    echo "just check http://rmlint.readthedocs.io/en/latest/install.html"
+    echo "check http://rmlint.readthedocs.io/en/latest/install.html"
 else
     export PATH="$PATH:$HOME/repo/rmlint"
 fi

@@ -15,7 +15,7 @@ my_modules_init() {
         fi
 
         if [[ -f "$MY_SH_MODULE/init.bash" ]];then
-            rm -v "$MY_SH_MODULE/init.bash"
+            rm "$MY_SH_MODULE/init.bash"
         fi
 
         echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
