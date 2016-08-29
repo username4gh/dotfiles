@@ -60,7 +60,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     PROMPT_COMMAND="_no_invalid_command_in_history;history -a; history -n;${PROMPT_COMMAND}"
     shopt -s histappend
     export HISTCONTROL=ignoreboth:ignoredups
-    export HISTIGNORE="_no_invalid_command_in_history:[   ]*:&:bg:cat*:cd*:cp*df:echo*:fg:exit:hh*:history*:git*:ls*:mv*:sbs:src:z"
+    export HISTIGNORE="_no_invalid_command_in_history:[   ]*:&:ag:bg:cat*:cd*:df*:echo*:fg:exit:hh*:history*:git*:ls*:mv*:sbs:src:z"
     export HISTTIMEFORMAT='%F %T '
 
     # stolen from http://mywiki.wooledge.org/BashFAQ/088
