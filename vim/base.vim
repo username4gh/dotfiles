@@ -141,6 +141,8 @@ endfunction
 :inoremap <C-a> <Home>
 :inoremap <C-e> <End>
 
+" http://stackoverflow.com/questions/657447/vim-clear-last-search-highlighting
+:nnoremap <esc> :noh<return><esc>
 
 " encoding
 set fenc=utf-8
