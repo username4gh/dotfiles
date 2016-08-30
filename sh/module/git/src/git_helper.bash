@@ -8,3 +8,5 @@ git_history_search() {
 git_hook_up_with_osxkeychain() {
     git config credential.helper osxkeychain
 }
+
+alias git-author='git log | s Author | sort | uniq'
