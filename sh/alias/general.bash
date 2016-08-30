@@ -1,7 +1,10 @@
 #! /usr/bin/env bash
 
 alias makescript="fc -rnl | head -1 >"
-alias ls='ls -F'
+
+alias la='ls -a'
+alias lf='ls -F'
+alias ll='ls -al'
 
 # System info
 alias cmount="mount | column -t"
