@@ -4,9 +4,26 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
+if [[ "$(uname -s)" == 'Darwin' ]];then
+    if [[ "$(id -u)" -ne 0 ]];then
+        if [[ ! -d "$MY_WORKSPACE" ]];then
+            # in order to avoid issue casuing by HFS+'s default `case-insenstive but case-preserve`
+            echo "for Darwin, please use workspace.bash to create a case-senstive partition"
+            return
+        fi
+    else 
+        # while under root, just use a ordinary directory.
+        mkdir -p "$MY_WORKSPACE"
+    fi
+else
+    # while under linux, just use a ordinary directory.
+    mkdir -p "$MY_WORKSPACE"    
+fi
+
+
 # level-1 directory setup
 export MY_BIN="$HOME/bin"
-export MY_REPO="$HOME/workspace/repo"
+export MY_REPO="$MY_WORKSPACE/repo"
 
 # level-2 directory setup
 export MY_I3="$MY_REPO/my-i3"

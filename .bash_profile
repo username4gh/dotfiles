@@ -123,9 +123,12 @@ done
 unset file_type
 
 export MY_CURRENT_SHELL='bash'
+
+export MY_WORKSPACE="$HOME/workspace"
+
 # integration with my own stuff with bash-it
-if [[ -f "$HOME/workspace/repo/my-i3/sh/init.bash" ]];then
-    source "$HOME/workspace/repo/my-i3/sh/init.bash";
+if [[ -f "$MY_WORKSPACE/repo/my-i3/sh/init.bash" ]];then
+    source "$MY_WORKSPACE/repo/my-i3/sh/init.bash";
 fi
 
-source "$HOME/workspace/repo/my-i3/.profile"
+source "$MY_WORKSPACE/repo/my-i3/.profile"
