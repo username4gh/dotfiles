@@ -16,11 +16,11 @@ esac
 export BASH_IT="$HOME/.bash_it"
 
 # http://mivok.net/2009/09/20/bashfunctionoverrist.html
-_overrideFunction() { 
-    local -r functionBody=$(declare -f $1) 
-    local -r newDefinition="${1}Super ${functionBody#$1}" 
-    eval "$newDefinition" 
-} 
+_overrideFunction() {
+    local -r functionBody=$(declare -f $1)
+    local -r newDefinition="${1}Super ${functionBody#$1}"
+    eval "$newDefinition"
+}
 
 _bash_it_load_one() {
     file_type=$1
@@ -124,8 +124,8 @@ unset file_type
 
 export MY_CURRENT_SHELL='bash'
 # integration with my own stuff with bash-it
-if [[ -f "$HOME/repo/my-i3/sh/init.bash" ]];then
-    source "$HOME/repo/my-i3/sh/init.bash";
+if [[ -f "$HOME/workspace/repo/my-i3/sh/init.bash" ]];then
+    source "$HOME/workspace/repo/my-i3/sh/init.bash";
 fi
 
-source "$HOME/repo/my-i3/.profile"
+source "$HOME/workspace/repo/my-i3/.profile"

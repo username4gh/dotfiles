@@ -6,7 +6,7 @@ fi
 
 # level-1 directory setup
 export MY_BIN="$HOME/bin"
-export MY_REPO="$HOME/repo"
+export MY_REPO="$HOME/workspace/repo"
 
 # level-2 directory setup
 export MY_I3="$MY_REPO/my-i3"
@@ -38,7 +38,7 @@ _sh_log() {
     fi
 }
 
-_gen_cache() {
+_cache_gen() {
     # generate cache.bash, for cache.bash, those 'init.bash' just useless
     if [[ "$(echo $1 | grep init)" == '' ]];then
         echo 'source '"$1" >> "$MY_SH/cache.bash"
@@ -46,6 +46,12 @@ _gen_cache() {
         if [[ "$(cat "$1" | grep 'export PATH')" != '' ]];then
             echo "$(cat "$1" | grep 'export PATH')" >> "$MY_SH/cache.bash"
         fi
+    fi
+}
+
+_cache_clear() {
+    if [[ -f "$MY_SH/cache.bash" ]];then
+        rm "$MY_SH/cache.bash"
     fi
 }
 
@@ -60,7 +66,7 @@ _load_sh_files() {
         if [[ -d "$fullPath" ]];then
             while IFS= read -r -d '' file
             do
-                _gen_cache "$file"
+                _cache_gen "$file"
 
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file";
             done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
@@ -70,6 +76,11 @@ _load_sh_files() {
         echo "Usage: _load_sh_files baseDirectoryPath subDirectoryName"
     fi
 }
+
+# Reload the shell (i.e. invoke as a login shell)
+if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    alias src="exec $SHELL -l"
+fi
 
 if [[ ! -f "$MY_SH/cache.bash" ]];then
     _load_sh_files $MY_SH 'internal'

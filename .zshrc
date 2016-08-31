@@ -56,8 +56,8 @@ source $ZSH/oh-my-zsh.sh
 
 export MY_CURRENT_SHELL='zsh'
 
-source "$HOME/repo/my-i3/sh/init.bash"
+source "$HOME/workspace/repo/my-i3/sh/init.bash"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-source "$HOME/repo/my-i3/.profile"
+source "$HOME/workspace/repo/my-i3/.profile"

@@ -67,9 +67,9 @@ let g:multi_cursor_skip_key='<C-k>'
 let g:multi_cursor_quit_key='<Esc>'
 
 " basic editor-stuff
-if filereadable(expand("$HOME/repo/my-i3/vim/base.vim"))
-    :so $HOME/repo/my-i3/vim/base.vim
-    :so $HOME/repo/my-i3/vim/cscope.vim
+if filereadable(expand("$MY_REPO/my-i3/vim/base.vim"))
+    :so $MY_REPO/my-i3/vim/base.vim
+    :so $MY_REPO/my-i3/vim/cscope.vim
 endif
 
 let g:loaded_python_provider = 1

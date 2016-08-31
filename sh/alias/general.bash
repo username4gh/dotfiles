@@ -19,8 +19,3 @@ alias ipinfo="curl ifconfig.me && curl ifconfig.me/host"
 alias busy="cat /dev/urandom | hexdump -C | grep \"ca fe\""
 
 alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'"
-
-# Reload the shell (i.e. invoke as a login shell)
-if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
-    alias src="exec $SHELL -l"
-fi
