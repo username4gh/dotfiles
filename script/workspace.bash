@@ -17,7 +17,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     VOLUME_NAME=workspace
 
     # volume size
-    VOLUME_SIZE=60g
+    VOLUME_SIZE=120g
 
     # ---------------------------------------------------------
     # Functionality
