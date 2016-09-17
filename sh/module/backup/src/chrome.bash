@@ -2,7 +2,7 @@
 
 _backup_chrome_browsing_history() {
     if [[ "$(_check_os)" == Darwin ]];then
-        local HISTORY_FILE="$(find /Users/$USER/Library/Application\ Support -mindepth 1 -maxdepth 1 -type -d -name "*Google*")"
+        local HISTORY_FILE="$(find /Users/$USER/Library/Application\ Support -mindepth 1 -maxdepth 1 -type d -name "*Google*")"
         echo $HISTORY_FILE
         (cd "$HISTORY_FILE"; echo "$pwd"; cp -r ./Chrome "$1")
     fi

@@ -18,14 +18,14 @@ export BASH_IT="$HOME/.bash_it"
 # http://mivok.net/2009/09/20/bashfunctionoverrist.html
 _overrideFunction() {
     local -r functionBody=$(declare -f $1)
-    local -r newDefinition="${1}Super ${functionBody#$1}"
+    local -r newDefinition="${1}_super ${functionBody#$1}"
     eval "$newDefinition"
 }
 
 _bash_it_load_one() {
     file_type=$1
     file_to_enable=$2
-    [ ! -d "$BASH_IT/$file_type/enabled" ] && mkdir "$BASH_IT/${file_type}/enabled"
+    [[ ! -d "$BASH_IT/$file_type/enabled" ]] && mkdir "$BASH_IT/${file_type}/enabled"
 
     dest="${BASH_IT}/${file_type}/enabled/${file_to_enable}"
     if [ ! -e "${dest}" ]; then
@@ -37,7 +37,7 @@ _bash_it_load_one() {
 
 _bash_it_load_some() {
     file_type=$1
-    [ -d "$BASH_IT/$file_type/enabled" ] || mkdir "$BASH_IT/$file_type/enabled"
+    [[ -d "$BASH_IT/$file_type/enabled" ]] || mkdir "$BASH_IT/$file_type/enabled"
     for path in $BASH_IT/${file_type}/available/[^_]*
     do
         [[ -e $path ]] || break
@@ -114,6 +114,17 @@ cite _about _param _example _group _author _version
 
 # library(we only need the helpers.bash to use the '.bash_it' stuff)
 source "${BASH_IT}/lib/helpers.bash"
+
+_overrideFunction _load_bash_it_files
+_load_bash_it_files() {
+    subdirectory="$1"
+    if [ ! -d "${BASH_IT}/${subdirectory}/enabled" ]
+    then
+        return
+    else
+       _load_bash_it_files_super "$1"
+    fi
+}
 
 # Load enabled aliases, completion, plugins
 for file_type in "aliases" "completion" "plugins"
