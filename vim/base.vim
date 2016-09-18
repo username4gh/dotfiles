@@ -144,6 +144,12 @@ endfunction
 " http://stackoverflow.com/questions/657447/vim-clear-last-search-highlighting
 :nnoremap <esc> :noh<return><esc>
 
+" http://vim.wikia.com/wiki/Fix_arrow_keys_that_display_A_B_C_D_on_remote_shell
+nnoremap <silent> <ESC>OA <Nop>
+nnoremap <silent> <ESC>OB <Nop>
+nnoremap <silent> <ESC>OC <Nop>
+nnoremap <silent> <ESC>OD <Nop>
+
 " encoding
 set fenc=utf-8
 set encoding=utf-8

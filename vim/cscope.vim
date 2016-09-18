@@ -6,7 +6,7 @@ function CSBuild()
             " because I want to place the generated cscope.* file under the '.git', so
             " here I need to make sure the /tmp/.cs_db contains the full path of each
             " file
-            silent !find $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'
+            silent !find -L $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'
             " because cscope cannot accept a specified directory as the output dir, so
             silent !cd $PWD/.git && cscope -bkq -i './cscope.files' && cd ..
             silent !ctags -R --links=no --tag-relative=yes --exclude=.svn --exclude=.git -f './.git/tags'
