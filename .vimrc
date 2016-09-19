@@ -15,17 +15,19 @@ Plugin 'bling/vim-bufferline'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'henrik/vim-indexed-search'
-Plugin 'ktonga/vim-follow-my-lead'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'kelwin/vim-smali'
+Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
+Plugin 'myusuf3/numbers.vim'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'Raimondi/delimitMate'
 Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'swaroopch/vim-markdown-preview'
+Plugin 'terryma/vim-expand-region'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tomasr/molokai'
 Plugin 'vim-airline/vim-airline'
@@ -47,7 +49,7 @@ colorscheme molokai
 let g:airline_theme = 'badwolf'
 
 " default Leader key is \"
-:nnoremap <Leader>W :w !sudo tee % > /dev/null
+nnoremap <Leader>W :w !sudo tee % > /dev/null
 
 " Raimondi/delimitMate
 " indent after press enter key"
@@ -56,7 +58,7 @@ let delimitMate_expand_cr=1
 " scrooloose/nerdtree
 let NERDTreeShowHidden=1
 let g:nerdtree_tabs_open_on_gui_startup=0
-:map <Leader>n <plug>NERDTreeTabsToggle<CR>
+map <Leader>n <plug>NERDTreeTabsToggle<CR>
 
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0
@@ -67,9 +69,10 @@ let g:multi_cursor_skip_key='<C-k>'
 let g:multi_cursor_quit_key='<Esc>'
 
 " basic editor-stuff
-if filereadable(expand("$MY_REPO/my-i3/vim/base.vim"))
-    :so $MY_REPO/my-i3/vim/base.vim
-    :so $MY_REPO/my-i3/vim/cscope.vim
+if filereadable(expand("$MY_I3/vim/base.vim"))
+    so $MY_I3/vim/base.vim
+    so $MY_I3/vim/cscope.vim
+    so $MY_I3/vim/output.vim
 endif
 
 let g:loaded_python_provider = 1
@@ -77,3 +80,17 @@ let g:loaded_python3_provider = 1
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:python_host_prog = '/opt/local/bin/python'
+
+" https://github.com/myusuf3/numbers.vim
+nnoremap <F3> :NumbersToggle<CR>
+nnoremap <F4> :NumbersOnOff<CR>
+
+" https://github.com/terryma/vim-expand-region
+map K <Plug>(expand_region_expand)
+map J <Plug>(expand_region_shrink)
+
+" https://github.com/kien/rainbow_parentheses.vim
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces

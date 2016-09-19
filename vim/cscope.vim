@@ -6,7 +6,7 @@ function CSBuild()
             " because I want to place the generated cscope.* file under the '.git', so
             " here I need to make sure the /tmp/.cs_db contains the full path of each
             " file
-            silent !find -L $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'
+            silent !find $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'
             " because cscope cannot accept a specified directory as the output dir, so
             silent !cd $PWD/.git && cscope -bkq -i './cscope.files' && cd ..
             silent !ctags -R --links=no --tag-relative=yes --exclude=.svn --exclude=.git -f './.git/tags'
@@ -75,118 +75,176 @@ if has("cscope")
     " show msg when any other cscope db added
     set cscopeverbose
 
-    """"""""""""" My cscope/vim key mappings
-    "
-    " The following maps all invoke one of the following cscope search types:
-    "
-    "   's'   symbol: find all references to the token under cursor
-    "   'g'   global: find global definition(s) of the token under cursor
-    "   'c'   calls:  find all calls to the function name under cursor
-    "   't'   text:   find all instances of the text under cursor
-    "   'e'   egrep:  egrep search for the word under cursor
-    "   'f'   file:   open the filename under cursor
-    "   'i'   includes: find files that include the filename under cursor
-    "   'd'   called: find functions that function under cursor calls
-    "
-    " Below are three sets of the maps: one set that just jumps to your
-    " search result, one that splits the existing vim window horizontally and
-    " diplays your search result in the new window, and one that does the same
-    " thing, but does a vertical split instead (vim 6 only).
-    "
-    " I've used CTRL-\ and CTRL-@ as the starting keys for these maps, as it's
-    " unlikely that you need their default mappings (CTRL-\'s default use is
-    " as part of CTRL-\ CTRL-N typemap, which basically just does the same
-    " thing as hitting 'escape': CTRL-@ doesn't seem to have any default use).
-    " If you don't like using 'CTRL-@' or CTRL-\, , you can change some or all
-    " of these maps to use other keys.  One likely candidate is 'CTRL-_'
-    " (which also maps to CTRL-/, which is easier to type).  By default it is
-    " used to switch between Hebrew and English keyboard mode.
-    "
-    " All of the maps involving the <cfile> macro use '^<cfile>$': this is so
-    " that searches over '#include <time.h>" return only references to
-    " 'time.h', and not 'sys/time.h', etc. (by default cscope will return all
-    " files that contain 'time.h' as part of their name).
+    if has('quickfix')
+        set cscopequickfix=s-,c-,d-,i-,t-,e-
+    endif
 
-
-    " To do the first type of search, hit 'CTRL-\', followed by one of the
-    " cscope search types above (s,g,c,t,e,f,i,d).  The result of your cscope
-    " search will be displayed in the current window.  You can use CTRL-T to
-    " go back to where you were before the search.
-    "
-
-    nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-\>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-
-
-    " Using 'CTRL-spacebar' (intepreted as CTRL-@ by vim) then a search type
-    " makes the vim window split horizontally, with search result displayed in
-    " the new window.
-    "
-    " (Note: earlier versions of vim may not have the :scs command, but it
-    " can be simulated roughly via:
-    "    nmap <C-@>s <C-W><C-S> :cs find s <C-R>=expand("<cword>")<CR><CR>
-
-    "    nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>
-    "    nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>
-    "    nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR>
-    "    nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR>
-    "    nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>
-    "    nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
-    "    nmap <C-@>i :scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    "    nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>
-
-
-    " Hitting CTRL-space *twice* before the search type does a vertical
-    " split instead of a horizontal one (vim 6 and up only)
-    "
-    " (Note: you may wish to put a 'set splitright' in your .vimrc
-    " if you prefer the new window on the right instead of the left
-
-    nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-@><C-@>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-@><C-@>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-@><C-@>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-@><C-@>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-@><C-@>f :vert scs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-@><C-@>i :vert scs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <C-@><C-@>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
-
-    """"""""""""" key map timeouts
-    "
-    " By default Vim will only wait 1 second for each keystroke in a mapping.
-    " You may find that too short with the above typemaps.  If so, you should
-    " either turn off mapping timeouts via 'notimeout'.
-    "
-    "set notimeout
-    "
-    " Or, you can keep timeouts, by uncommenting the timeoutlen line below,
-    " with your own personal favorite value (in milliseconds):
-    "
-    "set timeoutlen=4000
-    "
-    " Either way, since mapping timeout settings by default also set the
-    " timeouts for multicharacter 'keys codes' (like <F1>), you should also
-    " set ttimeout and ttimeoutlen: otherwise, you will experience strange
-    " delays as vim waits for a keystroke after you hit ESC (it will be
-    " waiting to see if the ESC is actually part of a key code like <F1>).
-    "
-    "set ttimeout
-    "
-    " personally, I find a tenth of a second to work well for key code
-    " timeouts. If you experience problems and have a slow terminal or network
-    " connection, set it higher.  If you don't set ttimeoutlen, the value for
-    " timeoutlent (default: 1000 = 1 second, which is sluggish) is used.
-    "
-    "set ttimeoutlen=100
+    nmap <Leader>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <Leader>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <Leader>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 
     " Reload cscope DB or create new one
     :command -nargs=0 CSBuild :call CSBuild()
     :command -nargs=0 CSLoad :call CSLoad()
     :command -nargs=0 CSDelete :call CSDelete()
+
+    " Define the set of Cscope commands
+    command! -nargs=* Cscope call s:RunCscope(<f-args>)
+
+    nmap <C-\>s :Cscope s <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>g :Cscope g <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>d :Cscope d <C-R>=expand("<cword>")<CR> <C-R>=expand("%")<CR><CR>
+    nmap <C-\>c :Cscope c <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>t :Cscope t <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>e :Cscope e <C-R>=expand("<cword>")<CR><CR>
+    nmap <C-\>f :Cscope f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <C-\>i :Cscope i ^<C-R>=expand("<cfile>")<CR>$<CR>
 endif
+
+
+" https://github.com/vim-scripts/cscope-quickfix
+if !exists("Cscope_OpenQuickfixWindow")
+    let Cscope_OpenQuickfixWindow = 1
+endif
+
+if !exists("Cscope_JumpError")
+    let Cscope_JumpError = 1
+endif
+
+if !exists("Cscope_Keymap")
+    let Cscope_Keymap = 1
+endif
+
+if !exists("Cscope_PopupMenu")
+    let Cscope_PopupMenu = 0
+endif
+
+if !exists("Cscope_ToolMenu")
+    let Cscope_ToolMenu = 1
+endif
+
+" RunCscope()
+" Run the cscope command using the supplied option and pattern
+function! s:RunCscope(...)
+    if !exists("a:1") || !exists("a:2")
+        echohl WarningMsg | echohl None
+        return
+    endif
+    let cscope_opt = a:1
+    let pattern = a:2
+    let openwin = g:Cscope_OpenQuickfixWindow
+    let jumperr = g:Cscope_JumpError
+    if cscope_opt == '0' || cscope_opt == 's'
+        let cmd = "cs find s " . pattern
+    elseif cscope_opt == '1' || cscope_opt == 'g'
+        let cmd = "cs find g " . pattern
+    elseif cscope_opt == '2' || cscope_opt == 'd'
+        let cmd = "cs find d " . pattern
+    elseif cscope_opt == '3' || cscope_opt == 'c'
+        let cmd = "cs find c " . pattern
+    elseif cscope_opt == '4' || cscope_opt == 't'
+        let cmd = "cs find t " . pattern
+    elseif cscope_opt == '6' || cscope_opt == 'e'
+        let cmd = "cs find e " . pattern
+    elseif cscope_opt == '7' || cscope_opt == 'f'
+        let cmd = "cs find f " . pattern
+        let openwin = 0
+        let jumperr = 1
+    elseif cscope_opt == '8' || cscope_opt == 'i'
+        let cmd = "cs find i " . pattern
+    else
+        echohl WarningMsg | echohl None
+        return
+    endif
+    if exists("a:3")
+        let cmd = cmd . " " . a:3
+    endif
+
+    let temp_reg = @""
+    redir @"
+    silent execute cmd
+    redir END
+    let cmd_output = copy(@")
+    let @" = temp_reg
+
+    if cmd_output == ""
+        echohl WarningMsg | 
+                    \ echomsg "Error: Pattern " . pattern . " not found" | 
+                    \ echohl None
+        return
+    endif
+
+    let tmpfile = tempname()
+    let curfile = expand("%")
+
+    if &modified && (!&autowrite || curfile == "")
+        let jumperr = 0
+    endif
+
+    exe "redir! > " . tmpfile
+    if curfile != ""
+        silent echon curfile . " dummy " . line(".") . " " . getline(".") . "\n"
+        silent let ccn = 2
+    else
+        silent let ccn = 1
+    endif
+    silent echon cmd_output
+    redir END
+
+    let old_efm = &efm
+    set efm=%f\ %*[^\ ]\ %l\ %m
+
+    exe "silent! cfile " . tmpfile
+    let &efm = old_efm
+
+    " Open the cscope output window
+    if openwin == 1
+        botright copen
+    endif
+
+    " Jump to the first error
+    if jumperr == 1
+        exe "cc " . ccn
+    endif
+
+    call delete(tmpfile)
+endfunction
+
+
+" Filter the quickfix list
+function! FilterQFList(type, action, pattern)
+    " get current quickfix list
+    let s:curList = getqflist()
+    let s:newList = []
+    for item in s:curList
+        if a:type == 0     " filter on file names
+            let s:cmpPat = bufname(item.bufnr)
+        elseif a:type == 1 " filter by line content
+            let s:cmpPat = item.text . item.pattern
+        endif
+        if item.valid
+            if a:action < 0
+                " Keep only nonmatching lines
+                if s:cmpPat !~ a:pattern
+                    let s:newList += [item]
+                endif
+            else
+                " Keep only matching lines
+                if s:cmpPat =~ a:pattern
+                    let s:newList += [item]
+                endif
+            endif
+        endif
+    endfor
+    call setqflist(s:newList)
+endfunction
+
+nnoremap <Leader>fs :call FilterQFList(0, -1, inputdialog('Remove file names matching:', ''))<CR>
+nnoremap <Leader>of :call FilterQFList(0, 1, inputdialog('Keep only file names matching:', ''))<CR>
+nnoremap <Leader>as :call FilterQFList(1, -1, inputdialog('Remove all lines matching:', ''))<CR>
+nnoremap <Leader>os :call FilterQFList(1, 1, inputdialog('Keep only lines matching:', ''))<CR>
