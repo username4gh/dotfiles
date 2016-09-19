@@ -65,186 +65,72 @@ if has("cscope")
 
     """"""""""""" Standard cscope/vim boilerplate
     " use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
-    "set cscopetag
+    set cscopetag
 
     " check cscope for definition of a symbol before checking ctags: set to 1
     " if you want the reverse search order.
     set csto=0
 
-
     " show msg when any other cscope db added
     set cscopeverbose
 
     if has('quickfix')
-        set cscopequickfix=s-,c-,d-,i-,t-,e-
+        set cscopequickfix=s-,g-,d-,c-,t-,e-,f-,i-
     endif
 
-    nmap <Leader>s :cs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>g :cs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>c :cs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>t :cs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>e :cs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <Leader>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <Leader>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>s :lcs find s <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>g :lcs find g <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>c :lcs find c <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>t :lcs find t <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>e :lcs find e <C-R>=expand("<cword>")<CR><CR>
+    nmap <Leader>f :lcs find f <C-R>=expand("<cfile>")<CR><CR>
+    nmap <Leader>i :lcs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    nmap <Leader>d :lcs find d <C-R>=expand("<cword>")<CR><CR>
 
     " Reload cscope DB or create new one
-    :command -nargs=0 CSBuild :call CSBuild()
-    :command -nargs=0 CSLoad :call CSLoad()
-    :command -nargs=0 CSDelete :call CSDelete()
-
-    " Define the set of Cscope commands
-    command! -nargs=* Cscope call s:RunCscope(<f-args>)
-
-    nmap <C-\>s :Cscope s <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>g :Cscope g <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>d :Cscope d <C-R>=expand("<cword>")<CR> <C-R>=expand("%")<CR><CR>
-    nmap <C-\>c :Cscope c <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>t :Cscope t <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>e :Cscope e <C-R>=expand("<cword>")<CR><CR>
-    nmap <C-\>f :Cscope f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <C-\>i :Cscope i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    command! -nargs=0 CSBuild :call CSBuild()
+    command! -nargs=0 CSLoad :call CSLoad()
+    command! -nargs=0 CSDelete :call CSDelete()
 endif
 
-
-" https://github.com/vim-scripts/cscope-quickfix
-if !exists("Cscope_OpenQuickfixWindow")
-    let Cscope_OpenQuickfixWindow = 1
-endif
-
-if !exists("Cscope_JumpError")
-    let Cscope_JumpError = 1
-endif
-
-if !exists("Cscope_Keymap")
-    let Cscope_Keymap = 1
-endif
-
-if !exists("Cscope_PopupMenu")
-    let Cscope_PopupMenu = 0
-endif
-
-if !exists("Cscope_ToolMenu")
-    let Cscope_ToolMenu = 1
-endif
-
-" RunCscope()
-" Run the cscope command using the supplied option and pattern
-function! s:RunCscope(...)
-    if !exists("a:1") || !exists("a:2")
-        echohl WarningMsg | echohl None
-        return
+" https://github.com/brookhong/cscope.vim
+function! CscopeFind(action, word)
+  try
+    exe ':lcs f '.a:action.' '.a:word
+    if g:cscope_open_location == 1
+      lw
     endif
-    let cscope_opt = a:1
-    let pattern = a:2
-    let openwin = g:Cscope_OpenQuickfixWindow
-    let jumperr = g:Cscope_JumpError
-    if cscope_opt == '0' || cscope_opt == 's'
-        let cmd = "cs find s " . pattern
-    elseif cscope_opt == '1' || cscope_opt == 'g'
-        let cmd = "cs find g " . pattern
-    elseif cscope_opt == '2' || cscope_opt == 'd'
-        let cmd = "cs find d " . pattern
-    elseif cscope_opt == '3' || cscope_opt == 'c'
-        let cmd = "cs find c " . pattern
-    elseif cscope_opt == '4' || cscope_opt == 't'
-        let cmd = "cs find t " . pattern
-    elseif cscope_opt == '6' || cscope_opt == 'e'
-        let cmd = "cs find e " . pattern
-    elseif cscope_opt == '7' || cscope_opt == 'f'
-        let cmd = "cs find f " . pattern
-        let openwin = 0
-        let jumperr = 1
-    elseif cscope_opt == '8' || cscope_opt == 'i'
-        let cmd = "cs find i " . pattern
-    else
-        echohl WarningMsg | echohl None
-        return
-    endif
-    if exists("a:3")
-        let cmd = cmd . " " . a:3
-    endif
-
-    let temp_reg = @""
-    redir @"
-    silent execute cmd
-    redir END
-    let cmd_output = copy(@")
-    let @" = temp_reg
-
-    if cmd_output == ""
-        echohl WarningMsg | 
-                    \ echomsg "Error: Pattern " . pattern . " not found" | 
-                    \ echohl None
-        return
-    endif
-
-    let tmpfile = tempname()
-    let curfile = expand("%")
-
-    if &modified && (!&autowrite || curfile == "")
-        let jumperr = 0
-    endif
-
-    exe "redir! > " . tmpfile
-    if curfile != ""
-        silent echon curfile . " dummy " . line(".") . " " . getline(".") . "\n"
-        silent let ccn = 2
-    else
-        silent let ccn = 1
-    endif
-    silent echon cmd_output
-    redir END
-
-    let old_efm = &efm
-    set efm=%f\ %*[^\ ]\ %l\ %m
-
-    exe "silent! cfile " . tmpfile
-    let &efm = old_efm
-
-    " Open the cscope output window
-    if openwin == 1
-        botright copen
-    endif
-
-    " Jump to the first error
-    if jumperr == 1
-        exe "cc " . ccn
-    endif
-
-    call delete(tmpfile)
+  catch
+    echohl WarningMsg | echo 'Can not find '.a:word.' with querytype as '.a:action.'.' | echohl None
+  endtry
 endfunction
 
-
-" Filter the quickfix list
-function! FilterQFList(type, action, pattern)
-    " get current quickfix list
-    let s:curList = getqflist()
-    let s:newList = []
-    for item in s:curList
-        if a:type == 0     " filter on file names
-            let s:cmpPat = bufname(item.bufnr)
-        elseif a:type == 1 " filter by line content
-            let s:cmpPat = item.text . item.pattern
-        endif
-        if item.valid
-            if a:action < 0
-                " Keep only nonmatching lines
-                if s:cmpPat !~ a:pattern
-                    let s:newList += [item]
-                endif
-            else
-                " Keep only matching lines
-                if s:cmpPat =~ a:pattern
-                    let s:newList += [item]
-                endif
-            endif
-        endif
-    endfor
-    call setqflist(s:newList)
+function! CscopeFindInteractive(pat)
+    call inputsave()
+    let qt = input("\nChoose a querytype for '".a:pat."'(:help cscope-find)\n  c: functions calling this function\n  d: functions called by this function\n  e: this egrep pattern\n  f: this file\n  g: this definition\n  i: files #including this file\n  s: this C symbol\n  t: this text string\n\n or\n  <querytype><pattern> to query `pattern` instead of '".a:pat."' as `querytype`, Ex. `smain` to query a C symbol named 'main'.\n> ")
+    call inputrestore()
+    if len(qt) > 1
+        call CscopeFind(qt[0], qt[1:])
+    elseif len(qt) > 0
+        call CscopeFind(qt, a:pat)
+    endif
+    call feedkeys("\<CR>")
 endfunction
 
-nnoremap <Leader>fs :call FilterQFList(0, -1, inputdialog('Remove file names matching:', ''))<CR>
-nnoremap <Leader>of :call FilterQFList(0, 1, inputdialog('Keep only file names matching:', ''))<CR>
-nnoremap <Leader>as :call FilterQFList(1, -1, inputdialog('Remove all lines matching:', ''))<CR>
-nnoremap <Leader>os :call FilterQFList(1, 1, inputdialog('Keep only lines matching:', ''))<CR>
+function! ToggleLocationList()
+    let l:own = winnr()
+    lw
+    let l:cwn = winnr()
+    if(l:cwn == l:own)
+        if &buftype == 'quickfix'
+            lclose
+        elseif len(getloclist(winnr())) > 0
+            lclose
+        else
+            echohl WarningMsg | echo "No location list." | echohl None
+        endif
+    endif
+endfunction
+
+nnoremap <leader>w :call CscopeFindInteractive(expand('<cword>'))<CR>
+nnoremap <leader>l :call ToggleLocationList()<CR>
