@@ -3,8 +3,13 @@
 if [[ "$1" == 'do' ]];then
     echo "idea.case.sensitive.fs=true" >> idea.properties
 else 
-    echo 'This script must be executed in :
+    echo '
+    Usage: command do
+    
+    This script must be executed in :
     # For IntelliJ IDEA 14 this is: ~/Library/Preferences/IntelliJIdea14/
     # For Android studio this is: ~/Library/Preferences/AndroidStudio/
-    # For android studio preview release 1.2 this is: ~/Library/Preferences/AndroidStudioPreview1.2/'
+    # For android studio preview release 1.2 this is: ~/Library/Preferences/AndroidStudioPreview1.2/
+    
+    For more info: https://confluence.jetbrains.com/display/IDEADEV/Filesystem+Case-Sensitivity+Mismatch'
 fi
