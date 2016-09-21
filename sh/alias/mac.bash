@@ -35,6 +35,10 @@ if [[ "$(_check_os)" == "Darwin" ]]; then
     # Enable Spotlight
     alias spoton="sudo mdutil -a -i on"
 
+    alias spotlightoff="sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+
+    alias spotlighton="sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
+
     # Stuff I never really use but cannot delete either because of http://xkcd.com/530/
     alias stfu="osascript -e 'set volume output muted true'"
     alias pumpitup="osascript -e 'set volume 7'"
