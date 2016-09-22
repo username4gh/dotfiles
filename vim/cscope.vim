@@ -13,7 +13,11 @@ function CSBuild()
             :redraw!
             break
         endif
-        silent cd ..
+        if isdirectory("..") 
+            silent exe 'cd ..'
+        else
+            silent exe 'cd /'
+        endif
     endwhile
     silent exe 'cd ' . s:CURDIR
 endf
@@ -36,7 +40,14 @@ function CSLoad()
 
             break
         endif
-        silent cd ..
+        if isdirectory("..") 
+            " for unclear reason, no '..' under the 'workspace' which is the
+            " mount point for a sparseimage
+            " here we just jump to '/' to avoid stuck in infinite-loop
+            silent exe 'cd ..'
+        else
+            silent exe 'cd /'
+        endif
     endwhile
 
     silent exe 'cd ' . s:CURDIR
@@ -54,7 +65,11 @@ function CSDelete()
 
             break
         endif
-        silent cd ..
+        if isdirectory("..") 
+            silent exe 'cd ..'
+        else
+            silent exe 'cd /'
+        endif
     endwhile
     silent exe 'cd ' . s:CURDIR
 endf
@@ -95,14 +110,14 @@ endif
 
 " https://github.com/brookhong/cscope.vim
 function! CscopeFind(action, word)
-  try
-    exe ':lcs f '.a:action.' '.a:word
-    if g:cscope_open_location == 1
-      lw
-    endif
-  catch
-    echohl WarningMsg | echo 'Can not find '.a:word.' with querytype as '.a:action.'.' | echohl None
-  endtry
+    try
+        exe ':lcs f '.a:action.' '.a:word
+        if g:cscope_open_location == 1
+            lw
+        endif
+    catch
+        echohl WarningMsg | echo 'Can not find '.a:word.' with querytype as '.a:action.'.' | echohl None
+    endtry
 endfunction
 
 function! CscopeFindInteractive(pat)

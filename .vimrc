@@ -15,7 +15,7 @@ Plugin 'bling/vim-bufferline'
 Plugin 'derekwyatt/vim-scala'
 Plugin 'easymotion/vim-easymotion'
 Plugin 'henrik/vim-indexed-search'
-Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'hewes/unite-gtags'
 Plugin 'kelwin/vim-smali'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'majutsushi/tagbar'
@@ -23,8 +23,7 @@ Plugin 'mhinz/vim-signify'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'Raimondi/delimitMate'
-Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/nerdcommenter'
+Plugin 'Shougo/unite.vim'
 Plugin 'swaroopch/vim-markdown-preview'
 Plugin 'terryma/vim-expand-region'
 Plugin 'terryma/vim-multiple-cursors'
@@ -63,14 +62,11 @@ endif
 let delimitMate_expand_cr=1
 
 " toggle line number
-nnoremap <F2> :set nu!<CR>
+nnoremap <F2> :set number!<CR>
 
-nnoremap <F3> :TagbarToggle<CR>
+nnoremap <F3> :set relativenumber!<CR>
 
-" scrooloose/nerdtree
-let NERDTreeShowHidden=1
-let g:nerdtree_tabs_open_on_gui_startup=0
-map <F4> <plug>NERDTreeTabsToggle<CR>
+nnoremap <F4> :TagbarToggle<CR>
 
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0
@@ -99,4 +95,6 @@ au Syntax * RainbowParenthesesLoadChevrons
 
 nnoremap <F6> :w !sudo tee % > /dev/null
 
-nnoremap <leader>q :bp<cr>:bd #<cr>
+map <Leader>D :Unite gtags/def<CR>
+map <Leader>R :Unite gtags/ref<CR>
+map <Leader>G :Unite gtags/grep<CR>
