@@ -20,7 +20,6 @@ Plugin 'kelwin/vim-smali'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
-Plugin 'myusuf3/numbers.vim'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'Raimondi/delimitMate'
@@ -82,9 +81,7 @@ let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:python_host_prog = '/opt/local/bin/python'
 
-" https://github.com/myusuf3/numbers.vim
-nnoremap <F3> :NumbersToggle<CR>
-nnoremap <F4> :NumbersOnOff<CR>
+nnoremap <F3> :set nu!<CR>
 
 " https://github.com/terryma/vim-expand-region
 map K <Plug>(expand_region_expand)
