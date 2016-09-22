@@ -71,6 +71,7 @@ let g:multi_cursor_quit_key='<Esc>'
 " basic editor-stuff
 if filereadable(expand("$MY_I3/vim/base.vim"))
     so $MY_I3/vim/base.vim
+    so $MY_I3/vim/clipboard.vim
     so $MY_I3/vim/cscope.vim
     so $MY_I3/vim/output.vim
 endif
