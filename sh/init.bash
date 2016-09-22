@@ -92,11 +92,6 @@ _load_sh_files() {
     fi
 }
 
-# Reload the shell (i.e. invoke as a login shell)
-if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
-    alias src="exec $SHELL -l"
-fi
-
 if [[ ! -f "$MY_SH/cache.bash" ]];then
     _load_sh_files $MY_SH 'internal'
     _load_sh_files $MY_SH 'path'
