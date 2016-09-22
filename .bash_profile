@@ -135,11 +135,13 @@ unset file_type
 
 export MY_CURRENT_SHELL='bash'
 
+export MY_DOTFILES="$HOME/.dotfiles"
+
 export MY_WORKSPACE="$HOME/workspace"
 
 # integration with my own stuff with bash-it
-if [[ -f "$MY_WORKSPACE/repo/my-i3/sh/init.bash" ]];then
-    source "$MY_WORKSPACE/repo/my-i3/sh/init.bash";
+if [[ -f "$MY_DOTFILES/my-i3/sh/init.bash" ]];then
+    source "$MY_DOTFILES/my-i3/sh/init.bash";
 fi
 
-source "$MY_WORKSPACE/repo/my-i3/.profile"
+source "$MY_DOTFILES/my-i3/.profile"

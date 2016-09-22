@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 _flatbuffers_init() {
-	if [[ ! -d "$MY_REPO/flatbuffers" ]];then
-		git clone https://github.com/google/flatbuffers "$MY_REPO/flatbuffers"
+	if [[ ! -d "$MY_DOTFILES/flatbuffers" ]];then
+		git clone https://github.com/google/flatbuffers "$MY_DOTFILES/flatbuffers"
 	fi
 }
 
-export PATH="$MY_REPO/flatbuffers:$PATH"
+export PATH="$MY_DOTFILES/flatbuffers:$PATH"

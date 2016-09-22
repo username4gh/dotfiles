@@ -3,10 +3,10 @@
 _commitizen_fix_package_json() {
     if [[ ! -f "./package.json" ]];then
         if [[ "$#" == 0 ]];then
-            if [[ ! -d "$MY_REPO/cz-cli" ]];then
-                git clone https://github.com/commitizen/cz-cli "$MY_REPO/cz-cli"
+            if [[ ! -d "$MY_DOTFILES/cz-cli" ]];then
+                git clone https://github.com/commitizen/cz-cli "$MY_DOTFILES/cz-cli"
             fi
-            cp "$MY_REPO/cz-cli/package.json" ./
+            cp "$MY_DOTFILES/cz-cli/package.json" ./
         fi
     fi
 }

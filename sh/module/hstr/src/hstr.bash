@@ -8,13 +8,13 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-if [[ ! -d "$MY_REPO/hstr" ]];then
-    git clone https://github.com/dvorka/hstr "$MY_REPO/hstr"
+if [[ ! -d "$MY_DOTFILES/hstr" ]];then
+    git clone https://github.com/dvorka/hstr "$MY_DOTFILES/hstr"
 fi
 
 _hstr_init() {
-    (cd "$MY_REPO/hstr" && cd ./dist && ./1-dist.sh && cd .. && ./configure && make)
+    (cd "$MY_DOTFILES/hstr" && cd ./dist && ./1-dist.sh && cd .. && ./configure && make)
 }
 
 export HH_CONFIG=hicolor
-export PATH="$MY_REPO/hstr/src:$PATH"
+export PATH="$MY_DOTFILES/hstr/src:$PATH"

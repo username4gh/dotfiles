@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
-    export MY_HISTORY_DIR="$MY_REPO/my-history"
+    export MY_HISTORY_DIR="$MY_DOTFILES/my-history"
 
     _init_history() {
         if [[ "$(_check_dir "$MY_HISTORY_DIR")" == 0 ]];then

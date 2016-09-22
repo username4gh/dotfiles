@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_REPO/neofetch" ]];then
-    git clone https://github.com/dylanaraps/neofetch "$MY_REPO/neofetch"
+if [[ ! -d "$MY_DOTFILES/neofetch" ]];then
+    git clone https://github.com/dylanaraps/neofetch "$MY_DOTFILES/neofetch"
 fi
 
-export PATH="$MY_REPO/neofetch:$PATH"
+export PATH="$MY_DOTFILES/neofetch:$PATH"

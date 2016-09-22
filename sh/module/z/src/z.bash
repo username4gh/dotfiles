@@ -1,7 +1,7 @@
-if [[ ! -d "$MY_REPO/z" ]];then
-    git clone https://github.com/rupa/z "$MY_REPO/z"
+if [[ ! -d "$MY_DOTFILES/z" ]];then
+    git clone https://github.com/rupa/z "$MY_DOTFILES/z"
 fi
 
-source "$MY_REPO/z/z.sh"
+source "$MY_DOTFILES/z/z.sh"
 
-export MANPATH="$MY_REPO/z:${MANPATH}"
+export MANPATH="$MY_DOTFILES/z:${MANPATH}"

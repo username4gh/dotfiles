@@ -1,10 +1,10 @@
 #! /bin/sh
 
-if [[ ! -d "$MY_REPO/myrepos" ]];then
-    git clone https://github.com/joeyh/myrepos "$MY_REPO/myrepos"
+if [[ ! -d "$MY_DOTFILES/myrepos" ]];then
+    git clone https://github.com/joeyh/myrepos "$MY_DOTFILES/myrepos"
 fi
 
-export PATH="$MY_REPO/myrepos:$PATH"
+export PATH="$MY_DOTFILES/myrepos:$PATH"
 
 _repos_get_url() {
     (cd "$1";
@@ -17,8 +17,8 @@ repos_register_all() {
     local mrconfig_directory
     local repos_directory
     if [[ "$#" -eq 0 ]];then
-        mrconfig_directory=$MY_REPO
-        repos_directory=$MY_REPO
+        mrconfig_directory=$MY_DOTFILES
+        repos_directory=$MY_DOTFILES
     else
         mrconfig_directory=$1
         repos_directory=$1
