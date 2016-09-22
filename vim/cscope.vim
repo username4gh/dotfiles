@@ -134,3 +134,5 @@ endfunction
 
 nnoremap <leader>w :call CscopeFindInteractive(expand('<cword>'))<CR>
 nnoremap <leader>l :call ToggleLocationList()<CR>
+
+map <F8> :CSLoad<CR>

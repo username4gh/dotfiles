@@ -47,17 +47,30 @@ colorscheme molokai
 " bling/vim-airline
 let g:airline_theme = 'badwolf'
 
+" basic editor-stuff
+if filereadable(expand("$MY_I3/vim/base.vim"))
+    so $MY_I3/vim/base.vim
+    so $MY_I3/vim/clipboard.vim
+    so $MY_I3/vim/cscope.vim
+    so $MY_I3/vim/output.vim
+    so $MY_I3/vim/search.vim
+endif
+
 " default Leader key is \"
-nnoremap <Leader>W :w !sudo tee % > /dev/null
 
 " Raimondi/delimitMate
 " indent after press enter key"
 let delimitMate_expand_cr=1
 
+" toggle line number
+nnoremap <F2> :set nu!<CR>
+
+nnoremap <F3> :TagbarToggle<CR>
+
 " scrooloose/nerdtree
 let NERDTreeShowHidden=1
 let g:nerdtree_tabs_open_on_gui_startup=0
-map <Leader>n <plug>NERDTreeTabsToggle<CR>
+map <F4> <plug>NERDTreeTabsToggle<CR>
 
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0
@@ -67,21 +80,11 @@ let g:multi_cursor_next_key='<C-j>'
 let g:multi_cursor_skip_key='<C-k>'
 let g:multi_cursor_quit_key='<Esc>'
 
-" basic editor-stuff
-if filereadable(expand("$MY_I3/vim/base.vim"))
-    so $MY_I3/vim/base.vim
-    so $MY_I3/vim/clipboard.vim
-    so $MY_I3/vim/cscope.vim
-    so $MY_I3/vim/output.vim
-endif
-
 let g:loaded_python_provider = 1
 let g:loaded_python3_provider = 1
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:python_host_prog = '/opt/local/bin/python'
-
-nnoremap <F3> :set nu!<CR>
 
 " https://github.com/terryma/vim-expand-region
 map K <Plug>(expand_region_expand)
@@ -94,4 +97,6 @@ au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 au Syntax * RainbowParenthesesLoadChevrons
 
-nnoremap <Leader>T :TagbarToggle<CR>
+nnoremap <F6> :w !sudo tee % > /dev/null
+
+nnoremap <leader>q :bp<cr>:bd #<cr>

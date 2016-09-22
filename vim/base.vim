@@ -156,3 +156,5 @@ set encoding=utf-8
 set fileencodings=utf-8,gbk,cp936,latin-1
 set fileformat=unix
 set fileformats=unix,dos,mac
+
+map <F9> :buffers<CR>
