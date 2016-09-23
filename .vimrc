@@ -98,3 +98,5 @@ nnoremap <F6> :w !sudo tee % > /dev/null
 map <Leader>D :Unite gtags/def<CR>
 map <Leader>R :Unite gtags/ref<CR>
 map <Leader>G :Unite gtags/grep<CR>
+map <Leader>q <Plug>(unite_exit)<CR>
+map <Leader>Q <Plug>(unite_all_exit)<CR>
