@@ -1,10 +1,10 @@
 #! /usr/bin/env bash
 
 if [[ "$#" == 3 ]];then
-    local FILEPATH=${2%/*}
-    local FILE_NO_PATH=${2##*/};
-    local NOEXT=${FILE_NO_PATH%\.*};
-    local EXT=${FILE_NO_PATH##*.}
+    FILEPATH=${2%/*}
+    FILE_NO_PATH=${2##*/};
+    NOEXT=${FILE_NO_PATH%\.*};
+    EXT=${FILE_NO_PATH##*.}
 
     case $1 in
         "-r")
