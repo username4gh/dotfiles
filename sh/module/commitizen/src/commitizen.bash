@@ -15,7 +15,7 @@ _commitizen_deal_with_gitignore() {
     if [[ -a "./.gitignore" ]];then
         mv ./.gitignore ./.gitignore.previous
         cat $MY_SH_MODULE/commitizen/src/commitizen_gitignore >> ./.gitignore.previous
-        $MY_SH_MODULE/git/src/gitignore_merger.py -i ./.gitignore.previous -o ./.gitignore
+        $MY_SH_MODULE/git/script/gitignore_merger.py -i ./.gitignore.previous -o ./.gitignore
         rm ./.gitignore.previous
     else
         cp "$MY_SH_MODULE/commitizen/src/commitizen_gitignore" ./.gitignore
