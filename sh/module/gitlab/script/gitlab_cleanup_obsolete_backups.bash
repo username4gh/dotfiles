@@ -10,4 +10,4 @@ else
     echo "only one backup left!"
 fi
 
-uset GITLAB_BACKUPS_DIR
+unset GITLAB_BACKUPS_DIR
