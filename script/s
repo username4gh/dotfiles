@@ -253,7 +253,7 @@ def _run(pattern=None,
         if input_file is None:
             fileobj = sys.stdin
         else:
-            fileobj = file(input_file)
+            fileobj = open(input_file)
 
         matches = list(matcher.match_file(fileobj))
         if matches:
