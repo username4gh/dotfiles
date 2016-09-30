@@ -12,11 +12,12 @@ _conf_clear() {
     fi
 }
 
+# here I make the _conf_read case-sensitive & only read the key which matchs the whole word
 _conf_read() {
     # $1 --> variant name
     if [[ "$#" == 1 ]];then
         if [[ -f "$MY_SH/.conf" ]];then
-            echo $(s -f "$MY_SH/.conf" -i "$1" | s -o '(?<=]).*?(?=$)')
+            echo $(s -f "$MY_SH/.conf" -w "$1" | s -o '(?<=]).*?(?=$)')
         fi
     else
         echo "Usage: _conf_read key"
