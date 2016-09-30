@@ -57,7 +57,7 @@
 + performance
  1. lazy-loading like technique to reduce 'sourcing' overhead
 
-  		- prefer script over function
+  		- prefer script over function, scripts does not directly effect the sourcing process -- also this will be good for debugging (every time you change a function you have to source again to see if it works)
 
  2. caching source-chain to boost later bootstrap process (reducing usage of function like '_load_sh_files')
  3. <s>global environment variable to avoid repeat-initialization while opening multiple-tab inside iterm2/terminal</s>(open a new tab inside iterm2/terminal will create a new bash process, i might have mis-conjectured something)
