@@ -1,10 +1,10 @@
 #! /usr/bin/env bash
 
+# https://www.chromium.org/user-experience/user-data-directory
 _backup_chrome_browsing_history() {
     if [[ "$(_check_os)" == Darwin ]];then
         local HISTORY_FILE="$(find /Users/$USER/Library/Application\ Support -mindepth 1 -maxdepth 1 -type d -name "*Google*")"
-        echo $HISTORY_FILE
-        (cd "$HISTORY_FILE"; echo "$pwd"; cp -r ./Chrome "$1")
+        (cd "$HISTORY_FILE"; echo "$pwd"; cp -vr $(find ./Chrome/ -iname History) "$1")
     fi
 }
 
