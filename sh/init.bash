@@ -4,28 +4,18 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
-# level-1 directory setup
 export MY_BIN="$HOME/bin"
-export MY_REPO="$MY_WORKSPACE/repo"
-
-# level-2 directory setup
 export MY_I3="$MY_DOTFILES/my-i3"
-
-# level-3 directory setup
 export MY_SCRIPT="$MY_I3/script"
 export MY_SH="$MY_I3/sh"
-
-# level-4 directory setup
 export MY_SH_MODULE="$MY_SH/module"
 
 # reset to avoid issue causing by repeat sourcing
 unset PATH
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-
 export PATH="$MY_SCRIPT:$PATH"
 
 unset PROMPT_COMMAND
-
 
 _sh_log() {
     if [[ "$#" == 1 ]];then
