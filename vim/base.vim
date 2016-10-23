@@ -157,4 +157,11 @@ set fileencodings=utf-8,gbk,cp936,latin-1
 set fileformat=unix
 set fileformats=unix,dos,mac
 
+" toggle line number
+nnoremap <F2> :set number!<CR>
+
+nnoremap <F3> :set relativenumber!<CR>
+
+nnoremap <F6> :w !sudo tee % > /dev/null
+
 map <F9> :buffers<CR>

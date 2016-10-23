@@ -61,11 +61,7 @@ endif
 " indent after press enter key"
 let delimitMate_expand_cr=1
 
-" toggle line number
-nnoremap <F2> :set number!<CR>
-
-nnoremap <F3> :set relativenumber!<CR>
-
+" tagbar
 nnoremap <F4> :TagbarToggle<CR>
 
 " terryma/vim-multiple-cursors
@@ -93,8 +89,7 @@ au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 au Syntax * RainbowParenthesesLoadChevrons
 
-nnoremap <F6> :w !sudo tee % > /dev/null
-
+" unite-gtags
 map <Leader>D :Unite gtags/def<CR>
 map <Leader>R :Unite gtags/ref<CR>
 map <Leader>G :Unite gtags/grep<CR>
