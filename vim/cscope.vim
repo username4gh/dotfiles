@@ -24,8 +24,10 @@ endf
 
 function CSLoad()
     " add the database pointed to by environment variable
-    silent exe 'cs add ' $NDK_INCLUDE_CSCOPE_DB
-    silent exe 'set tags+=' . $NDK_INCLUDE_CTAGS_DB
+    if filereadable(expand("$NDK_INCLUDE_CSCOPE_DB"))
+        silent exe 'cs add ' $NDK_INCLUDE_CSCOPE_DB
+        silent exe 'set tags+=' . $NDK_INCLUDE_CTAGS_DB
+    endif
 
     let s:CURDIR = getcwd()
     while (getcwd() != '/')
