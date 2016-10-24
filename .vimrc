@@ -17,7 +17,6 @@ Plugin 'easymotion/vim-easymotion'
 Plugin 'henrik/vim-indexed-search'
 Plugin 'hewes/unite-gtags'
 Plugin 'kelwin/vim-smali'
-Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
 Plugin 'nathanaelkane/vim-indent-guides'
@@ -81,13 +80,6 @@ let g:python_host_prog = '/opt/local/bin/python'
 " https://github.com/terryma/vim-expand-region
 map K <Plug>(expand_region_expand)
 map J <Plug>(expand_region_shrink)
-
-" https://github.com/kien/rainbow_parentheses.vim
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
-au Syntax * RainbowParenthesesLoadChevrons
 
 " unite-gtags
 map <Leader>D :Unite gtags/def<CR>
