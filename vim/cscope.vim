@@ -91,14 +91,14 @@ if has("cscope")
     " show msg when any other cscope db added
     set cscopeverbose
 
-    nmap <Leader>s :lcs find s <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>g :lcs find g <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>c :lcs find c <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>t :lcs find t <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>e :lcs find e <C-R>=expand("<cword>")<CR><CR>
-    nmap <Leader>f :lcs find f <C-R>=expand("<cfile>")<CR><CR>
-    nmap <Leader>i :lcs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
-    nmap <Leader>d :lcs find d <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>s :lcs find s <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>g :lcs find g <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>c :lcs find c <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>t :lcs find t <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>e :lcs find e <C-R>=expand("<cword>")<CR><CR>
+    "nmap <Leader>f :lcs find f <C-R>=expand("<cfile>")<CR><CR>
+    "nmap <Leader>i :lcs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+    "nmap <Leader>d :lcs find d <C-R>=expand("<cword>")<CR><CR>
 
     " Reload cscope DB or create new one
     command! -nargs=0 CSBuild :call CSBuild()

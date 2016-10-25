@@ -33,6 +33,7 @@ Plugin 'vim-scripts/JSON.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-ruby/vim-ruby'
+Plugin 'vim-scripts/vim-unite-cscope'
 Plugin 'vim-scripts/YankRing.vim'
 
 call vundle#end()
@@ -80,6 +81,17 @@ let g:python_host_prog = '/opt/local/bin/python'
 " https://github.com/terryma/vim-expand-region
 map K <Plug>(expand_region_expand)
 map J <Plug>(expand_region_shrink)
+
+" unite-cscope
+map <Leader>a :Unite cscope/assignments_to_symbol<CR>
+map <Leader>c :Unite cscope/functions_calling<CR>
+map <Leader>d :Unite cscope/functions_called_by<CR>
+map <Leader>e :Unite cscope/egrep_pattern<CR>
+map <Leader>f :Unite cscope/find_file<CR>
+map <Leader>g :Unite cscope/global_definition<CR>
+map <Leader>i :Unite cscope/including_this_file<CR>
+map <Leader>s :Unite cscope/find_this_symbol<CR>
+map <Leader>t :Unite cscope/text_string<CR>
 
 " unite-gtags
 map <Leader>D :Unite gtags/def<CR>
