@@ -23,6 +23,7 @@ Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'Raimondi/delimitMate'
 Plugin 'Shougo/unite.vim'
+Plugin 'Shougo/vimproc.vim'
 Plugin 'swaroopch/vim-markdown-preview'
 Plugin 'terryma/vim-expand-region'
 Plugin 'terryma/vim-multiple-cursors'
@@ -50,7 +51,6 @@ let g:airline_theme = 'badwolf'
 if filereadable(expand("$MY_I3/vim/base.vim"))
     so $MY_I3/vim/base.vim
     so $MY_I3/vim/clipboard.vim
-    so $MY_I3/vim/cscope.vim
     so $MY_I3/vim/output.vim
     so $MY_I3/vim/search.vim
 endif
