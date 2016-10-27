@@ -55,8 +55,6 @@ if filereadable(expand("$MY_I3/vim/base.vim"))
     so $MY_I3/vim/search.vim
 endif
 
-" default Leader key is \"
-
 " Raimondi/delimitMate
 " indent after press enter key"
 let delimitMate_expand_cr=1
@@ -71,12 +69,6 @@ let g:multi_cursor_prev_key='<C-h>'
 let g:multi_cursor_next_key='<C-j>'
 let g:multi_cursor_skip_key='<C-k>'
 let g:multi_cursor_quit_key='<Esc>'
-
-let g:loaded_python_provider = 1
-let g:loaded_python3_provider = 1
-let g:python_host_skip_check = 1
-let g:python3_host_skip_check = 1
-let g:python_host_prog = '/opt/local/bin/python'
 
 " https://github.com/terryma/vim-expand-region
 map K <Plug>(expand_region_expand)
