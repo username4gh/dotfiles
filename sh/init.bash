@@ -4,9 +4,6 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
-export MY_BIN="$HOME/bin"
-export MY_I3="$MY_DOTFILES/my-i3"
-export MY_SCRIPT="$MY_I3/script"
 export MY_SH="$MY_I3/sh"
 export MY_SH_MODULE="$MY_SH/module"
 
