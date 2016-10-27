@@ -55,10 +55,6 @@ if filereadable(expand("$MY_I3/vim/base.vim"))
     so $MY_I3/vim/search.vim
 endif
 
-" Raimondi/delimitMate
-" indent after press enter key"
-let delimitMate_expand_cr=1
-
 " tagbar
 nnoremap <F4> :TagbarToggle<CR>
 
