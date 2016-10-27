@@ -141,8 +141,8 @@ export MY_I3="$MY_DOTFILES/my-i3"
 export MY_SCRIPT="$MY_I3/script"
 
 # integration with my own stuff with bash-it
-if [[ -f "$MY_DOTFILES/my-i3/sh/init.bash" ]];then
-    source "$MY_DOTFILES/my-i3/sh/init.bash";
+if [[ -f "$MY_I3/sh/init.bash" ]];then
+    source "$MY_I3/sh/init.bash";
 fi
 
-source "$MY_DOTFILES/my-i3/.profile"
+source "$MY_I3/.profile"
