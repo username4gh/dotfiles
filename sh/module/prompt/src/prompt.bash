@@ -286,10 +286,11 @@ if [[ $(whoami) != root ]];then
         fi
 
         # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
+        # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
         if [[ "$color_prompt" = yes ]]; then
-            PS1="\u \[\e[01;32m\]\w\[\e[00m\]\$(scm_prompt_info '(%s)') \$ "
+            PS1="[\j] \u \[\e[01;32m\]\${PWD}\[\e[00m\]\$(scm_prompt_info '(%s)') \n\$ "
         else
-            PS1="\u \w\$(scm_prompt_info '(%s)') \$ "
+            PS1="[\j] \u \${PWD} \$(scm_prompt_info '(%s)') \n\$ "
         fi
         unset color_prompt force_color_prompt
 
@@ -319,10 +320,11 @@ else
     fi
 
     # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
+    # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
     if [[ "$color_prompt" = yes ]]; then
-        PS1="\u \[\e[01;32m\]\w\[\e[00m\] \$ "
+        PS1="[\j] \u \[\e[01;32m\]\${PWD}\[\e[00m\] \n\$ "
     else
-        PS1="\u \w \$ "
+        PS1="[\j] \u \${PWD} \n\$ "
     fi
     unset color_prompt force_color_prompt
 
