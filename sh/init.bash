@@ -4,7 +4,6 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
-export MY_SH="$MY_I3/sh"
 export MY_SH_MODULE="$MY_SH/module"
 
 # reset to avoid issue causing by repeat sourcing
@@ -28,17 +27,13 @@ _sh_log() {
 _cache_gen() {
     # generate cache.bash, for cache.bash, those 'init.bash' just useless
     if [[ "$(echo $1 | grep init)" == '' ]];then
+        # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
+        # cut overhead as much as possible, so no checking, if anything wrong, just `rf` and then `rl`
         echo 'source '"$1" >> "$MY_SH/cache.bash"
     else
         if [[ "$(cat "$1" | grep 'export PATH')" != '' ]];then
             echo "$(cat "$1" | grep 'export PATH')" >> "$MY_SH/cache.bash"
         fi
-    fi
-}
-
-_cache_clear() {
-    if [[ -f "$MY_SH/cache.bash" ]];then
-        rm "$MY_SH/cache.bash"
     fi
 }
 
@@ -62,6 +57,32 @@ _load_sh_files() {
     else
         echo "Usage: _load_sh_files baseDirectoryPath subDirectoryName"
     fi
+}
+
+rf() {
+    if [[ "$#" == 0 ]];then
+        # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
+        if [[ -f "$MY_SH/cache.bash" ]];then
+            rm "$MY_SH/cache.bash"
+        fi
+
+        if [[ -f "$MY_SH_MODULE/init.bash" ]];then
+            rm "$MY_SH_MODULE/init.bash"
+        fi
+
+        echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
+
+        while IFS= read -r item;
+        do
+            echo '_load_sh_files $MY_SH_MODULE '${item##*/} >> "$MY_SH_MODULE/init.bash";
+        done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
+    fi
+}
+
+rl() {
+    # http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
+    # https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
+    exec $SHELL
 }
 
 if [[ ! -f "$MY_SH/cache.bash" ]];then

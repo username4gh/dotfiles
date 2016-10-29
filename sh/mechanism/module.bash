@@ -7,28 +7,6 @@ _module_generate_init_bash() {
     fi
 }
 
-my_modules_init() {
-    if [[ "$#" == 0 ]];then
-        # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
-        if [[ -f "$MY_SH/cache.bash" ]];then
-            rm "$MY_SH/cache.bash"
-        fi
-
-        if [[ -f "$MY_SH_MODULE/init.bash" ]];then
-            rm "$MY_SH_MODULE/init.bash"
-        fi
-
-        echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
-
-        while IFS= read -r item;
-        do
-            echo '_load_sh_files $MY_SH_MODULE '$(_dir_basename $item) >> "$MY_SH_MODULE/init.bash";
-        done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
-    else
-        echo "Usage: my_modules_init"
-    fi
-}
-
 my_module_init() {
     if [[ "$#" == 2 ]];then
         local current_dir=$(pwd)

@@ -19,7 +19,3 @@ alias ipinfo="curl ifconfig.me && curl ifconfig.me/host"
 alias busy="cat /dev/urandom | hexdump -C | grep \"ca fe\""
 
 alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'"
-
-# http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
-# https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
-alias src="exec $SHELL"
