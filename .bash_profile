@@ -136,10 +136,11 @@ unset file_type
 export MY_CURRENT_SHELL='bash'
 
 export MY_DOTFILES="$HOME/.dotfiles"
-export MY_BIN="$HOME/bin"
+export MY_BIN="$HOME/bin" # executable/does not concerns privacy
+export MY_PRIVATE_BIN="$MY_DOTFILES/bin" # executable/concerns privacy/will be deleted in cleanup-process.
 export MY_I3="$MY_DOTFILES/my-i3"
 
-export MY_SCRIPT="$MY_I3/script"
+export MY_BUNDLED_BIN="$MY_I3/bin" # executable/does not concerns privacy/built-in of this whole setup
 export MY_SH="$MY_I3/sh"
 
 # integration with my own stuff with bash-it

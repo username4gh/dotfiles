@@ -4,12 +4,17 @@ if [[ ! -d "$HOME/bin" ]];then
     mkdir -p "$HOME/bin"
 fi
 
+if [[ ! -d "$MY_DOTFILES/bin" ]];then
+    mkdir -p "$MY_DOTFILES/bin"
+fi
+
 export MY_SH_MODULE="$MY_SH/module"
 
 # reset to avoid issue causing by repeat sourcing
 unset PATH
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-export PATH="$MY_SCRIPT:$PATH"
+export PATH="$MY_BUNDLED_BIN:$PATH"
+export PATH="$MY_PRIVATE_BIN:$PATH"
 
 unset PROMPT_COMMAND
 
