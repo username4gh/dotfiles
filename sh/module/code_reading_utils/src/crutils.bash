@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 crutils_search() {
-    if [[ "$1" == '--help' ]];then
+    if [[ "$1" == '--help' ]] || [[ "$#" -lt 2 ]];then
         echo 'Usage: _cscope_search Num Pattern
         Where num can be one of:
         0 ==> C symbol
