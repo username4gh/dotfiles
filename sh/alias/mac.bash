@@ -52,5 +52,8 @@ if [[ "$(_check_os)" == "Darwin" ]]; then
 
     alias reloadLaunchepad="defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock"
 
+    # https://github.com/nodejs/node-gyp/issues/569
+    alias fix_xcodebuild="sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
+
     alias macd="open -a MacDown"
 fi
