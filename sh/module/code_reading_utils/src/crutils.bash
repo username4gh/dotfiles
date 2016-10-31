@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-_crutils_cs_search() {
+crutils_search() {
     if [[ "$1" == '--help' ]];then
         echo 'Usage: _cscope_search Num Pattern
         Where num can be one of:
@@ -12,17 +12,7 @@ _crutils_cs_search() {
         5 ==> egrep pattern
         6 ==> files #including this file'
     else
-        cscope -dL -f ./.git/cscope.out -$1$2
+        cscope -dL -f ./cscope.out -$1$2
     fi
 }
 
-_crutils_cs_generate() {
-    if [[ -d './.git' ]];then
-        echo "cscope -- generate cscope.files"
-        find $PWD -name '*.aidl' -o -name '*.cc' -o -name '*.h' -o -name '*.c' -o -name '*.cpp' -o -name '*.java' -o -name '*.py' > './.git/cscope.files'
-        echo "cscope -- generate cscope.out"
-        cd $PWD/.git && cscope -bkq -i './cscope.files' && cd ..
-        echo "ctags -- generate -- tags"
-        ctags -R --links=no --tag-relative=yes --exclude=.svn --exclude=.git -f './.git/tags'
-    fi
-}
