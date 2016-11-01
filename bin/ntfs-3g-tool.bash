@@ -24,6 +24,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         echo "Usage: command device_qualifier mount_point"
         echo "For device_qualifier, use `diskutil list` to check candidates"
         echo "Example: command QPTP /mnt"
+        echo "And for unmount, use `diskutil unmount` to unmount partition first, then use `diskutil unmountDisk` to unmount disk"
     fi
 else 
     echo "Only works for Darwin"
