@@ -5,7 +5,7 @@ if [[ $(whoami) != root ]];then
 
         SCM_PROMPT_DIRTY=' ✗'
         SCM_PROMPT_CLEAN=' ✓'
-        SCM_PROMPT_PREFIX=' |'
+        SCM_PROMPT_PREFIX='|'
         SCM_PROMPT_SUFFIX='|'
         SCM_BRANCH_PREFIX=''
         SCM_TAG_PREFIX='tag:'
@@ -264,69 +264,17 @@ if [[ $(whoami) != root ]];then
             [[ "$SCM" == "$SCM_SVN" ]] && _svn_prompt_info && return
         }
 
-        # set a fancy prompt (non-color, unless we know we "want" color)
-        case "$TERM" in
-            xterm-color) color_prompt=yes;;
-        esac
-
-        # uncomment for a colored prompt, if the terminal has the capability; turned
-        # off by default to not distract the user: the focus in a terminal window
-        # should be on the output of commands, not on the prompt
-        force_color_prompt=yes
-
-        if [[ -n "$force_color_prompt" ]]; then
-            if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-                # We have color support; assume it's compliant with Ecma-48
-                # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-                # a case would tend to support setf rather than setaf.)
-                color_prompt='yes'
-            else
-                color_prompt='false'
-            fi
-        fi
-
         # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
         # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
-        if [[ "$color_prompt" = yes ]]; then
-            PS1="[\j] \u \[\e[01;32m\]\[\${PWD}\]\[\e[00m\]\[\$(scm_prompt_info '(%s)')\] \\$ "
-        else
-            PS1="[\j] \u \[\${PWD}\] \[\$(scm_prompt_info '(%s)')\] \\$ "
-        fi
-        unset color_prompt force_color_prompt
+        PS1="[\\j] \\u \${PWD} \$(scm_prompt_info '(%s)') \\$ "
 
         # make `pwd` as iterm2 tab title
         PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
     fi
 else
-    # set a fancy prompt (non-color, unless we know we "want" color)
-    case "$TERM" in
-        xterm-color) color_prompt=yes;;
-    esac
-
-    # uncomment for a colored prompt, if the terminal has the capability; turned
-    # off by default to not distract the user: the focus in a terminal window
-    # should be on the output of commands, not on the prompt
-    force_color_prompt=yes
-
-    if [[ -n "$force_color_prompt" ]]; then
-        if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-            # We have color support; assume it's compliant with Ecma-48
-            # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-            # a case would tend to support setf rather than setaf.)
-            color_prompt='yes'
-        else
-            color_prompt='false'
-        fi
-    fi
-
     # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
     # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
-    if [[ "$color_prompt" = yes ]]; then
-        PS1="[\j] \u \[\e[01;32m\]\[\${PWD}\]\[\e[00m\] \\$ "
-    else
-        PS1="[\j] \u \[\${PWD}\] \\$ "
-    fi
-    unset color_prompt force_color_prompt
+    PS1="[\\j] \\u \${PWD} \\$ "
 
     # make `pwd` as iterm2 tab title
     PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
