@@ -1,0 +1,4 @@
+# deal with the conflict causing by iTerm
+
+"\C-f": forward-word
+"\C-b": backward-word
