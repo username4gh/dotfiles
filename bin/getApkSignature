@@ -11,20 +11,26 @@ if [[ "$#" -lt 1 ]];then
     exit
 fi
 
-mypath=$(pwd)
-filepath=""
 if [ -d .temp_for_certificate ]
 then
     echo ".temp_for_certificate is exist,remove it first!"
     exit
 fi
 
+inputfile=$1
+echo "dealing $1 ..."
+
+mypath=$(pwd)
+filepath=""
+
 mkdir .temp_for_certificate
 cd .temp_for_certificate
 count=0
 while [ -n "$1" ]  
-do  
-    if [ $(expr substr "$1" 1 1) = "/" ]
+do 
+    # because of the 'BSD expr' is different with 'GNU expr', so i had to ditch this 
+    #if [ $(expr substr "$1" 1 1) = "/" ]
+    if [ ${inputfile:0:1} = '/' ]
     then
         filepath="$1"
     else
