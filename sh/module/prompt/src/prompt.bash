@@ -6,7 +6,7 @@ if [[ $(whoami) != root ]];then
         SCM_PROMPT_DIRTY=' ✗'
         SCM_PROMPT_CLEAN=' ✓'
         SCM_PROMPT_PREFIX='|'
-        SCM_PROMPT_SUFFIX='|'
+        SCM_PROMPT_SUFFIX='| '
         SCM_BRANCH_PREFIX=''
         SCM_TAG_PREFIX='tag:'
         SCM_DETACHED_PREFIX='detached:'
@@ -241,17 +241,17 @@ if [[ $(whoami) != root ]];then
 
         _git_prompt_info() {
             _git_prompt_vars
-            echo -e "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
+            echo -ne "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
         }
 
         _svn_prompt_info() {
             _svn_prompt_vars
-            echo -e "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
+            echo -ne "$SCM_PREFIX$SCM_BRANCH$SCM_STATE$SCM_SUFFIX"
         }
 
         _hg_prompt_info() {
             _hg_prompt_vars
-            echo -e "$SCM_PREFIX$SCM_BRANCH:${SCM_CHANGE#*:}$SCM_STATE$SCM_SUFFIX"
+            echo -ne "$SCM_PREFIX$SCM_BRANCH:${SCM_CHANGE#*:}$SCM_STATE$SCM_SUFFIX"
         }
 
         scm_prompt_info() {
@@ -266,7 +266,7 @@ if [[ $(whoami) != root ]];then
 
         # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
         # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
-        PS1="[\\j] \\u \${PWD} \$(scm_prompt_info '(%s)') \\$ "
+        PS1="[\\j] \\u \${PWD} \$(scm_prompt_info '(%s)')\\$ "
 
         # make `pwd` as iterm2 tab title
         PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
