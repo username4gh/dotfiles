@@ -11,10 +11,11 @@ if [[ "$(uname -s)" == 'Linux' ]];then
     do
         version=$(echo "$item" | grep -Po '(?<=linux-headers-).*?(?=-generic)')
         echo "delete $version"
-        sudo dpkg --purge linux-headers-$version-generic && \
+        sudo dpkg --purge linux-headers-"$version"-generic && \
             sudo dpkg --purge linux-headers-$version && \
-            sudo dpkg --purge linux-image-extra-$version-generic && \
-            sudo dpkg --purge linux-image-$version
+            sudo dpkg --purge linux-image-extra-"$version"-generic && \
+            sudo dpkg --purge linux-image-$version \
+            sudo dpkg --purge linux-image-"$version"-generic
 
     done< <(dpkg -l | grep 'linux' | awk '{print $2}' | grep ".*headers-[0-9].*-generic" | sort | head -n "$((line-1))")
 else
