@@ -4,9 +4,15 @@ if [[ ! -d "$MY_DOTFILES/enhancd" ]];then
     git clone https://github.com/b4b4r07/enhancd "$MY_DOTFILES/enhancd"
 fi
 
-export ENHANCD_COMMAND=ecd
-export ENHANCD_FILTER="$HOME/.fzf/fzf"
+if [[ ! -d "$MY_DOTFILES/fzy" ]];then
+    git clone https://github.com/jhawthorn/fzy "$MY_DOTFILES/fzy"
+fi
 
-if [[ -f "$MY_DOTFILES/enhancd/enhancd.sh" ]];then
-    source "$MY_DOTFILES/enhancd/enhancd.sh"
+export PATH="$MY_DOTFILES/fzy:$PATH"
+
+export ENHANCD_FILTER=fzy
+export ENHANCD_COMMAND='cd'
+
+if [[ -f "$MY_DOTFILES/enhancd/init.sh" ]];then
+    source "$MY_DOTFILES/enhancd/init.sh"
 fi
