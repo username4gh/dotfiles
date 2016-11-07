@@ -3,7 +3,7 @@
 export PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin'):$PATH"
 _completion_setup rg
 
-_completion_register_write rg -a                
+_completion_register_write rg -a
 _completion_register_write rg --text
 
 _completion_register_write rg -c

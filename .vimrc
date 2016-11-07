@@ -53,6 +53,7 @@ if filereadable(expand("$MY_I3/vim/base.vim"))
     so $MY_I3/vim/clipboard.vim
     so $MY_I3/vim/output.vim
     so $MY_I3/vim/search.vim
+    so $MY_I3/vim/whitespace.vim
 endif
 
 " tagbar
