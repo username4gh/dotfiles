@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 if [[ ! -d  "$HOME/.nvm" ]];then
-    git clone https://github.com/creationix/nvm.git ~/.nvm && cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`
+    git clone https://github.com/creationix/nvm.git ~/.nvm && git -C ~/.nvm checkout `git describe --abbrev=0 --tags`
 fi
 
 virtual_nvm() {

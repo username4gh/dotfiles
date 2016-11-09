@@ -7,10 +7,8 @@ fi
 export PATH="$MY_DOTFILES/myrepos:$PATH"
 
 _repos_get_url() {
-    (cd "$1";
-    local url;
-    url=$(git config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)') ;
-    echo "$url")
+    (url="$(git -C "$1" config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)')";
+    echo "$url";)
 }
 
 repos_register_all() {
@@ -29,13 +27,13 @@ repos_register_all() {
     fi
 
     local file
-    while IFS= read -r -d '' file
+    while IFS= read -r file
     do
-        echo "$file"
         if [[ -d "$file/.git" ]];then
             url=$(_repos_get_url "$file")
+            echo $file -- $url
             echo "[${file/#$HOME\//}]" >> "$mrconfig_directory/.mrconfig" \
                 && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$mrconfig_directory/.mrconfig"
         fi
-    done < <(find "$repos_directory" -mindepth 1 -maxdepth 1 -type d -print0)
+    done < <(find "$repos_directory" -mindepth 1 -maxdepth 1 -type d)
 }
