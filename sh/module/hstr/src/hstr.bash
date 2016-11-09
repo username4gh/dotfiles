@@ -5,7 +5,7 @@ if [[ ! -d "$MY_DOTFILES/hstr" ]];then
 fi
 
 _hstr_init() {
-    (cd "$MY_DOTFILES/hstr" && cd ./dist && ./1-dist.sh && cd .. && ./configure && make)
+    (pushd "$MY_DOTFILES/hstr/dist" && ./1-dist.sh && pushd .. && ./configure && make)
 }
 
 export HH_CONFIG=hicolor
