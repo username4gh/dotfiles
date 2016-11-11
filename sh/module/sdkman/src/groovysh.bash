@@ -1,3 +1,4 @@
+ME/.groovy/groovysh.profile
 #! /usr/bin/env bash
 
 my_groovysh() {
@@ -5,11 +6,11 @@ my_groovysh() {
         cp "$MY_I3/groovysh.profile" "$HOME/.groovy/"
     fi
 
-    local JSOUP_JAR="$(ls -a "$HOME/.groovy/"| s 'jsoup-.*?.jar')"
-    cat "$MY_I3/groovysh.profile"
-    if [[ -f "$HOME/.groovy/$JSOUP_JAR" ]];then
-        groovysh -cp "$HOME/.groovy/$JSOUP_JAR"
-    fi
+    local JARS="$(find "$HOME/.groovy" -type f -iname "*.jar")"
+    local CLASS_PATH="${JARS//[[:space:]]/:}"
+    echo "loading $HOME/.groovy/groovysh.profile"
+    cat "$HOME/.groovy/groovysh.profile"
+    groovysh -cp "$CLASS_PATH"
 }
 
 _latest_jsoup_version_code() {
