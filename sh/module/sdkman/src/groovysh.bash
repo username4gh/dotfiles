@@ -1,4 +1,3 @@
-ME/.groovy/groovysh.profile
 #! /usr/bin/env bash
 
 my_groovysh() {
