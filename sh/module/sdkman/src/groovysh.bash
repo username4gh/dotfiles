@@ -24,7 +24,7 @@ _sdkman_jsoup_url(){
 
 _sdkman_download_jsoup() {
     local url="$(_sdkman_jsoup_url)"
-    curl "$url" -o "$HOME/.groovy/$(_file_name_from_url $url)"
+    curl "$url" -o "$HOME/.groovy/$(_file_name_from_uri $url)"
 }
 
 _sdkman_groovy_init() {

@@ -12,7 +12,7 @@ _java_bin_init() {
             fileUrl=$(_java_8_url_linux)
         fi
 
-        fileName=$(_file_name_from_url "$fileUrl")
+        fileName=$(_file_name_from_uri "$fileUrl")
 
         (echo $fileUrl
 

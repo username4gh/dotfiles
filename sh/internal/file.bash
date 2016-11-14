@@ -40,7 +40,7 @@ _file_ext(){
     fi
 }
 
-_file_name_from_url() {
+_file_name_from_uri() {
     if [[ "$#" == 1 ]];then
         echo "${1##*/}"
     else
