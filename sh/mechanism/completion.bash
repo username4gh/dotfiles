@@ -81,15 +81,21 @@ _completion_complete () {
         local name
         for ((i = 0; i < size; i++))
         do
-           if [[ $i -eq $max_index ]];then
-               name+=${args[$i]}
-           else
-               name+=${args[$i]}_
-           fi
+            if [[ $i -eq $max_index ]];then
+                name+=${args[$i]}
+            else
+                name+=${args[$i]}_
+            fi
         done
 
         local completion_args="$(_completion_read $name)"
-        COMPREPLY=( $(compgen -W "${completion_args}" -- ${cur}) )
+
+        if [[ "${#completion_args}" == 0 ]];then
+            compopt -o default
+        else
+            compopt +o default
+            COMPREPLY=( $(compgen -W "${completion_args}" -- ${cur}) )
+        fi
     fi
 }
 
