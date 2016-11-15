@@ -4,6 +4,7 @@ alias makescript="fc -rnl | head -1 >"
 
 alias la='ls -a'
 alias lf='ls -F'
+alias lh='ls -alh'
 alias ll='ls -al'
 
 # System info

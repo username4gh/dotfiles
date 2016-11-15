@@ -2,8 +2,8 @@
 
 #Description wrapper for fzf
 if [[ ! -d "$HOME/.fzf" ]];then
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    fi
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+fi
 
 _fzf() {
     if [[ "$#" == 0 ]];then
@@ -14,3 +14,7 @@ _fzf() {
 }
 
 alias fzf='_fzf'
+
+gdgsaf() {
+    git diff $(git status -s | s 'M' | awk '{print $2}' | _fzf)
+}
