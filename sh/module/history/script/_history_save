@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+if [[ -d "$MY_HISTORY_DIR" ]]; then
+    # there is a threshold for history file, so it might cause 'git command' not always
+    # return true
+    (cd "$MY_HISTORY_DIR" \
+        && git add . \
+        && git commit -am save)
+else
+    _sh_log "${BASH_SOURCE[0]}" 'plz do history_init first'
+fi

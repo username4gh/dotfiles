@@ -5,16 +5,6 @@ if [[ ! -d "$HOME/.fzf" ]];then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 fi
 
-_fzf() {
-    if [[ "$#" == 0 ]];then
-        (export PATH="$HOME/.fzf:$PATH"; fzf)
-    else
-        (export PATH="$HOME/.fzf:$PATH"; fzf "$@")
-    fi
-}
-
-alias fzf='_fzf'
-
 gdgsaf() {
-    git diff $(git status -s | s 'M' | awk '{print $2}' | _fzf)
+    git diff $(git status -s | s 'M' | awk '{print $2}' | fzf)
 }

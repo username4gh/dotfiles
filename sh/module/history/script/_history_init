@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+if [[ ! -d "$MY_HISTORY_DIR"]];then
+    _sh_log "${BASH_SOURCE[0]}" 'plz enter the git address of history repo'
+    read history_repo_address
+    if [[ "$history_repo_address" != '' ]];then
+        git clone "$history_repo_address" "$MY_HISTORY_DIR"
+    fi
+fi
+
+_sh_log "${BASH_SOURCE[0]}" 'plz select an exist setup or make a new one'
+_sh_log "${BASH_SOURCE[0]}" 'here below list the setups already exists'
+
+ls -F "$MY_HISTORY_DIR" | grep '/'
+read setup
+if [[ "$setup" != '' ]];then
+    ln -s "$MY_HISTORY_DIR/$setup/.bash_history.archive" ~/.bash_history.archive
+fi

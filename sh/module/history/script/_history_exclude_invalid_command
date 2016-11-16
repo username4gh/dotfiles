@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+# https://blog.dhampir.no/content/avoiding-invalid-commands-in-bash-history
+exit_status=$?
+# If the exit status was 127, the command was not found. Let's remove it from history
+
+number=$(history 1 | awk '{print $1}')
+#number=${number%% *}
+if [ -n "$number" ]; then
+    if [ $exit_status -eq 127 ] && ([ -z $HISTLASTENTRY ] || [ $HISTLASTENTRY -lt $number ]) ; then
+        history -d $number
+    else
+        HISTLASTENTRY=$number
+    fi
+fi

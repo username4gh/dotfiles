@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+cat "$MY_SH_MODULE/info/infos/$1.info"

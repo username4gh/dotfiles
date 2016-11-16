@@ -5,35 +5,3 @@ if [[ ! -d "$MY_DOTFILES/myrepos" ]];then
 fi
 
 export PATH="$MY_DOTFILES/myrepos:$PATH"
-
-_repos_get_url() {
-    (url="$(git -C "$1" config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)')";
-    echo "$url";)
-}
-
-repos_register_all() {
-    local mrconfig_directory
-    local repos_directory
-    if [[ "$#" -eq 0 ]];then
-        mrconfig_directory=$MY_DOTFILES
-        repos_directory=$MY_DOTFILES
-    else
-        mrconfig_directory=$1
-        repos_directory=$1
-    fi
-
-    if [[ -f "$mrconfig_directory/.mrconfig" ]];then
-        rm -v "$mrconfig_directory/.mrconfig"
-    fi
-
-    local file
-    while IFS= read -r file
-    do
-        if [[ -d "$file/.git" ]];then
-            url=$(_repos_get_url "$file")
-            echo $file -- $url
-            echo "[${file/#$HOME\//}]" >> "$mrconfig_directory/.mrconfig" \
-                && echo "checkout = git clone '"$url"' '"${file/#$HOME\//}"'" >> "$mrconfig_directory/.mrconfig"
-        fi
-    done < <(find "$repos_directory" -mindepth 1 -maxdepth 1 -type d)
-}

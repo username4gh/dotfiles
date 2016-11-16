@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+cat ~/.bash_history >> ~/.bash_history.archive
