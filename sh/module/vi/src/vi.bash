@@ -24,7 +24,7 @@ if [[ -f "/opt/local/bin/port" ]];then
     }
 
     if [[ "$(_check_command multimarkdown)" == 0 ]];then
-        echo "Need multimarkdown for previewing markdown"
+        _sh_log "${BASH_SOURCE[0]}" "Need multimarkdown for previewing markdown"
     fi
 
     if [[ "$(_check_command nvim)" == 1 ]]; then

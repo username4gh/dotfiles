@@ -14,20 +14,18 @@ _commitizen_fix_package_json() {
 _commitizen_deal_with_gitignore() {
     if [[ -a "./.gitignore" ]];then
         mv ./.gitignore ./.gitignore.previous
-        cat $MY_SH_MODULE/commitizen/src/commitizen_gitignore >> ./.gitignore.previous
+        cat $MY_SH_MODULE/git/script/commitizen.gitignore >> ./.gitignore.previous
         $MY_SH_MODULE/git/script/gitignore_merger.py -i ./.gitignore.previous -o ./.gitignore
         rm ./.gitignore.previous
     else
-        cp "$MY_SH_MODULE/commitizen/src/commitizen_gitignore" ./.gitignore
+        cp "$MY_SH_MODULE/git/script/commitizen.gitignore" ./.gitignore
     fi
 }
 
-commitizen_init() {
-    if [[ -d './.git' ]];then
-        _commitizen_deal_with_gitignore
-        _commitizen_fix_package_json
-        commitizen init cz-conventional-changelog --save-dev --save-exact --force
-    else
-        echo "Usage:commitizen_init must be used under the git-repo root"
-    fi
-}
+if [[ -d './.git' ]];then
+    _commitizen_deal_with_gitignore
+    _commitizen_fix_package_json
+    commitizen init cz-conventional-changelog --save-dev --save-exact --force
+else
+    echo "Usage:commitizen_init must be used under the git-repo root"
+fi

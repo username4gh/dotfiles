@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 export PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin'):$PATH"
+
 _completion_setup rg
 
 _completion_register_write rg -a

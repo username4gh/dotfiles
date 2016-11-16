@@ -42,7 +42,7 @@ _android_cscope() {
 }
 
 if [[ "$(_conf_read ANDROID_NDK_VERSION)" == '' ]];then
-    echo 'plz set ANDROID_NDK_VERSION first, using _conf_write'
+    _sh_log "${BASH_SOURCE[0]}" 'plz set ANDROID_NDK_VERSION first, using _conf_write'
 else
     export NDK_INCLUDE_CTAGS_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/tags"
     export NDK_INCLUDE_CSCOPE_DB="$HOME/cscope_db/ndk/$(_conf_read ANDROID_NDK_VERSION)/cscope.out"

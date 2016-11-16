@@ -19,13 +19,13 @@ export PATH="$MY_PRIVATE_BIN:$PATH"
 unset PROMPT_COMMAND
 
 _sh_log() {
-    if [[ "$#" == 1 ]];then
+    if [[ "$#" == 2 ]];then
         local LOG_DIR="$MY_I3/log"
         if [[ -d "$LOG_DIR" ]]; then
-            echo "$(date +%Y-%m-%d-%H-%M-%S) $1" >> $LOG_DIR/sh.log
+            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> $LOG_DIR/sh.log
         fi
     else
-        echo "Usage: _sh_log content"
+        echo "Usage: _sh_log tag message"
     fi
 }
 

@@ -28,6 +28,6 @@ _java_init() {
 
 if [[ "$(_check_os)" == "Linux" ]];then
     export JDK_PATH="$(_autodetect_bin "jdk1\..*")"
-    export JAVA_HOME="$(_autodetect_bin "jdk1\..*")"
+    export JAVA_HOME="$JDK_PATH"
     export PATH="$JDK_PATH/bin:$PATH"
 fi

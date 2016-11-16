@@ -4,15 +4,15 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
 
     _init_history() {
         if [[ "$(_check_dir "$MY_HISTORY_DIR")" == 0 ]];then
-            echo 'plz enter the git address of history repo'
+            _sh_log "${BASH_SOURCE[0]}" 'plz enter the git address of history repo'
             read history_repo_address
             if [[ "$history_repo_address" != '' ]];then
                 git clone "$history_repo_address" "$MY_HISTORY_DIR"
             fi
         fi
 
-        echo 'plz select an exist setup or make a new one'
-        echo 'here below list the setups already exists'
+        _sh_log "${BASH_SOURCE[0]}" 'plz select an exist setup or make a new one'
+        _sh_log "${BASH_SOURCE[0]}" 'here below list the setups already exists'
         ls -F "$MY_HISTORY_DIR" | grep '/'
         read setup
         if [[ "$setup" != '' ]];then
@@ -28,7 +28,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
                 && git add . \
                 && git commit -am save)
         else
-            echo 'plz do history_init first'
+            _sh_log "${BASH_SOURCE[0]}" 'plz do history_init first'
         fi
     }
 

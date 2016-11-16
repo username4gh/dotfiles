@@ -8,8 +8,8 @@ node_modules/
 package.json
 sh/.conf
 sh/.conf.tmp
+sh/cache.bash
 sh/custom
 sh/custom/
 sh/module/conf.d
 sh/module/init.bash
-sh/cache.bash
