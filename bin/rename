@@ -1,18 +1,23 @@
 #! /usr/bin/env python
+# coding=UTF-8
 
-import glob, os, sys
-
-# checking whether path and filename are given.
-if len(sys.argv) != 4:
-    print("Usage : rename 'pattern' 'old_str' 'new_str'")
-    print("All arguments must be surrounded with single quote to avoid being expanded")
-    sys.exit()
+import os, sys
 
 # pattern to match file for process
-def rename(pattern, old_str, new_str):
-    dirName = os.path.realpath(os.curdir)
-    for f in glob.iglob(os.path.join(dirName, pattern)):
-        fileName = os.path.basename(f).replace(old_str, new_str)
-        os.rename(f, os.path.join(dirName, fileName))
+def rename(old_str, new_str):
+    try:
+        input_name = sys.stdin
+        lines = input_name.readlines()
+        for line in lines:
+            old_file_name = str(line).strip('\n')
+            new_file_name = old_file_name.replace(old_str, new_str)
+            os.rename(old_file_name, new_file_name)
+    except KeyboardInterrupt:
+        print('interrupted - exiting')
+        return 130
+    except Exception as err:
+        print('unexpected error: %s' % err)
+        return 1
 
-rename(sys.argv[1], sys.argv[2], sys.argv[3])
+
+rename(sys.argv[1], sys.argv[2])
