@@ -64,7 +64,8 @@ _load_sh_files() {
     fi
 }
 
-rf() {
+# rfc stands for `refresh configuration`
+rfc() {
     if [[ "$#" == 0 ]];then
         # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
         if [[ -f "$MY_SH/cache.bash" ]];then
@@ -84,7 +85,8 @@ rf() {
     fi
 }
 
-rl() {
+# rlc stands for `reload configuration`
+rlc() {
     # http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
     # https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
     exec $SHELL
