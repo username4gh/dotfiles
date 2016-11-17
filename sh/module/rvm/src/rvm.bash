@@ -6,7 +6,7 @@ _rvm_init() {
     fi
 }
 
-virtual_rvm() {
+v_rvm() {
     # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/
     if [[ "$#" -le 0 ]];then
         echo "Usage: $0 command [arg1, arg2, ...]" >&2;
@@ -23,9 +23,9 @@ virtual_rvm() {
 }
 
 
-_completion_register_write virtual_rvm alfi
-_completion_register_write virtual_rvm gem
-_completion_register_write virtual_rvm pod
-_completion_register_write virtual_rvm rvm
+_completion_register_write v_rvm alfi
+_completion_register_write v_rvm gem
+_completion_register_write v_rvm pod
+_completion_register_write v_rvm rvm
 
-_completion_setup virtual_rvm
+_completion_setup v_rvm

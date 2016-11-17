@@ -11,7 +11,7 @@ else
     _sh_log "${BASH_SOURCE[0]}" "SDKMAN requires 'unzip'!"
 fi
 
-virtual_sdkman() {
+v_sdkman() {
     # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/
     if [[ "$#" -le 0 ]];then
         echo "Usage: $0 command [arg1, arg2, ...]" >&2;
@@ -27,8 +27,8 @@ virtual_sdkman() {
     $command $*)
 }
 
-_completion_register_write virtual_sdkman groovysh
-_completion_register_write virtual_sdkman my_groovysh
-_completion_register_write virtual_sdkman sdk
+_completion_register_write v_sdkman groovysh
+_completion_register_write v_sdkman my_groovysh
+_completion_register_write v_sdkman sdk
 
-_completion_setup virtual_sdkman
+_completion_setup v_sdkman

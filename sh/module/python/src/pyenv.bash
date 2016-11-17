@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-virtual_pyenv() {
+v_pyenv() {
     # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/
     if [[ "$#" -le 0 ]];then
         echo "Usage: $0 command [arg1, arg2, ...]" >&2;
@@ -56,12 +56,12 @@ _python_check_pyenv() {
 }
 
 
-_completion_register_write virtual_pyenv pip
-_completion_register_write virtual_pyenv pip list
-_completion_register_write virtual_pyenv pip show
+_completion_register_write v_pyenv pip
+_completion_register_write v_pyenv pip list
+_completion_register_write v_pyenv pip show
 
-_completion_register_write virtual_pyenv pyenv
-_completion_register_write virtual_pyenv python
-_completion_register_write virtual_pyenv youtube-dl
+_completion_register_write v_pyenv pyenv
+_completion_register_write v_pyenv python
+_completion_register_write v_pyenv youtube-dl
 
-_completion_setup virtual_pyenv
+_completion_setup v_pyenv
