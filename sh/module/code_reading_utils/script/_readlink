@@ -1,0 +1,29 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+import os
+import sys
+
+def main(argv=sys.argv):
+    """
+    """
+    try:
+        input_file = sys.stdin
+        lines = input_file.readlines()
+        for line in lines:
+            fileName = str(line).strip('\n')
+            if os.path.exists(fileName):
+                if os.path.islink(fileName):
+                    result = os.readlink(fileName)
+                    real = os.path.join(os.path.dirname(fileName), result)
+                else:
+                    real = fileName
+                sys.stdout.write(os.path.abspath(real) + '\n')
+    except KeyboardInterrupt:
+        print('interrupted - exiting')
+        return 130
+    except Exception as err:
+        print('unexpected error: %s' % err)
+        return 1
+
+sys.exit(main())
