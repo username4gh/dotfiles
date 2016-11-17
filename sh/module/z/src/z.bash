@@ -3,5 +3,3 @@ if [[ ! -d "$MY_DOTFILES/z" ]];then
 fi
 
 source "$MY_DOTFILES/z/z.sh"
-
-export MANPATH="$MY_DOTFILES/z:${MANPATH}"

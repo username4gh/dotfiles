@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-export PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin'):$PATH"
+RIPGREP_PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin')"
+export PATH="$RIPGREP_PATH:$PATH"
+unset RIPGREP_PATH
 
 _completion_setup rg
 
