@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+git diff $(git status -s | s 'M' | awk '{print $2}' | fzf)
