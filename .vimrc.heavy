@@ -47,15 +47,6 @@ colorscheme molokai
 " bling/vim-airline
 let g:airline_theme = 'badwolf'
 
-" basic editor-stuff
-if filereadable(expand("$MY_I3/vim/base.vim"))
-    so $MY_I3/vim/base.vim
-    so $MY_I3/vim/clipboard.vim
-    so $MY_I3/vim/output.vim
-    so $MY_I3/vim/search.vim
-    so $MY_I3/vim/whitespace.vim
-endif
-
 " tagbar
 nnoremap <F4> :TagbarToggle<CR>
 
@@ -88,3 +79,11 @@ map <Leader>R :Unite gtags/ref<CR>
 map <Leader>G :Unite gtags/grep<CR>
 map <Leader>q <Plug>(unite_exit)<CR>
 map <Leader>Q <Plug>(unite_all_exit)<CR>
+
+" basic editor-stuff
+so $MY_I3/vim/base.vim
+so $MY_I3/vim/clipboard.vim
+so $MY_I3/vim/output.vim
+so $MY_I3/vim/search.vim
+so $MY_I3/vim/whitespace.vim
+
