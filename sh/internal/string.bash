@@ -104,6 +104,7 @@ _string_remove_from_back() {
     substring="$2"
     echo "${input%substring}"
 }
+
 _string_remove_from_back_greedy() {
     input="$1"
     substring="$2"

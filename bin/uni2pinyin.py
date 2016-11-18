@@ -3,18 +3,17 @@
 
 # https://geekwardnote.wordpress.com/2013/02/08/how-to-rename-chinese-file-to-pinyin/
 
-# renameCH2Pinyin.py
 # Rename filename from Chinese characters to capitalized pinyin using the
 # mapping file and taking out the tone numbers
- 
+
 import os
 import re
- 
+
 # File uni2pinyin is a mapping from hex to Pinyin with a tone number
-f = open(os.path.join(os.getenv('HOME'), '.dotfiles/my-i3/script/uni2pinyin'))
+mapping_file = os.path.join(os.getenv('MY_BUNDLED_BIN'), 'uni2pinyin')
+f = open(mapping_file)
 wf = f.read() # read the whole mapping file
- 
-os.chdir('./images') # to rename all files in sub folder 'voc'
+
 myulist = os.listdir(u'.') # read all file names in unicode mode
 for x in myulist: # each file name
     filenamePY = ''
@@ -28,8 +27,9 @@ for x in myulist: # each file name
                                             # number and capitalize it
         else:
             filenamePY+=y
-    print x
-    filename = filenamePY
-    print filename.lower()
-    os.rename(x, filename.lower().replace('-', '_'))
-os.chdir('..') # go back to the parent folder
+    filename = filenamePY.lower()
+
+    # skip the directory
+    if os.path.isfile(x):
+        print(x + ' -> ' + filename)
+        os.rename(x, filename)
