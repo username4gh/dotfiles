@@ -36,6 +36,8 @@ colorscheme molokai
 " bling/vim-airline
 let g:airline_theme = 'badwolf'
 
+map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
+
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0
 " Default mapping
@@ -54,4 +56,3 @@ so $MY_I3/vim/clipboard.vim
 so $MY_I3/vim/output.vim
 so $MY_I3/vim/search.vim
 so $MY_I3/vim/whitespace.vim
-

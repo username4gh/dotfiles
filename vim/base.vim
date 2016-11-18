@@ -157,11 +157,14 @@ set fileencodings=utf-8,gbk,cp936,latin-1
 set fileformat=unix
 set fileformats=unix,dos,mac
 
+map <F1> :buffers<CR>
+
 " toggle line number
 nnoremap <F2> :set number!<CR>
 
 nnoremap <F3> :set relativenumber!<CR>
 
-nnoremap <F6> :w !sudo tee % > /dev/null
+set pastetoggle=<F4>
 
-map <F9> :buffers<CR>
+nnoremap <F5> :w !sudo tee % > /dev/null
+
