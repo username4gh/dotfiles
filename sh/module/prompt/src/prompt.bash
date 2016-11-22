@@ -267,7 +267,7 @@ if [[ $(whoami) != root ]];then
         # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
         # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
         #http://misc.flogisoft.com/bash/tip_colors_and_formatting
-        PS1="[\\j] \\u \e[91m\${PWD}\e[0m \$(scm_prompt_info '(%s)')\\$ "
+        PS1="[\\j] \\u \e[32m\${PWD}\e[0m \$(scm_prompt_info '(%s)')\\$ "
 
         # make `pwd` as iterm2 tab title
         PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
@@ -275,7 +275,7 @@ if [[ $(whoami) != root ]];then
 else
     # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
     # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
-    PS1="[\\j] \\u \e[91m\${PWD}\e[0m \\$ "
+    PS1="[\\j] \\u \e[32m\${PWD}\e[0m \\$ "
 
     # make `pwd` as iterm2 tab title
     PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
