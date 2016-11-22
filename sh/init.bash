@@ -8,6 +8,14 @@ if [[ ! -d "$MY_DOTFILES/bin" ]];then
     mkdir -p "$MY_DOTFILES/bin"
 fi
 
+export MY_DOTFILES="$HOME/.dotfiles"
+export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
+export MY_PRIVATE_BIN="$MY_DOTFILES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
+export MY_I3="$MY_DOTFILES/my-i3"
+
+export MY_BUNDLED_BIN="$MY_I3/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
+export MY_SH="$MY_I3/sh"
+
 export MY_SH_MODULE="$MY_SH/module"
 
 # reset to avoid issue causing by repeat sourcing
@@ -18,14 +26,13 @@ export PATH="$MY_PRIVATE_BIN:$PATH"
 
 unset PROMPT_COMMAND
 
+# for internal function, no `Usage`, only print log
 _sh_log() {
     if [[ "$#" == 2 ]];then
         local LOG_DIR="$MY_I3/log"
         if [[ -d "$LOG_DIR" ]]; then
             echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> $LOG_DIR/sh.log
         fi
-    else
-        echo "Usage: _sh_log tag message"
     fi
 }
 
@@ -60,38 +67,11 @@ _load_sh_files() {
         fi
         unset -v file
     else
-        echo "Usage: _load_sh_files baseDirectoryPath subDirectoryName"
+        _sh_log "$MY_SH/init.bash"  '_load_sh_files'
     fi
 }
 
-# rfc stands for `refresh configuration`
-rfc() {
-    if [[ "$#" == 0 ]];then
-        # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
-        if [[ -f "$MY_SH/cache.bash" ]];then
-            rm "$MY_SH/cache.bash"
-        fi
-
-        if [[ -f "$MY_SH_MODULE/init.bash" ]];then
-            rm "$MY_SH_MODULE/init.bash"
-        fi
-
-        echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
-
-        while IFS= read -r item;
-        do
-            echo '_load_sh_files $MY_SH_MODULE '${item##*/} >> "$MY_SH_MODULE/init.bash";
-        done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
-    fi
-}
-
-# rlc stands for `reload configuration`
-rlc() {
-    # http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
-    # https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
-    exec $SHELL
-}
-
+# using cache as much as possible
 if [[ ! -f "$MY_SH/cache.bash" ]];then
     _load_sh_files $MY_SH 'internal'
     _load_sh_files $MY_SH 'path'
@@ -105,10 +85,38 @@ else
     source "$MY_SH/cache.bash"
 fi
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
 if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    
+    # check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
     shopt -s checkwinsize
+
+    # rfc stands for `refresh configuration`
+    rfc() {
+        if [[ "$#" == 0 ]];then
+            # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
+            if [[ -f "$MY_SH/cache.bash" ]];then
+                rm "$MY_SH/cache.bash"
+            fi
+
+            if [[ -f "$MY_SH_MODULE/init.bash" ]];then
+                rm "$MY_SH_MODULE/init.bash"
+            fi
+
+            echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
+
+            while IFS= read -r item;
+            do
+                echo '_load_sh_files $MY_SH_MODULE '${item##*/} >> "$MY_SH_MODULE/init.bash";
+            done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
+        fi
+    }
+
+    # rlc stands for `reload configuration`
+    rlc() {
+        # http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
+        # https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
+        exec $SHELL
+    }
 fi
 
 # If set, the pattern "**" used in a pathname expansion context will
@@ -121,3 +129,5 @@ if [[ "$(_check_os)" == "Darwin" ]];then
 else
     [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 fi
+
+source "$MY_I3/.profile"

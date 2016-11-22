@@ -12,6 +12,6 @@ if [[ "$(_check_os)" == 'Darwin' ]];then
     fi
 
     if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then
-        source "$MY_DOTFILES/m-cli/completion/zsh/m"
+        source "$MY_DOTFILES/m-cli/completion/zsh/_m"
     fi
 fi
