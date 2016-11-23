@@ -2,7 +2,7 @@
 
 export ZSH=$HOME/.oh-my-zsh
 
-plugins=(z zsh_reload)
+plugins=(dirhistory macports z zsh_reload)
 
 source $ZSH/oh-my-zsh.sh
 

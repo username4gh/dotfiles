@@ -136,6 +136,6 @@ unset file_type
 
 export MY_CURRENT_SHELL='bash'
 # integration with my own stuff with bash-it
-if [[ -f "$MY_SH/init.bash" ]];then
-    source "$MY_SH/init.bash";
+if [[ -f "$HOME/.dotfiles/my-i3/sh/init.bash" ]];then
+    source "$HOME/.dotfiles/my-i3/sh/init.bash";
 fi
