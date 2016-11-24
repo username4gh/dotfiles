@@ -2,6 +2,23 @@
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     export MY_HISTORY_DIR="$MY_DOTFILES/my-history"
 
+    # if i put this function in script, PROMPT_COMMAND cannot work right, do not know why yet
+    _history_exclude_invalid_command() {
+        # https://blog.dhampir.no/content/avoiding-invalid-commands-in-bash-history
+        exit_status=$?
+        # If the exit status was 127, the command was not found. Let's remove it from history
+
+        number=$(history 1 | awk '{print $1}')
+        number=${number%% *}
+        if [ -n "$number" ]; then
+            if [ $exit_status -eq 127 ] && ([ -z $HISTLASTENTRY ] || [ $HISTLASTENTRY -lt $number ]) ; then
+                history -d $number
+            else
+                HISTLASTENTRY=$number
+            fi
+        fi
+    }
+
     # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
     # HISTSIZE is the number of lines or commands that are stored in memory in a history list while your bash session is ongoing.
 
@@ -14,7 +31,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
     PROMPT_COMMAND="_history_exclude_invalid_command; history -a; ${PROMPT_COMMAND}"
     shopt -s histappend
     export HISTCONTROL=ignoreboth:ignoredups
-    export HISTIGNORE="_no_invalid_command_in_history:[   ]*:&:ag:bg:cat*:cd*:df*:echo*:fg:exit:hh*:history*:git*:ls*:mv*:rfc:rlc:sbs:src:z"
+    export HISTIGNORE="_history_exclude_invalid_command:[   ]*:&:ag:bg:cat*:cd*:df*:echo*:fg:exit:hh*:history*:git*:ls*:mv*:rfc:rlc:sbs:src:z"
     export HISTTIMEFORMAT='%F %T '
 
     # stolen from http://mywiki.wooledge.org/BashFAQ/088

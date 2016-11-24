@@ -139,3 +139,5 @@ export MY_CURRENT_SHELL='bash'
 if [[ -f "$HOME/.dotfiles/my-i3/sh/init.bash" ]];then
     source "$HOME/.dotfiles/my-i3/sh/init.bash";
 fi
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
