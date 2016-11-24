@@ -1,6 +1,11 @@
 #! /usr/bin/env bash
 
-export PATH="$(_autodetect_bin 'gradle-.*')/bin:$PATH"
+GRADLE_PATH=$(_autodetect_bin 'gradle-.*')
+if [[ "${#GRADLE_PATH}" -eq 0 ]];then
+    _sh_log "${BASH_SOURCE[0]}" "gradle has not been installed yet"
+else
+    export PATH="$GRADLE_PATH/bin:$PATH"
+fi
 
 _completion_register_write gradle androidDependencies
 _completion_register_write gradle signingReport
