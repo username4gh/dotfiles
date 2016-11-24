@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-url="https://bitbucket.org$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | s -o "(?<=<a\ class=\"execute\"\ href=\").*?(?=\">)" | head -1)"
+VERSION_CODE=$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads | s 'iBotPeaches/apktool/downloads' | s -o '(?<=apktool_).*?(?=.jar)' | head -1)
+# https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.2.1.jar
+url="https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_$VERSION_CODE.jar"
 echo $url
 
 if [[ ! -f "$MY_BIN/apktool" ]];then
