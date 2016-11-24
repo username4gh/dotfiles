@@ -3,7 +3,7 @@
 manifest_list=($(find . -iname *AndroidManifest.xml | s -v build))
 size=${#manifest_list[@]}
 max_index=$(($size-1))
-echo "\e[31mfollowing activities was not registered in the AndroidManifest.xml:\e[0m"
+echo -e "\e[31mfollowing activities was not registered in the AndroidManifest.xml:\e[0m"
 while IFS= read -r activity
 do
     # reset flag
