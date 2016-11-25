@@ -10,25 +10,3 @@ if [[ "$(_check_command 'unzip')" == 1 ]];then
 else
     _sh_log "${BASH_SOURCE[0]}" "SDKMAN requires 'unzip'!"
 fi
-
-v_sdkman() {
-    # https://www.topbug.net/blog/2013/10/23/use-both-homebrew-and-macports-on-your-os-x/
-    if [[ "$#" -le 0 ]];then
-        echo "Usage: $0 command [arg1, arg2, ...]" >&2;
-        return;
-    fi
-
-    ([[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-    command=$1;
-
-    shift
-
-    $command $*)
-}
-
-_completion_register_write v_sdkman groovysh
-_completion_register_write v_sdkman my_groovysh
-_completion_register_write v_sdkman sdk
-
-_completion_setup v_sdkman
