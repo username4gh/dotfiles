@@ -91,7 +91,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     shopt -s checkwinsize
 
     # rfc stands for `refresh configuration`
-    rfc() {
+    my_rfc() {
         if [[ "$#" == 0 ]];then
             # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
             if [[ -f "$MY_SH/cache.bash" ]];then
@@ -112,7 +112,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
     }
 
     # rlc stands for `reload configuration`
-    rlc() {
+    my_rlc() {
         # http://stackoverflow.com/questions/2518127/how-do-i-reload-bashrc-without-logging-out-and-back-in
         # https://www.shell-tips.com/2007/01/10/linux-how-to-reload-or-change-your-current-shell/
         exec $SHELL
