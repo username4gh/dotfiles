@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+
+if [[ ! -d "$HOME/.code_reading_utils" ]];then
+    mkdir "$HOME/.code_reading_utils"
+fi
+
+(
+CSEARCH_WROKSPACE="$HOME/.code_reading_utils";
+CURRENT_DIR="${PWD//\//_}";
+export CSEARCHINDEX="$CSEARCH_WROKSPACE/$CURRENT_DIR.cseachindex";
+cindex $PWD;
+
+if [[ -f "$HOME/.csearchindex" ]];then
+    rm -v "$HOME/.csearchindex"
+fi
+)
