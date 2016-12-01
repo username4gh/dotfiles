@@ -22,5 +22,3 @@ function _git_prompt_info() {
 }
 
 export PS1='%n %F{green}$PWD%f$(_git_prompt_info)%# '
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
