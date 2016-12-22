@@ -1,7 +1,0 @@
-#! /usr/bin/env bash
-
-VERSION_CODE="$(curl -s https://github.com/BurntSushi/ripgrep/releases | s 'ripgrep/releases/tag' | s -o '(?<=/tag/).*?(?=\"\>)' | head -n 1)"
-
-echo "https://github.com/BurntSushi/ripgrep/releases/download/$VERSION_CODE/ripgrep-$VERSION_CODE-x86_64-apple-darwin.tar.gz"
-
-unset VERSION_CODE
