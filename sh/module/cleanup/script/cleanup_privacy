@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+echo -e "\e[31mstage 1: Apps\e[0m"
+
+if ! command -v "zap" > /dev/null; then
+    echo "install https://github.com/keith/zap first"
+else
+    apps=(Atom.app Dash.app Evernote.app Flux.app 'Foxit Reader.app' 'Google Chrome.app' MacDown.app QQ.app 'Visual Studio Code.app' 有道词典.app)
+    (
+    SAVEIFS=$IFS
+    IFS=$(echo -en "\n\b")
+    cd /Applications
+    for f in ${apps[@]}
+    do
+        if [[ -d "$f" ]];then
+            file "$f"
+        fi
+    done
+    IFS=$SAVEIFS
+    )
+fi
+
+echo -e "\e[31mstage 2: rc file & home directory\e[0m"
+files=(bin cscope_db go .ShadowsocksX .android .atom .bash_history .bash_history.archive .bash_it .bash_profile .bashrc .cache .cocoapods .code_reading_utils .config .dotfiles .enhancd .fpp .fzf .gem .gitconfig .gradle .groovy .inputrc .iterm2 .lesshst .lldb .local .m2 .mkshrc .npm .nvm .oh-my-zsh .pyhistory .pythonrc.py .pythonstartup.py .repo_.gitconfig.json .repoconfig .rnd .rvm .sdkman .sogouinput .ssh .subversion .translate-shell .vim .viminfo .vimperator .vimrc .vscode .z .zsh)
+
+for f in ${files[@]}
+do
+    if [[ -d "$f" || -f "$f" ]];then
+        file $f
+    fi
+done
+
