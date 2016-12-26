@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+files=(GPATH GRTAGS GTAGS cscope.files cscope.in.out cscope.out cscope.po.out tags)
+
+for f in "${files[@]}"
+do
+    rm -rvf $f
+done
+
+unset files
