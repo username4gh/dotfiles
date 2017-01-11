@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+while read -r -d : item
+do 
+    echo $item
+done < <(echo $PATH)
+
