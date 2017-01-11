@@ -55,5 +55,8 @@ if [[ "$(_check_os)" == "Darwin" ]]; then
     # https://github.com/nodejs/node-gyp/issues/569
     alias fix_xcodebuild="sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
 
+    # http://www.amsys.co.uk/2015/02/delete-keychains-logout/
+    alias clear_keychain="rm -Rvf /Users/$USER/Library/Keychains/*"
+
     alias macd="open -a MacDown"
 fi
