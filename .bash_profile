@@ -135,6 +135,15 @@ unset file_type
 
 
 export MY_CURRENT_SHELL='bash'
+
+if [[ -f '/opt/local/bin/port' ]];then
+    export MY_CURRENT_PM='macports'
+elif [[ -f '/usr/local/bin/brew' ]];then
+    export MY_CURRENT_PM='homebrew'
+else
+    unset MY_CURRENT_PM
+fi
+
 # integration with my own stuff with bash-it
 if [[ -f "$HOME/.dotfiles/my-i3/sh/init.bash" ]];then
     source "$HOME/.dotfiles/my-i3/sh/init.bash";

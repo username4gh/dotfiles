@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ "$(_check_os)" == 'Darwin' ]]; then
     # using macports
-    if [[ -f "/opt/local/bin/port" ]];then
+    if [[ "$MY_CURRENT_PM" == 'macports' ]];then
         # no need to install any '*completion' package, leave it to oh-my-zsh/bash-it
 
         # keep macports remaining completely isolated
@@ -15,8 +15,12 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
         if [ -f /opt/local/etc/profile.d/bash_completion.sh ]; then
             . /opt/local/etc/profile.d/bash_completion.sh
         fi
-    else
+    elif [[ "$MY_CURRENT_PM" == 'homebrew' ]];then
         # using homebrew
         export PATH="/usr/local/bin:$PATH"
+    else
+        echo "install macports or homebrew"
+        echo "http://brew.sh/"
+        echo "https://www.macports.org/"
     fi
 fi
