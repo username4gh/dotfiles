@@ -20,7 +20,7 @@ export MY_SH_MODULE="$MY_SH/module"
 
 # reset to avoid issue causing by repeat sourcing
 unset PATH
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH="$MY_BUNDLED_BIN:$PATH"
 export PATH="$MY_PRIVATE_BIN:$PATH"
 
