@@ -12,13 +12,17 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
         export MANPATH="/usr/share/man:/usr/local/share/man:/usr/X11/man"
         export MANPATH="/opt/local/share/man:/opt/local/man:${MANPATH}"
 
-        if [ -f /opt/local/etc/profile.d/bash_completion.sh ]; then
+        if [[ -f /opt/local/etc/profile.d/bash_completion.sh ]]; then
             . /opt/local/etc/profile.d/bash_completion.sh
         fi
     elif [[ "$MY_CURRENT_PM" == 'homebrew' ]];then
         # using homebrew
         export PATH="/usr/local/bin:$PATH"
-    else
+ 
+        if [[ -f /usr/local/etc/profile.d/bash_completion.sh ]];then
+            . /usr/local/etc/profile.d/bash_completion.sh
+        fi
+   else
         echo "install macports or homebrew"
         echo "http://brew.sh/"
         echo "https://www.macports.org/"
