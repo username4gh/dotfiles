@@ -18,11 +18,12 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
     elif [[ "$MY_CURRENT_PM" == 'homebrew' ]];then
         # using homebrew
         export PATH="/usr/local/bin:$PATH"
- 
-        if [[ -f /usr/local/etc/profile.d/bash_completion.sh ]];then
-            . /usr/local/etc/profile.d/bash_completion.sh
+
+        # homebrew/versions/bash-completion2
+        if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
+            . $(brew --prefix)/share/bash-completion/bash_completion
         fi
-   else
+    else
         echo "install macports or homebrew"
         echo "http://brew.sh/"
         echo "https://www.macports.org/"
