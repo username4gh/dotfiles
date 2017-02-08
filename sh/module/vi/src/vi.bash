@@ -20,6 +20,7 @@ elif [[ "$(_check_command vim)" == 1 ]]; then
                     export PATH="/opt/local/bin:$PATH";
                     export PATH="/opt/local/sbin:$PATH";
                     export PATH="/opt/local/libexec/gnubin:$PATH";
+                    export PATH="$MY_DOTFILES/ctags:$PATH"
                     vim)
                 else
                     (unset PATH;
@@ -28,6 +29,7 @@ elif [[ "$(_check_command vim)" == 1 ]]; then
                     export PATH="/opt/local/bin:$PATH";
                     export PATH="/opt/local/sbin:$PATH";
                     export PATH="/opt/local/libexec/gnubin:$PATH";
+                    export PATH="$MY_DOTFILES/ctags:$PATH"
                     vim "$@")
                 fi
             }
