@@ -1,10 +1,11 @@
 #! /usr/bin/env bash
+
 if [[ "$(_check_os)" == 'Darwin' ]]; then
-    # using macports
-    if [[ "$MY_CURRENT_PM" == 'macports' ]];then
+    if [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'macports' ]];then
         # no need to install any '*completion' package, leave it to oh-my-zsh/bash-it
 
-        # keep macports remaining completely isolated
+        export PATH="/usr/local/bin:$PATH"
+
         export PATH="/opt/local/bin:$PATH"
         export PATH="/opt/local/sbin:$PATH"
         export PATH="/opt/local/libexec/gnubin:$PATH"
@@ -15,17 +16,14 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
         if [[ -f /opt/local/etc/profile.d/bash_completion.sh ]]; then
             . /opt/local/etc/profile.d/bash_completion.sh
         fi
-    elif [[ "$MY_CURRENT_PM" == 'homebrew' ]];then
-        # using homebrew
+    elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
         export PATH="/usr/local/bin:$PATH"
 
-        # homebrew/versions/bash-completion2
+        # prefer `homebrew/versions/bash-completion2`, the `bash-completion` package wonn't work properly with other stuff in this dotfile, some function is missing
         if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
             . $(brew --prefix)/share/bash-completion/bash_completion
         fi
     else
-        echo "install macports or homebrew"
-        echo "http://brew.sh/"
-        echo "https://www.macports.org/"
+        echo "install [macports](https://www.macports.org/) or [homebrew](http://brew.sh/)"
     fi
 fi

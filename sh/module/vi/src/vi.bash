@@ -9,7 +9,7 @@ if [[ "$(_check_command nvim)" == 1 ]]; then
     alias vim='nvim'
 elif [[ "$(_check_command vim)" == 1 ]]; then
     if [[ "$(_check_os)" == 'Darwin' ]];then
-        if [[ "$MY_CURRENT_PM" == 'macports' ]];then
+        if [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'macports' ]];then
             # in order to keep pyenv and YouCompleteMe both work
             # https://github.com/Valloric/YouCompleteMe/issues/8
             _vi() {

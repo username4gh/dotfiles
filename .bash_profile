@@ -137,11 +137,11 @@ unset file_type
 export MY_CURRENT_SHELL='bash'
 
 if [[ -f '/opt/local/bin/port' ]];then
-    export MY_CURRENT_PM='macports'
+    export MY_CURRENT_PACKAGE_MANAGER='macports'
 elif [[ -f '/usr/local/bin/brew' ]];then
-    export MY_CURRENT_PM='homebrew'
+    export MY_CURRENT_PACKAGE_MANAGER='homebrew'
 else
-    unset MY_CURRENT_PM
+    unset MY_CURRENT_PACKAGE_MANAGER
 fi
 
 # integration with my own stuff with bash-it
