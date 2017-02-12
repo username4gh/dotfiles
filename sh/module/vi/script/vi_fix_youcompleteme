@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+sed -i 's/@executable_path\/..\/lib/\/opt\/local\/libexec\/llvm-3.9\/lib/g' ~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/CMakeLists.txt

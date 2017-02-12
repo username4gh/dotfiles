@@ -4,10 +4,7 @@ if [[ "$(_check_command multimarkdown)" == 0 ]];then
     _sh_log "${BASH_SOURCE[0]}" "Need multimarkdown for previewing markdown"
 fi
 
-if [[ "$(_check_command nvim)" == 1 ]]; then
-    alias vi='nvim'
-    alias vim='nvim'
-elif [[ "$(_check_command vim)" == 1 ]]; then
+if [[ "$(_check_command vim)" == 1 ]]; then
     if [[ "$(_check_os)" == 'Darwin' ]];then
         if [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'macports' ]];then
             # in order to keep pyenv and YouCompleteMe both work
@@ -37,7 +34,5 @@ elif [[ "$(_check_command vim)" == 1 ]]; then
             alias vi='_vi'
             alias vim='_vi'
         fi
-    else
-        alias vim='vim'
     fi
 fi
