@@ -22,7 +22,7 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
 
     export CMAKE_MAKE_PROGRAM='/opt/local/bin/cmake'
     
-    # in order to enable --clang-completer, I use the `port install llvm-3.8`, and then un-comment below too line
+    # in order to \'enable --clang-completer\', I use the `port install llvm-3.9`, and then un-comment below too line
     export PATH_TO_LLVM_ROOT='/opt/local/libexec/llvm-3.9'
     export EXTRA_CMAKE_ARGS="-DPYTHON_EXECUTABLE=/opt/local/bin/python, -DPATH_TO_LLVM_ROOT=$PATH_TO_LLVM_ROOT"
 
@@ -35,7 +35,7 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
     #                      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${LIBCLANG_TAIL}"
     #                    )
     # this `@executable_path/../lib` assumes the `libclang.dylib` is located in the path $(which install_name_tool)/../lib
-    # sadly for macports, it's /opt/local/bin/install_name_tool and /opt/local/libexec/llvm-3.9/lib/libclang.dylib
+    # sadly for macports, it\'s /opt/local/bin/install_name_tool and /opt/local/libexec/llvm-3.9/lib/libclang.dylib
     # so in order to compile, we must change `@executable_path/../lib` to `/opt/local/libexec/llvm-3.9/lib` 
 
     export CMAKE_C_COMPILER="/opt/local/bin/clang"

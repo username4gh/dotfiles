@@ -33,6 +33,8 @@ if [[ "$(_check_command vim)" == 1 ]]; then
 
             alias vi='_vi'
             alias vim='_vi'
+        elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
+            alias vi='vim'
         fi
     fi
 fi
