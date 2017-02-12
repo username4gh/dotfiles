@@ -11,9 +11,35 @@ BASH_HISTORY_ARCHIVE = os.path.join(os.environ.get('HOME'), '.bash_history.archi
 TMP = dict()
 
 def _is_legit_command(line):
-    if ('#' not in line) and ('[' not in line):
-        return True
-    else:
+    if '#' in line:
+        return False 
+
+    if '[' in line:
+        return False
+
+    if ']' in line:
+        return False
+
+    if '(' in line:
+        return False
+
+    if ')' in line:
+        return False
+
+    return True
+
+def _filte_out_command(line):
+    return str(str(line).split(' ')[0]).strip('\n')
+
+def _is_command_exist(cmd):
+    command = 'command -v ' + cmd +' > /dev/null'
+    try:
+        if os.system(command) == 0:
+            return True
+        else:
+            return False
+    except Exception as err:
+        print cmd
         return False
 
 def _handling_history_file(history_file):
@@ -21,9 +47,10 @@ def _handling_history_file(history_file):
 
     for line in history_lines:
         if _is_legit_command(line):
-            key = str(str(line).split(' ')[0]).strip('\n')
+            key = _filte_out_command(line)
             if key not in TMP:
-                TMP[key] = 1
+                if _is_command_exist(key):
+                    TMP[key] = 1
             else:
                 TMP[key] = TMP[key] + 1
 
@@ -35,15 +62,17 @@ def main(argv=sys.argv):
 
     _handling_history_file(history_file)
     _handling_history_file(history_archive_file)
-        
+
     iterator = TMP.iteritems()
 
-    item = iterator.next()
-    try:
-        while item is not None:
-            print item
-            item = iterator.next()
-    except StopIteration as ex:
-        print ex.message
+    if iterator is not None:
+        item = iterator.next()
+        try:
+            while item is not None:
+                print item
+                item = iterator.next()
+        except StopIteration as ex:
+            return 0
+    # do nothing
 
 sys.exit(main())
