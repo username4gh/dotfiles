@@ -44,7 +44,7 @@ set autoindent
 set smartindent
 
 " Enable line numbers
-set number
+" set number
 
 " Display the cursor position on the last line of the screen or in the status
 " line of a window
