@@ -67,9 +67,6 @@ set modelines=4
 " Enable per-directory .vimrc files and disable unsafe commands in them
 set secure
 
-" Enable line number
-set number
-
 " Highlight searches
 set hlsearch
 
