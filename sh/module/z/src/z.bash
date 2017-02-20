@@ -1,5 +1,5 @@
-if [[ ! -d "$MY_DOTFILES/z" ]];then
-    git clone https://github.com/rupa/z "$MY_DOTFILES/z"
+if [[ ! -d "$MY_DEPENDENCIES/z" ]];then
+    git clone https://github.com/rupa/z "$MY_DEPENDENCIES/z"
 fi
 
-source "$MY_DOTFILES/z/z.sh"
+source "$MY_DEPENDENCIES/z/z.sh"

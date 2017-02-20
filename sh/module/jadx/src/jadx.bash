@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_DOTFILES/jadx" ]];then
-    git clone https://github.com/skylot/jadx "$MY_DOTFILES/jadx"
+if [[ ! -d "$MY_DEPENDENCIES/jadx" ]];then
+    git clone https://github.com/skylot/jadx "$MY_DEPENDENCIES/jadx"
 fi
 
-export PATH="$MY_DOTFILES/jadx/build/jadx/bin:$PATH"
+export PATH="$MY_DEPENDENCIES/jadx/build/jadx/bin:$PATH"

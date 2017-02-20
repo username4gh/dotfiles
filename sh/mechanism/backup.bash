@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-export MY_BACKUP_DIR=$MY_DOTFILES/my-backup
+export MY_BACKUP_DIR=$MY_DEPENDENCIES/my-backup
 
 _backup_get_dest_dir() {
     if [[ ! -d "$MY_BACKUP_DIR" ]];then

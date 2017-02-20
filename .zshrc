@@ -8,7 +8,7 @@ source $ZSH/oh-my-zsh.sh
 
 export MY_CURRENT_SHELL='zsh'
 
-source "$HOME/.dotfiles/my-i3/sh/init.bash"
+source "$HOME/.dotfiles/sh/init.bash"
 
 function _git_prompt_info() {
     local prompt_info

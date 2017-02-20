@@ -2,6 +2,7 @@
 .mrconfig
 codes
 completions
+dependencies
 log
 node_modules
 node_modules/

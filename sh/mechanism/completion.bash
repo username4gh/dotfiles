@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-export MY_SH_COMPLETIONS="$MY_I3/completions"
+export MY_SH_COMPLETIONS="$MY_DOTFILES/completions"
 
 _completion_read() {
     if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then

@@ -7,8 +7,8 @@ _repos_get_url() {
 }
 
 if [[ "$#" -eq 0 ]];then
-    mrconfig_directory=$MY_DOTFILES
-    repos_directory=$MY_DOTFILES
+    mrconfig_directory=$MY_DEPENDENCIES
+    repos_directory=$MY_DEPENDENCIES
 else
     mrconfig_directory=$1
     repos_directory=$1

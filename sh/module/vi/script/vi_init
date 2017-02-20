@@ -5,5 +5,5 @@ if [[ ! -h "$HOME/.vimrc" ]];then
         rm "$HOME/.vimrc"
     fi
 
-    ln -s "$MY_I3/.vimrc" "$HOME/.vimrc"
+    ln -s "$MY_DOTFILES/.vimrc" "$HOME/.vimrc"
 fi

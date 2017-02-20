@@ -1,22 +1,25 @@
 #! /usr/bin/env bash
-
-if [[ ! -d "$HOME/bin" ]];then
-    mkdir -p "$HOME/bin"
-fi
-
-if [[ ! -d "$MY_DOTFILES/bin" ]];then
-    mkdir -p "$MY_DOTFILES/bin"
-fi
+export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 
 export MY_DOTFILES="$HOME/.dotfiles"
-export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
-export MY_PRIVATE_BIN="$MY_DOTFILES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
-export MY_I3="$MY_DOTFILES/my-i3"
-
-export MY_BUNDLED_BIN="$MY_I3/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
-export MY_SH="$MY_I3/sh"
-
+export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
+export MY_SH="$MY_DOTFILES/sh"
 export MY_SH_MODULE="$MY_SH/module"
+
+export MY_DEPENDENCIES="$HOME/.dotfiles_dependencies"
+export MY_PRIVATE_BIN="$MY_DEPENDENCIES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
+
+if [[ ! -d "$MY_BIN" ]];then
+    mkdir -p "$MY_BIN"
+fi
+
+if [[ ! -d "$MY_DEPENDENCIES" ]];then
+    mkdir -p "$MY_DEPENDENCIES"
+fi
+
+if [[ ! -d "$MY_PRIVATE_BIN" ]];then
+    mkdir -p "$MY_PRIVATE_BIN"
+fi
 
 # reset to avoid issue causing by repeat sourcing
 unset PATH
@@ -29,7 +32,7 @@ unset PROMPT_COMMAND
 # for internal function, no `Usage`, only print log
 _sh_log() {
     if [[ "$#" == 2 ]];then
-        local LOG_DIR="$MY_I3/log"
+        local LOG_DIR="$MY_DOTFILES/log"
         if [[ -d "$LOG_DIR" ]]; then
             echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> $LOG_DIR/sh.log
         fi
@@ -130,4 +133,4 @@ else
     [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 fi
 
-source "$MY_I3/.profile"
+source "$MY_DOTFILES/.profile"

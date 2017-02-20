@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_DOTFILES/hstr" ]];then
-    git clone https://github.com/dvorka/hstr "$MY_DOTFILES/hstr"
+if [[ ! -d "$MY_DEPENDENCIES/hstr" ]];then
+    git clone https://github.com/dvorka/hstr "$MY_DEPENDENCIES/hstr"
 fi
 
 _hstr_init() {
-    (pushd "$MY_DOTFILES/hstr/dist" && ./1-dist.sh && pushd .. && ./configure && make)
+    (pushd "$MY_DEPENDENCIES/hstr/dist" && ./1-dist.sh && pushd .. && ./configure && make)
 }
 
 export HH_CONFIG=hicolor
-export PATH="$MY_DOTFILES/hstr/src:$PATH"
+export PATH="$MY_DEPENDENCIES/hstr/src:$PATH"

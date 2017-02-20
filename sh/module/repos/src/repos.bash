@@ -1,7 +1,7 @@
 #! /bin/sh
 
-if [[ ! -d "$MY_DOTFILES/myrepos" ]];then
-    git clone https://github.com/joeyh/myrepos "$MY_DOTFILES/myrepos"
+if [[ ! -d "$MY_DEPENDENCIES/myrepos" ]];then
+    git clone https://github.com/joeyh/myrepos "$MY_DEPENDENCIES/myrepos"
 fi
 
-export PATH="$MY_DOTFILES/myrepos:$PATH"
+export PATH="$MY_DEPENDENCIES/myrepos:$PATH"

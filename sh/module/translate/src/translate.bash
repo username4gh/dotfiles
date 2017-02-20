@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_DOTFILES/translate-shell" ]];then
-    git clone https://github.com/soimort/translate-shell "$MY_DOTFILES/translate-shell"
+if [[ ! -d "$MY_DEPENDENCIES/translate-shell" ]];then
+    git clone https://github.com/soimort/translate-shell "$MY_DEPENDENCIES/translate-shell"
 fi
 
 _translate() {
-    (export PATH="$PATH:$MY_DOTFILES/translate-shell"; translate "$@";)
+    (export PATH="$PATH:$MY_DEPENDENCIES/translate-shell"; translate "$@";)
 }
 
 alias trans='_translate'

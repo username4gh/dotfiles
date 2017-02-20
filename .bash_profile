@@ -145,6 +145,6 @@ else
 fi
 
 # integration with my own stuff with bash-it
-if [[ -f "$HOME/.dotfiles/my-i3/sh/init.bash" ]];then
-    source "$HOME/.dotfiles/my-i3/sh/init.bash";
+if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
+    source "$HOME/.dotfiles/sh/init.bash";
 fi
