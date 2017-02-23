@@ -58,5 +58,7 @@ if [[ "$(_check_os)" == "Darwin" ]]; then
     # http://www.amsys.co.uk/2015/02/delete-keychains-logout/
     alias clear_keychain="rm -Rvf /Users/$USER/Library/Keychains/*"
 
+    alias list_user_shell="dscl . -read $HOME UserShell"
+
     alias macd="open -a MacDown"
 fi
