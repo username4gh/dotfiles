@@ -16,7 +16,7 @@ v_pyenv() {
         (
         export PYENV_ROOT="$MY_DEPENDENCIES/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
-        export PYTHONSTARTUP="$MY_DEPENDENCIES/.pythonstartup.py";
+        export PYTHONSTARTUP="$MY_DOTFILES/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';
         export PATH="$HOME/.local/bin:$PATH";
 
@@ -32,7 +32,7 @@ v_pyenv() {
         (
         export PYENV_ROOT="$MY_DEPENDENCIES/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
-        export PYTHONSTARTUP="$MY_DEPENDENCIES/.pythonstartup.py";
+        export PYTHONSTARTUP="$MY_DOTFILES/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';
         export PATH="$HOME/.local/bin:$PATH";
 
