@@ -15,3 +15,5 @@ ln -s "$HOME/.dotfiles/.bash_profile" "$HOME/.bash_profile"
 ln -s "$HOME/.dotfiles/.vimrc" "$HOME/.vimrc"
 
 ln -s "$HOME/.dotfiles/.inputrc" "$HOME/.inputrc"
+
+ln -s "$HOME/.dotfiles/.translate-shell" "$HOME/.translate-shell"

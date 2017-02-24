@@ -15,4 +15,3 @@ crutils_search() {
         cscope -dL -f ./cscope.out -$1$2
     fi
 }
-
