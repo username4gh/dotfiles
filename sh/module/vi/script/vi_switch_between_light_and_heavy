@@ -1,13 +1,9 @@
 #! /usr/bin/env bash
 
-if [[ "$(readlink ~/.vimrc)" =~ .*\.vimrc\.heavy ]];then
-    echo "currently using .vimrc.heavy"
-    rm -vf ~/.vimrc
-    echo "switching to .vimrc.light"
-    ln -s ~/.dotfiles/.vimrc.light ~/.vimrc
+if [[ -f ~/.vim/HEAVY ]];then
+    echo "switching to light config"
+    rm -vf ~/.vim/HEAVY
 else
-    echo "currently using .vimrc.light"
-    rm -vf ~/.vimrc
-    echo "switching to .vimrc.heavy"
-    ln -s ~/.dotfiles/.vimrc.heavy ~/.vimrc
+    echo "switching to heavy config"
+    touch ~/.vim/HEAVY
 fi

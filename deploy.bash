@@ -12,6 +12,6 @@ ln -s "$HOME/.dotfiles/.bash_profile" "$HOME/.bashrc"
 
 ln -s "$HOME/.dotfiles/.bash_profile" "$HOME/.bash_profile"
 
-ln -s "$HOME/.dotfiles/.vimrc.light" "$HOME/.vimrc"
+ln -s "$HOME/.dotfiles/.vimrc" "$HOME/.vimrc"
 
 ln -s "$HOME/.dotfiles/.inputrc" "$HOME/.inputrc"

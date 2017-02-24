@@ -21,6 +21,7 @@ Plugin 'majutsushi/tagbar'
 Plugin 'mhinz/vim-signify'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'octol/vim-cpp-enhanced-highlight'
+Plugin 'plasticboy/vim-markdown'
 Plugin 'Raimondi/delimitMate'
 Plugin 'Shougo/unite.vim'
 Plugin 'Shougo/vimproc.vim'
@@ -35,6 +36,11 @@ Plugin 'tpope/vim-surround'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'vim-scripts/vim-unite-cscope'
 Plugin 'vim-scripts/YankRing.vim'
+
+" here i use the file existence to switch on-and-off some plugins
+if !empty(glob("~/.vim/HEAVY"))
+    Plugin 'Valloric/YouCompleteMe'
+endif
 
 call vundle#end()
 
