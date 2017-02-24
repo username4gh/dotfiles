@@ -264,11 +264,25 @@ if [[ $(whoami) != root ]];then
             [[ "$SCM" == "$SCM_SVN" ]] && _svn_prompt_info && return
         }
 
+        prompt_switch_between_light_and_heavy() {
+            if [[ -f ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON ]];then
+                rm ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON
+            else
+                touch ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON
+            fi
+        }
+
+        _prompt_info() {
+            if [[ -f "$MY_DEPENDENCIES/SCM_PROMPT_INFO_ON" ]];then
+                scm_prompt_info $@
+            fi
+        }
+
         # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
         # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
         # http://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
         # http://misc.flogisoft.com/bash/tip_colors_and_formatting
-        PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(scm_prompt_info '(%s)')\\$ "
+        PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_prompt_info '(%s)')\\$ "
 
         # make `pwd` as iterm2 tab title
         PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
