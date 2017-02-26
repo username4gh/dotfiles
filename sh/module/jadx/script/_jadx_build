@@ -1,3 +1,10 @@
 #! /usr/bin/env bash
 
-(cd $MY_DEPENDENCIES/jadx; ./gradlew dist)
+(
+cd $MY_DEPENDENCIES/jadx; 
+if command -v 'gradle' > /dev/null;then
+    gradle dist
+else
+    ./gradlew dist
+fi
+)
