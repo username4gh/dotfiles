@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_DEPENDENCIES/gitignore" ]];then
-    git clone https://github.com/github/gitignore "$MY_DEPENDENCIES/gitignore"
+if [[ ! -d "$MY_DOTFILES_RESOURCES/gitignore" ]];then
+    git clone https://github.com/github/gitignore "$MY_DOTFILES_RESOURCES/gitignore"
 fi
 
 _gitignore_merge() {
@@ -23,15 +23,15 @@ my_git_ignore_init() {
 
     if [[ "$#" == 1 ]];then
         if [[ ! -f "$(pwd)/.gitignore" ]];then
-            cp "$MY_DEPENDENCIES/gitignore/$1.gitignore" "$pwd/.gitignore"
+            cp "$MY_DOTFILES_RESOURCES/gitignore/$1.gitignore" "$pwd/.gitignore"
         else
-            _gitignore_merge "$MY_DEPENDENCIES/gitignore/$1.gitignore" "$pwd/.gitignore"
+            _gitignore_merge "$MY_DOTFILES_RESOURCES/gitignore/$1.gitignore" "$pwd/.gitignore"
         fi
     else
         echo "Usage: my_git_ignore_init template"
     fi
 }
 
-_completion_register_generate my_git_ignore_init $MY_DEPENDENCIES/gitignore gitignore
+_completion_register_generate my_git_ignore_init $MY_DOTFILES_RESOURCES/gitignore gitignore
 
 _completion_setup my_git_ignore_init

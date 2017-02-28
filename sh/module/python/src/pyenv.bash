@@ -7,14 +7,14 @@ v_pyenv() {
         return;
     fi
 
-    if [[ ! -d "$MY_DEPENDENCIES/pyenv" ]]; then
+    if [[ ! -d "$MY_DOTFILES_RESOURCES/pyenv" ]]; then
         echo "first time of installing pyenv? check out 'https://github.com/yyuu/pyenv/wiki'"
-        git clone 'https://github.com/yyuu/pyenv' "$MY_DEPENDENCIES/pyenv"
+        git clone 'https://github.com/yyuu/pyenv' "$MY_DOTFILES_RESOURCES/pyenv"
     fi
 
     if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then
         (
-        export PYENV_ROOT="$MY_DEPENDENCIES/pyenv";
+        export PYENV_ROOT="$MY_DOTFILES_RESOURCES/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
         export PYTHONSTARTUP="$MY_DOTFILES/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';
@@ -30,7 +30,7 @@ v_pyenv() {
         )
     else
         (
-        export PYENV_ROOT="$MY_DEPENDENCIES/pyenv";
+        export PYENV_ROOT="$MY_DOTFILES_RESOURCES/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";
         export PYTHONSTARTUP="$MY_DOTFILES/.pythonstartup.py";
         export PYTHONIOENCODING='UTF-8';

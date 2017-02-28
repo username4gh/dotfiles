@@ -1,19 +1,29 @@
 #! /usr/bin/env bash
 
-files=('.bashrc' '.bash_profile' '.inputrc' '.vimrc')
+MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
+MY_DEPLOY_BACKUP="$MY_DOTFILES_RESOURCES/backup"
+
+if [[ ! -d "$MY_DOTFILES_RESOURCES" ]];then
+    mkdir -p "$MY_DOTFILES_RESOURCES"
+fi
+
+if [[ ! -d "$MY_DEPLOY_BACKUP" ]];then
+    mkdir -p "$MY_DEPLOY_BACKUP"
+fi
+
+files=('.bash_profile' '.bash_profile' '.inputrc' '.translate-shell' '.vimrc')
+targets=('.bashrc' '.bash_profile' '.inputrc' '.translate-shell' '.vimrc')
 
 for((i=0; i<${#files[@]}; i++))
 do
-    rm -v "$HOME/${files[$i]}"
+    if [[ -h "$HOME/${targets[$i]}" ]];then
+        rm -v "$HOME/${targets[$i]}"
+    fi
 
+
+    if [[ -f "$HOME/${targets[$i]}" ]];then
+        mv -v "$HOME/${targets[$i]}" "$MY_DOTFILES_RESOURCES/backup/"
+    fi
+
+    ln -vs "$HOME/.dotfiles/${files[$i]}" "$HOME/${targets[$i]}"
 done
-
-ln -s "$HOME/.dotfiles/.bash_profile" "$HOME/.bashrc"
-
-ln -s "$HOME/.dotfiles/.bash_profile" "$HOME/.bash_profile"
-
-ln -s "$HOME/.dotfiles/.vimrc" "$HOME/.vimrc"
-
-ln -s "$HOME/.dotfiles/.inputrc" "$HOME/.inputrc"
-
-ln -s "$HOME/.dotfiles/.translate-shell" "$HOME/.translate-shell"

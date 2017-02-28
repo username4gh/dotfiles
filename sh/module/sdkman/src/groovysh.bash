@@ -2,7 +2,7 @@
 
 my_groovysh() {
     if [[ ! -f "$HOME/.groovy/groovysh.profile" ]];then
-        cp "$MY_DEPENDENCIES/groovysh.profile" "$HOME/.groovy/"
+        cp "$MY_DOTFILES_RESOURCES/groovysh.profile" "$HOME/.groovy/"
     fi
 
     local JARS="$(find "$HOME/.groovy" -type f -iname "*.jar")"

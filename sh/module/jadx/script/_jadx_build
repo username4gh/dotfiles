@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 (
-cd $MY_DEPENDENCIES/jadx; 
+cd $MY_DOTFILES_RESOURCES/jadx; 
 if command -v 'gradle' > /dev/null;then
     gradle dist
 else
