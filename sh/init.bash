@@ -6,15 +6,15 @@ export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns priva
 export MY_SH="$MY_DOTFILES/sh"
 export MY_SH_MODULE="$MY_SH/module"
 
-export MY_DEPENDENCIES="$HOME/.dotfiles_dependencies"
-export MY_PRIVATE_BIN="$MY_DEPENDENCIES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
+export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
+export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
 
 if [[ ! -d "$MY_BIN" ]];then
     mkdir -p "$MY_BIN"
 fi
 
-if [[ ! -d "$MY_DEPENDENCIES" ]];then
-    mkdir -p "$MY_DEPENDENCIES"
+if [[ ! -d "$MY_DOTFILES_RESOURCES" ]];then
+    mkdir -p "$MY_DOTFILES_RESOURCES"
 fi
 
 if [[ ! -d "$MY_PRIVATE_BIN" ]];then

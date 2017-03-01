@@ -273,7 +273,7 @@ if [[ $(whoami) != root ]];then
         }
 
         _prompt_info() {
-            if [[ -f "$MY_DEPENDENCIES/SCM_PROMPT_INFO_ON" ]];then
+            if [[ -f "$MY_DOTFILES_RESOURCES/SCM_PROMPT_INFO_ON" ]];then
                 scm_prompt_info $@
             fi
         }

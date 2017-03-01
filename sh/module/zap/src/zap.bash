@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 if [[ "$(_check_os)" == 'Darwin' ]];then
-    if [[ ! -d "$MY_DEPENDENCIES/zap" ]];then
-        git clone https://github.com/keith/zap "$MY_DEPENDENCIES/zap"
+    if [[ ! -d "$MY_DOTFILES_RESOURCES/zap" ]];then
+        git clone https://github.com/keith/zap "$MY_DOTFILES_RESOURCES/zap"
     fi
 
-    export PATH="$MY_DEPENDENCIES/zap:$PATH"
+    export PATH="$MY_DOTFILES_RESOURCES/zap:$PATH"
 fi

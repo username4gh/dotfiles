@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
-    export MY_HISTORY_DIR="$MY_DEPENDENCIES/my-history"
+    export MY_HISTORY_DIR="$MY_DOTFILES_RESOURCES/my-history"
 
     # if i put this function in script, PROMPT_COMMAND cannot work right, do not know why yet
     _history_exclude_invalid_command() {
