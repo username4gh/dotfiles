@@ -5,26 +5,26 @@
  1. <small>meaningfull name</small>
  2. <small>comment & reference</small>
 
-+ Compatibility & Light-weight (So i had to ditch my beloved emacs) & less-dependency
++ Compatibility & Light-weight (i had to ditch my beloved emacs) & less-dependency
  1. <small>darwin & ubuntu</small>
  2. <s><small>zsh & bash</small></s>(I'am really busy now and will stay the same for a long time, i just not able to continue doing this, so bash only)
  3. <small>local & ssh</small>
  4. <small>prefer pre-installed software(intersection of OSX and Ubuntu)</small>
- 	
- 		- <small>use curl rather than wget(because as to OSX, wget is not a built-in)</small>
- 	
+
+    - <small>use curl rather than wget(because as to OSX, wget is not a built-in command)</small>
+
  5. <small>deal with the difference between BSD & GNU program</small>
 
-      - <small>use python script to replace some of these programs in order to reduce the impact causing by these differences (between go python ruby and javascript, only python is supported by both OS in default)</small>
+    - <small>use python script to replace some of these programs in order to reduce the impact causing by these differences (between go python ruby and javascript, only python is supported by both OS in default)</small>
 
 # Pre-arrangement
-+ bash script loading-sequence(also the dependency chain): 
++ bash script loading-sequence(also the dependency chain, frome left to right, each layer may or may not depends on the layer on its left side and may or may not be depended by the layer on its right side):
 
 	> internal -> path -> mechanism -> (function - alias) -> module -> custom
 
- 1. <small>internal (shell-builtin command & pre-installed program)</small>
+ 1. <small>internal (written with only then shell-builtin commands & some shared pre-installed programs on both the ubuntu and OSX)</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
-    	- <small>try Sub-Shell when ```export PATH``` is needed, only keep necessary 'PATH' exported([Global Variables Are Bad](http://c2.com/cgi/wiki?GlobalVariablesAreBad))</small>
+    	- <small>try Sub-Shell when ```export PATH``` is needed, only keep necessary 'PATH' exported(remember the [Global Variables Are Bad](http://c2.com/cgi/wiki?GlobalVariablesAreBad))</small>
  3. <small>mechanism (basic setup for downstream stuff)</small>
  4. <small>module (least dependence between each other, dependency autonomy)</small>
  5. <small>no external dependence for executable script</small>
@@ -55,7 +55,7 @@
  3. <small>easy to extend</small>
 
 + performance
- 1. lazy-loading like technique to reduce 'sourcing' overhead
+ 1. lazy-loading like technique to reduce the 'sourcing' overhead
 
   		- prefer script over function, scripts does not directly effect the sourcing process -- also this will be good for debugging (every time you change a function you have to source again to see if it works)
 
