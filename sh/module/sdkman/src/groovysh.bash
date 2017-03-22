@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-my_groovysh() {
+_groovysh() {
     if [[ ! -f "$HOME/.groovy/groovysh.profile" ]];then
         cp "$MY_DOTFILES_RESOURCES/groovysh.profile" "$HOME/.groovy/"
     fi
@@ -9,8 +9,10 @@ my_groovysh() {
     local CLASS_PATH="${JARS//[[:space:]]/:}"
     echo "loading $HOME/.groovy/groovysh.profile"
     cat "$HOME/.groovy/groovysh.profile"
-    groovysh -cp "$CLASS_PATH"
+    command groovysh -cp "$CLASS_PATH"
 }
+
+alias groovysh='_groovysh'
 
 _latest_jsoup_version_code() {
     local latest_version_code

@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-
-ag -p "$MY_SH_MODULE/the_silver_searcher/script/.ignore" "$@"

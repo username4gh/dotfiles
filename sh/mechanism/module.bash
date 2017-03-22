@@ -7,7 +7,7 @@ _module_generate_init_bash() {
     fi
 }
 
-my_module_init() {
+module_init() {
     if [[ "$#" == 2 ]];then
         local current_dir=$(pwd)
         if [[ "$current_dir" == "$MY_SH_MODULE" ]];then
@@ -19,7 +19,7 @@ my_module_init() {
             echo "Usage: _package_init can only be used while current_dir is $MY_SH_MODULE"
         fi
     else
-        echo "Usage: my_module_init package_name (y|n)"
+        echo "Usage: module_init package_name (y|n)"
         echo "(y|n) for whether this package work under root or not"
     fi
 }

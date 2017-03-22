@@ -2,21 +2,21 @@
 
 # sn -- special named
 
-my_init() {
+_init() {
     local useage='Usage:my_init option \n init:do actual init process \n list:show all modules'
     if [[ "$#" == 1 ]];then
         if  [[ "$1" == 'init' ]];then
-            _snfunction_on_modules_level my_init execute
+            _snfunction_on_modules_level _init execute
         fi
         if [[ "$1" == 'list' ]];then
-            _snfunction_on_modules_level my_init
+            _snfunction_on_modules_level _init
         fi
     else
         printf "$useage"
     fi
 }
 
-my_backup() {
+_backup() {
     local useage='Usage:my_backup option \n init:do actual init process \n list:show all modules'
     if [[ "$#" == 1 ]];then
         if  [[ "$1" == 'init' ]];then
@@ -30,7 +30,7 @@ my_backup() {
     fi
 }
 
-my_cleanup() {
+_cleanup() {
     local useage='Usage:my_cleanup option \n init:do actual init process \n list:show all modules'
     if [[ "$#" == 1 ]];then
         if  [[ "$1" == 'init' ]];then
@@ -45,7 +45,7 @@ my_cleanup() {
 }
 
 if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
-    complete -F _snfunction_complete my_init
-    complete -F _snfunction_complete my_backup
-    complete -F _snfunction_complete my_cleanup
+    complete -F _snfunction_complete _init
+    complete -F _snfunction_complete _backup
+    complete -F _snfunction_complete _cleanup
 fi

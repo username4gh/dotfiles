@@ -15,7 +15,7 @@ _gitignore_merge() {
     fi
 }
 
-my_git_ignore_init() {
+git_ignore_init() {
     if [[ ! -d "$(pwd)/.git" ]];then
         echo "my_git_ignore_init can only be used in the root dir of a git repo"
         return
@@ -28,10 +28,10 @@ my_git_ignore_init() {
             _gitignore_merge "$MY_DOTFILES_RESOURCES/gitignore/$1.gitignore" "$pwd/.gitignore"
         fi
     else
-        echo "Usage: my_git_ignore_init template"
+        echo "Usage: git_ignore_init template"
     fi
 }
 
-_completion_register_generate my_git_ignore_init $MY_DOTFILES_RESOURCES/gitignore gitignore
+_completion_register_generate git_ignore_init $MY_DOTFILES_RESOURCES/gitignore gitignore
 
-_completion_setup my_git_ignore_init
+_completion_setup git_ignore_init

@@ -31,7 +31,6 @@
 
 + naming convention:
  	- prefix '\_' for function only used internally
-	- prefix 'my\_' for function that needed to be exposed to the user
 
 + terminology
         - when I mention about module in comment/naming or something else, it means someting related to one module

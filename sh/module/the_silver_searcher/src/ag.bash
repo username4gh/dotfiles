@@ -5,3 +5,5 @@ if [[ ! -d "$MY_DOTFILES_RESOURCES/the_silver_searcher" ]];then
 fi
 
 export PATH="$MY_DOTFILES_RESOURCES/the_silver_searcher:$PATH"
+
+alias ag='ag -p "$MY_SH_MODULE/the_silver_searcher/script/.ignore" "$@"'
