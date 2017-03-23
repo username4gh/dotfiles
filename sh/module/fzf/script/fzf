@@ -1,7 +1,3 @@
 #! /usr/bin/env bash
 
-if [[ "$#" == 0 ]];then
-    (export PATH="$HOME/.fzf:$PATH"; fzf)
-else
-    (export PATH="$HOME/.fzf:$PATH"; fzf "$@")
-fi
+(export PATH="$HOME/.fzf:$PATH"; fzf "$@")

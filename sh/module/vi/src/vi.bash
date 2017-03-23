@@ -10,25 +10,16 @@ if [[ "$(_check_command vim)" == 1 ]]; then
             # in order to keep pyenv and YouCompleteMe both work
             # https://github.com/Valloric/YouCompleteMe/issues/8
             _vi() {
-                if [[ "$#" == 0 ]];then
-                    (unset PATH;
-                    export PATH="/bin"
-                    export PATH="/usr/bin:$PATH";
-                    export PATH="/opt/local/bin:$PATH";
-                    export PATH="/opt/local/sbin:$PATH";
-                    export PATH="/opt/local/libexec/gnubin:$PATH";
-                    export PATH="$MY_DOTFILES_RESOURCES/ctags:$PATH"
-                    vim)
-                else
-                    (unset PATH;
-                    export PATH="/bin"
-                    export PATH="/usr/bin:$PATH";
-                    export PATH="/opt/local/bin:$PATH";
-                    export PATH="/opt/local/sbin:$PATH";
-                    export PATH="/opt/local/libexec/gnubin:$PATH";
-                    export PATH="$MY_DOTFILES_RESOURCES/ctags:$PATH"
-                    vim "$@")
-                fi
+                (unset PATH;
+                export PATH="/bin"
+                export PATH="/usr/bin:$PATH";
+                export PATH="/opt/local/bin:$PATH";
+                export PATH="/opt/local/sbin:$PATH";
+                export PATH="/opt/local/libexec/gnubin:$PATH";
+                export PATH="$MY_DOTFILES_RESOURCES/ctags:$PATH"
+                export NVM_DIR="$HOME/.nvm";
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm, some vim-plugin need it.
+                vim "$@")
             }
 
             alias vi='_vi'

@@ -13,19 +13,11 @@ _binutils(){
 
     binutils=$(find $MY_BIN -maxdepth 1 -type d  | s 'binutils-.*')
 
-    if [[ "$#" == 1 ]];then
-        (
-        COMMAND=$1
-        shift
-        $binutils/binutils/$COMMAND
-        )
-    else
-        (
-        COMMAND=$1
-        shift
-        $binutils/binutils/$COMMAND "$@"
-        )
-    fi
+    (
+    COMMAND=$1
+    shift
+    $binutils/binutils/$COMMAND "$@"
+    )
 }
 
 _completion_register_write _binutils addr2line
