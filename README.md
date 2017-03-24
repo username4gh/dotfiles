@@ -20,7 +20,7 @@
 # Pre-arrangement
 + bash script loading-sequence(also the dependency chain, frome left to right, each layer may or may not depends on the layer on its left side and may or may not be depended by the layer on its right side):
 
-	> internal -> path -> mechanism -> (function - alias) -> module -> custom
+	> internal -> mechanism -> (path - runtime) -> (function - alias) -> module -> custom
 
  1. <small>internal (written with only then shell-builtin commands & some shared pre-installed programs on both the ubuntu and OSX)</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>

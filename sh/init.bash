@@ -4,6 +4,7 @@ export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 export MY_DOTFILES="$HOME/.dotfiles"
 export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
 export MY_SH="$MY_DOTFILES/sh"
+export MY_RUNTIME="$MY_SH/runtime"
 export MY_SH_MODULE="$MY_SH/module"
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
@@ -77,12 +78,12 @@ _load_sh_files() {
 # using cache as much as possible
 if [[ ! -f "$MY_SH/cache.bash" ]];then
     _load_sh_files $MY_SH 'internal'
-    _load_sh_files $MY_SH 'path'
     _load_sh_files $MY_SH 'mechanism'
+    _load_sh_files $MY_SH 'path'
+    _load_sh_files $MY_SH 'runtime'
     _load_sh_files $MY_SH 'function'
     _load_sh_files $MY_SH 'alias'
     _load_sh_files $MY_SH 'module'
-    _load_sh_files $MY_SH 'completion'
     _load_sh_files $MY_SH 'custom'
 else
     source "$MY_SH/cache.bash"

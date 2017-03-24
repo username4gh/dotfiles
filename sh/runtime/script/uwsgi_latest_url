@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+echo "http://projects.unbit.it/downloads/uwsgi-latest.tar.gz"

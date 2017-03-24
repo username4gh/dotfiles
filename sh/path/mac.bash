@@ -18,6 +18,7 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
         fi
     elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
         export PATH="/usr/local/bin:$PATH"
+        export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
         # prefer `homebrew/versions/bash-completion2`, the `bash-completion` package wonn't work properly with other stuff in this dotfile, some function is missing
         if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
