@@ -4,5 +4,5 @@
 CSEARCH_WROKSPACE="$HOME/.code_reading_utils";
 CURRENT_DIR="${PWD//\//_}";
 export CSEARCHINDEX="$CSEARCH_WROKSPACE/$CURRENT_DIR.csearchindex";
-csearch "$@"
+csearch -n "$@"
 )
