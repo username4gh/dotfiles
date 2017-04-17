@@ -15,3 +15,8 @@ crutils_search() {
         cscope -dL -f ./cscope.out -$1$2
     fi
 }
+
+# a more convenient _csearch
+cs() {
+    _csearch "$@" | s -i -v 'test' | s -i -v 'example' | s -i -v 'html' | s -i -v 'xml'
+}
