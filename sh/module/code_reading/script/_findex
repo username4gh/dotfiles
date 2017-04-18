@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+(
+FSEARCH_WORKSPACE="$HOME/.code_reading_utils/file";
+
+if [[ ! -d "$FSEARCH_WORKSPACE" ]];then
+    mkdir -p "$FSEARCH_WORKSPACE"
+fi
+
+CURRENT_DIR="${PWD//\//_}";
+export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.index";
+find . -type f -iname '*.aidl' -o -iname '*.cc' -o -iname '*.h' -o -iname '*.c' -o -iname '*.cpp' -o -iname '*.java' | s -i -v 'test' | _readlink | sort | uniq > $FSEARCHINDEX
+)

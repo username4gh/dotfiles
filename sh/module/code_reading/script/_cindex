@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$HOME/.code_reading_utils" ]];then
-    mkdir "$HOME/.code_reading_utils"
+if [[ ! -d "$HOME/.code_reading_utils/code" ]];then
+    mkdir -p "$HOME/.code_reading_utils/code"
 fi
 
 (
-CSEARCH_WROKSPACE="$HOME/.code_reading_utils";
+CSEARCH_WROKSPACE="$HOME/.code_reading_utils/code";
 CURRENT_DIR="${PWD//\//_}";
 export CSEARCHINDEX="$CSEARCH_WROKSPACE/$CURRENT_DIR.csearchindex";
 cindex $PWD;
