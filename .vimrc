@@ -56,7 +56,7 @@ let g:airline_theme = 'badwolf'
 map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
 
 " tagbar
-nnoremap <F6> :TagbarToggle<CR>
+nnoremap <F8> :TagbarToggle<CR>
 
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0
