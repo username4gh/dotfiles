@@ -165,3 +165,6 @@ set pastetoggle=<F4>
 
 nnoremap <F5> :w !sudo tee % > /dev/null
 
+nnoremap <F7> :bp<CR>
+nnoremap <F8> :bn<CR>
+

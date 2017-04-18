@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-
-_csearch "$@" | s -i -v 'test' | s -i -v 'example' | s -i -v 'html' | s -i -v 'xml' | s -i -v 'txt' | s -i -v 'packages'

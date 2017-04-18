@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+# csfa - csearch for aosp
+
+_csearch "$@" | s -i -v 'test' | s -i -v 'examples' | s -i -v '.html' | s -i -v '.xml' | s -i -v '.txt' | s -i -v 'packages' | s -i -v '.py'
