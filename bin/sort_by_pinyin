@@ -1,0 +1,48 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+# https://geekwardnote.wordpress.com/2013/02/08/how-to-rename-chinese-file-to-pinyin/
+
+# Rename filename from Chinese characters to capitalized pinyin using the
+# mapping file and taking out the tone numbers
+
+import os
+import re
+import sys
+
+def main(argv):
+    if len(argv) == 1:
+        # File uni2pinyin is a mapping from hex to Pinyin with a tone number
+        mapping_file = os.path.join(os.getenv('MY_BUNDLED_BIN'), 'uni2pinyin')
+        f = open(mapping_file, 'r')
+        wf = f.read() # read the whole mapping file
+        f.close()
+
+        try:
+            tmp = dict()
+            f = sys.stdin
+            for line in f.readlines():
+                decoded_line_PY = ''
+                decoded_line = line.decode('UTF-8')
+
+                for y in decoded_line: # each character
+                    if 0x4e00 <= ord(y) <= 0x9fff: # Chinese Character Unicode range
+                        hexCH = (hex(ord(y))[2:]).upper() # strip leading '0x' and change to uppercase
+
+                        p = re.compile(hexCH+'\t([a-z]+)[\d]*') # define the match pattern
+                        mp = p.search(wf)
+                        decoded_line_PY+= mp.group(1).title() # get the pinyin without the tone number and capitalize it
+                    else:
+                        decoded_line_PY+=y
+                decoded_line_py = decoded_line_PY.lower()
+
+                tmp[decoded_line_py] = decoded_line
+
+            for key in sorted(tmp.keys()):
+                print(tmp[key].encode('UTF-8'))
+        except RuntimeError as err:
+            print(err)
+    else:
+        print('c2p can only be used with pipeline, do no accept any arguments')
+
+sys.exit(main(sys.argv))

@@ -2,7 +2,7 @@
 
 nlc() {
     if [[ "$#" == 0 ]];then
-        local DIRS=( $(find . -mindepth 1 -maxdepth 1 -type d) )
+        local DIRS=( $(find . -mindepth 1 -maxdepth 1 -type d | sort_by_pinyin) )
 
         size=${#DIRS[@]}
 
@@ -17,7 +17,7 @@ nlc() {
 
 ncd() {
     if [[ "$1" =~ [0-9]+ ]];then
-        local DIRS=( $(find . -mindepth 1 -maxdepth 1 -type d) )
+        local DIRS=( $(find . -mindepth 1 -maxdepth 1 -type d | sort_by_pinyin) )
 
         cd ${DIRS[$1]}
     else
