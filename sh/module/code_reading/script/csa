@@ -2,4 +2,4 @@
 
 # csfa - csearch for aosp
 
-_csearch "$@" | s -i -v 'test' | s -i -v 'examples' | s -i -v '.html' | s -i -v '.xml' | s -i -v '.txt' | s -i -v 'packages' | s -i -v '.py'
+_csearch "$@" | s -i -v 'test' | s -i -v 'examples' | s -i -v '.html' | s -i -v '.xml' | s -i -v '.txt' | s -i -v 'packages' | s -i -v '.py' | s -i -v 'sdk' | s -i -v 'aosp/prebuilts' | s -i -v 'aosp/tools/' | s -i -v 'aosp/developers' | s -i -v 'aosp/device' | s -i -v 'aosp/cts' | s -i -v 'aosp/hardware'

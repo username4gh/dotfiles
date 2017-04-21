@@ -266,9 +266,9 @@ if [[ $(whoami) != root ]];then
 
         prompt_switch_between_light_and_heavy() {
             if [[ -f ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON ]];then
-                rm ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON
+                rm ~/.dotfiles_resources/SCM_PROMPT_INFO_ON
             else
-                touch ~/.dotfiles_dependencies/SCM_PROMPT_INFO_ON
+                touch ~/.dotfiles_resources/SCM_PROMPT_INFO_ON
             fi
         }
 
