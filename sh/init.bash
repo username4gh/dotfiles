@@ -41,19 +41,20 @@ _sh_log() {
 }
 
 _cache_gen() {
-    # generate cache.bash, for cache.bash, those 'init.bash' just useless
-    if [[ "$(echo $1 | grep init)" == '' ]];then
+    # generate cache.bash
+    if [[ ! "$1" =~ 'init' ]];then
         # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
         # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
 
         cat "$1" >> "$MY_SH/cache.bash"
 
-        # append a new line for preventing issue
+        # append a new line to prevent issue
         echo -e "\n" >> "$MY_SH/cache.bash"
     else
-        if [[ "$(cat "$1" | grep 'export PATH')" != '' ]];then
-            echo "$(cat "$1" | grep 'export PATH')" >> "$MY_SH/cache.bash"
-        fi
+        while IFS= read -r line
+        do
+            [[ "$line" =~ 'export PATH' ]] && echo "$line" >> "$MY_SH/cache.bash"
+        done < <(cat "$1")
     fi
 }
 
