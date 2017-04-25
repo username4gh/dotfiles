@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+if [[ ! -d "$MY_DOTFILES_RESOURCES/percol" ]];then
+    git clone https://github.com/mooz/percol "$MY_DOTFILES_RESOURCES/percol"
+fi
+
+(export PATH="$MY_DOTFILES_RESOURCES/percol/bin:$PATH"; percol "$@")

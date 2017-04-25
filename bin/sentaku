@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+if [[ ! -d "$MY_DOTFILES_RESOURCES/sentaku" ]];then
+    git clone https://github.com/rcmdnk/sentaku "$MY_DOTFILES_RESOURCES/sentaku"
+fi
+
+(export PATH="$MY_DOTFILES_RESOURCES/sentaku/bin:$PATH"; sentaku "$@")
