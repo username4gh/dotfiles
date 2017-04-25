@@ -2,4 +2,31 @@
 
 # csfa - csearch for aosp
 
-_csearch "$@" | s -i -v 'test' | s -i -v 'examples' | s -i -v '.html' | s -i -v '.xml' | s -i -v '.txt' | s -i -v 'packages' | s -i -v '.py' | s -i -v 'sdk' | s -i -v 'aosp/prebuilts' | s -i -v 'aosp/tools/' | s -i -v 'aosp/developers' | s -i -v 'aosp/device' | s -i -v 'aosp/cts' | s -i -v 'aosp/hardware'
+
+pattern='('
+
+pattern+='aosp/cts'
+pattern+='|aosp/developers'
+pattern+='|aosp/device'
+pattern+='|aosp/hardware'
+pattern+='|aosp/prebuilts'
+pattern+='|aosp/tools/'
+
+pattern+='|examples'
+pattern+='|packages'
+pattern+='|sdk'
+pattern+='|test'
+
+pattern+='|.html'
+pattern+='|.js'
+pattern+='|.xml'
+pattern+='|.txt'
+pattern+='|.py'
+
+pattern+='|no such file or directory'
+
+pattern+=')'
+
+_csearch "$@" | s -i -v "$pattern"
+
+unset pattern

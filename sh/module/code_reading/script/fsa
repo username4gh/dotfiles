@@ -2,4 +2,19 @@
 
 # csfa - csearch for aosp
 
-_fsearch "$@" | s -i -v 'test' | s -i -v 'examples' | s -i -v '.html' | s -i -v '.xml' | s -i -v '.txt' | s -i -v 'packages' | s -i -v '.py'
+pattern='('
+
+pattern+='examples'
+pattern+='|packages'
+pattern+='|test'
+
+pattern+='|.html'
+pattern+='|.py'
+pattern+='|.txt'
+pattern+='|.xml'
+
+pattern+=')'
+
+_fsearch "$@" | s -i -v "$pattern"
+
+unset pattern
