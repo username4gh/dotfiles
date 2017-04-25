@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 if [[ "$(_check_os)" == "Linux" ]];then
+    export PATH="/usr/local/bin:$PATH"
     if ! shopt -oq posix; then
         if [[ -f /usr/share/bash-completion/bash_completion ]]; then
             . /usr/share/bash-completion/bash_completion
