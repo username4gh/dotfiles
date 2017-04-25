@@ -3,9 +3,6 @@
 if [[ "$(_check_os)" == 'Darwin' ]]; then
     if [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'macports' ]];then
         # no need to install any '*completion' package, leave it to oh-my-zsh/bash-it
-
-        export PATH="/usr/local/bin:$PATH"
-
         export PATH="/opt/local/bin:$PATH"
         export PATH="/opt/local/sbin:$PATH"
         export PATH="/opt/local/libexec/gnubin:$PATH"
@@ -17,7 +14,6 @@ if [[ "$(_check_os)" == 'Darwin' ]]; then
             . /opt/local/etc/profile.d/bash_completion.sh
         fi
     elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
-        export PATH="/usr/local/bin:$PATH"
         export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
         # prefer `homebrew/versions/bash-completion2`, the `bash-completion` package wonn't work properly with other stuff in this dotfile, some function is missing
