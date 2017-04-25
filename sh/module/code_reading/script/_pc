@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+# strip out newline character by default
+
+tr -d '\n' | pbcopy
