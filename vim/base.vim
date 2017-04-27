@@ -168,3 +168,5 @@ nnoremap <F5> :w !sudo tee % > /dev/null
 nnoremap <F6> :bp<CR>
 nnoremap <F7> :bn<CR>
 
+nnoremap <F8> 20j<CR>
+nnoremap <F9> 20k<CR>
