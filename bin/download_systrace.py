@@ -88,13 +88,16 @@ class UrlGenerator:
         self.__base_url = 'https://dl.google.com/android/repository/'
 
     def url(self, version):
+        url = self.__base_url + 'platform-tools_r' + str(version) 
         if version.major > 25:
-            return self.__base_url + 'platform-tools_r' + str(version) + '-darwin.zip'
+            return url + '-darwin.zip'
         elif version.major == 25:
             if version.minor > 3:
-                return self.__base_url + 'platform-tools_r' + str(version) + '-darwin.zip'
+                return url + '-darwin.zip'
+            else:
+                return url + '-macosx.zip'
         else:
-            return self.__base_url + 'platform-tools_r' + str(version) + '-macosx.zip'
+            return url + '-macosx.zip'
 
 
 def main(argv=sys.argv):
