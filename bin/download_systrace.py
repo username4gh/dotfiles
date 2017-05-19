@@ -44,10 +44,10 @@ class Downloader:
                 data = result.read(1024 * 1024)
                 if len(data) != 0:
                     output.write(data)
-                    self._file_size(output)
+                    print 'output file size -- ' + self._file_size(filename)
                 else:
                     break
-                self._file_size(output)
+                print 'output file size -- ' + self._file_size(filename)
         except Exception as exception:
             print exception
 
@@ -69,23 +69,39 @@ class Version:
         self.mid = mid
         self.minor = minor
 
+    @staticmethod
+    def generate():
+        versions = []
+        for major in range(22, 27):
+            for mid in range(0, 4):
+                for minor in range(0, 4):
+                    versions.append(Version(major, mid, minor))
+        return versions
+
+
     def __str__(self):
         return str(self.major) + '.' + str(self.mid) + '.' + str(self.minor)
 
+class UrlGenerator:
 
-base_url = 'https://dl.google.com/android/repository/'
+    def __init__(self):
+        self.__base_url = 'https://dl.google.com/android/repository/'
 
-
-def _url(version):
-    url = base_url + 'platform-tools_r' + str(version) + '-darwin.zip'
-    return url
+    def url(self, version):
+        if version.major > 25:
+            return self.__base_url + 'platform-tools_r' + str(version) + '-darwin.zip'
+        elif version.major == 25:
+            if version.minor > 3:
+                return self.__base_url + 'platform-tools_r' + str(version) + '-darwin.zip'
+        else:
+            return self.__base_url + 'platform-tools_r' + str(version) + '-macosx.zip'
 
 
 def main(argv=sys.argv):
     downloader = Downloader()
-    for x in range(1, 5):
-        version = Version(24, 0, x)
-        downloader.download(_url(version))
+    urlGenerator = UrlGenerator()
+    for version in Version.generate():
+        downloader.download(urlGenerator.url(version))
 
 
 sys.exit(main())

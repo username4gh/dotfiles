@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 # coding=UTF-8
 
-import os
+import re
 import sys
 import urllib2
-
 
 class Downloader:
     def __init__(self):
@@ -55,22 +54,12 @@ class Downloader:
                 output.close()
         return 0
 
-
-base_url = 'http://traffic.libsyn.com/dickwall/JavaPosse'
-
-
 def main(argv=sys.argv):
-    downloader = Downloader()
-    for i in xrange(1, 462):
-        if len(str(i)) == 1:
-            url = base_url + '00' + str(i) + '.mp3'
-        if len(str(i)) == 2:
-            url = base_url + '0' + str(i) + '.mp3'
-        if len(str(i)) == 3:
-            url = base_url + str(i) + '.mp3'
+    print argv
+    if len(argv) == 1:
+        print 'Usage: dl.py <url>'
 
-        print url
-        downloader.download(url)
-
+    dl = Downloader()
+    dl.download(argv[1])
 
 sys.exit(main())
