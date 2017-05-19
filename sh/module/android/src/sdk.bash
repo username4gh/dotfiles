@@ -12,6 +12,7 @@ export PATH="$ANDROID_NDK:$PATH"
 export PATH="$ANDROID_SDK/tools:$PATH"
 export PATH="$ANDROID_SDK/build-tools/23.0.2:$PATH"
 export PATH="$ANDROID_SDK/platform-tools:$PATH"
+export PATH="$ANDROID_SDK/platform-tools/systrace:$PATH"
 
 _android_cscope() {
     local ndk_version

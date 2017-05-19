@@ -33,10 +33,13 @@ unset PROMPT_COMMAND
 
 # for internal function, no `Usage`, only print log
 _sh_log() {
-    if [[ "$#" == 2 ]];then
+    # $1 -- TAG
+    # $2 -- content
+    # $3 -- log file
+    if [[ "$#" == 3 ]];then
         local LOG_DIR="$MY_DOTFILES/log"
         if [[ -d "$LOG_DIR" ]]; then
-            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> $LOG_DIR/sh.log
+            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> "$LOG_DIR/$3.log"
         fi
     fi
 }
