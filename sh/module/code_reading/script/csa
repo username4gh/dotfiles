@@ -28,6 +28,6 @@ pattern+='|no such file or directory'
 
 pattern+=')'
 
-_csearch "$@" | s -i -v "$pattern"
+_csearch "$@" |& s -i -v "$pattern"
 
 unset pattern
