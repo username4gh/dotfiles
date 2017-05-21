@@ -7,17 +7,19 @@
 
 + Compatibility & Light-weight (i had to ditch my beloved emacs) & less-dependency
  1. <small>darwin & ubuntu</small>
- 2. <s><small>zsh & bash</small></s>(I'am really busy now and will stay the same for a long time, i just not able to continue doing this, so bash only)
+ 2. <s><small>zsh & bash 4.x</small></s>(I'am really busy now and will stay the same for a long time, i just not able to continue doing this, and i'm only familiar with bash 4.x, so bash 4.x only)
  3. <small>local & ssh</small>
- 4. <small>prefer pre-installed software(intersection of OSX and Ubuntu)</small>
+ 4. <s><small>Prefer pre-installed software(intersection of OSX and Ubuntu)</small></s>(Same reason above, i'll remain trying, but i cann't guarantee)
 
-    - <small>use curl rather than wget(because as to OSX, wget is not a built-in command)</small>
+    	- <small>use curl rather than wget(because as to OSX, wget is not a built-in command)</small>
 
  5. <small>deal with the difference between BSD & GNU program</small>
 
     - <small>use python script to replace some of these programs in order to reduce the impact causing by these differences (between go python ruby and javascript, only python is supported by both OS in default)</small>
 
 # Pre-arrangement
++ PATH -- keep `/bin/` at the end of PATH sequence, so avoid using some old version of softwares like `/bin/bash` on macosx, to save energy.
+
 + bash script loading-sequence(also the dependency chain, frome left to right, each layer may or may not depends on the layer on its left side and may or may not be depended by the layer on its right side):
 
 	> internal -> mechanism -> (path - runtime) -> (function - alias) -> module -> custom
