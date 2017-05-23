@@ -8,10 +8,10 @@ pattern+='examples'
 pattern+='|packages'
 pattern+='|test'
 
-pattern+='|.html'
-pattern+='|.py'
-pattern+='|.txt'
-pattern+='|.xml'
+pattern+='|\.html'
+pattern+='|\.py'
+pattern+='|\.txt'
+pattern+='|\.xml'
 
 pattern+=')'
 

@@ -18,11 +18,11 @@ pattern+='|packages'
 pattern+='|sdk'
 pattern+='|test'
 
-pattern+='|.html'
-pattern+='|.js'
-pattern+='|.xml'
-pattern+='|.txt'
-pattern+='|.py'
+pattern+='|\.html'
+pattern+='|\.js'
+pattern+='|\.xml'
+pattern+='|\.txt'
+pattern+='|\.py'
 
 pattern+='|no such file or directory'
 
