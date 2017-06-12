@@ -6,9 +6,9 @@ _repos_get_url() {
     echo "$url";)
 }
 
-if [[ "$#" -eq 0 ]];then
-    mrconfig_directory=$MY_DOTFILES_RESOURCES
-    repos_directory=$MY_DOTFILES_RESOURCES
+if [[ ! "$#" -eq 1 ]];then
+    echo "Usage: repos_register_all <path>"
+    exit
 else
     mrconfig_directory=$1
     repos_directory=$1
