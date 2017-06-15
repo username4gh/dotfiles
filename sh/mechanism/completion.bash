@@ -62,7 +62,7 @@ _completion_generate() {
     fi
 }
 
-_annotation_completion_write() {
+_annotation_completion_write () {
     # like java-annotation, i use this to annotate certain lines in bash file, in
     # order to process them later
     return
@@ -71,10 +71,14 @@ _annotation_completion_write() {
 _annotation_completion_generate() {
     # like java-annotation, i use this to annotate certain lines in bash file, in
     # order to process them later
-    return
+    if [[ "$#" -eq 3 ]];then
+        return
+    else
+        echo "#@"
+    fi
 }
 
-_completion_complete () {
+_completion_complete() {
     if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
         local cur="${COMP_WORDS[COMP_CWORD]}"
 
@@ -111,25 +115,34 @@ _completion_setup() {
 }
 
 completion_generate() {
-    while IFS= read -r item
-    do
-        # deal with _annotation_completion_write
-        while IFS= read -r line
+    if [[ ! -f "$MY_SH/cache.bash" ]];then
+        while IFS= read -r file
         do
-            completion_args=$(echo "$line" | cut -d ' ' -f2-)
-            _completion_write $completion_args
-        done < <(s -f $item '_annotation_completion_write')
+            _completion_process "$file"
+            # filtered out some irrelevant files to boost performance
+        done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
+    else
+        _completion_process "$MY_SH/cache.bash"
+    fi
+}
 
-        # deal with _annotation_completion_generate
-        while IFS= read -r line
-        do
-            IFS=' ' read -r -a array <<< "$line"
-            completion_target="${array[1]}"
-            # using eval to avoid apostrophe
-            completion_dir="$(eval echo ${array[2]})"
-            completion_pattern="${array[3]}"
-            _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
-        done < <(s -f $item _annotation_completion_generate)
-        # filtered out some irrelevant files to boost performance
-    done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
+_completion_process() {
+    echo "$1"
+    # deal with _annotation_completion_write
+    while IFS= read -r line
+    do
+        completion_args=$(echo "$line" | cut -d ' ' -f2-)
+        _completion_write $completion_args
+    done < <(s -f $1 '^_annotation_completion_write[a-zA-Z0-9_\s]+[^(){}]')
+
+    # deal with _annotation_completion_generate
+    while IFS= read -r line
+    do
+        IFS=' ' read -r -a array <<< "$line"
+        completion_target="${array[1]}"
+        # using eval to avoid apostrophe
+        completion_dir="$(eval echo ${array[2]})"
+        completion_pattern="${array[3]}"
+        _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
+    done < <(s -f $1 '^_annotation_completion_generate[a-zA-Z0-9_\s]+[^(){}]')
 }
