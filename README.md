@@ -1,28 +1,30 @@
 # Guidelines
-+ Don't put any lines in your config files that you don't understand!
+## Don't put any lines in your config files that you don't understand!
 
-+ Keep necessary notes
+## Keep necessary notes
  1. <small>meaningfull name</small>
  2. <small>comment & reference</small>
 
-+ Compatibility & Light-weight (i had to ditch my beloved emacs) & less-dependency
- 1. <small>darwin & ubuntu</small>
- 2. <s><small>zsh & bash 4.x</small></s>(I'am really busy now and will stay the same for a long time, i just not able to continue doing this, and i'm only familiar with bash 4.x, so bash 4.x only)
+## Compatibility & Light-weight (i had to ditch my beloved emacs) & less-dependency
+ 1. <small>support both darwin & ubuntu</small>
+ 2. <s><small>zsh & bash 4.x</small></s>
  3. <small>local & ssh</small>
- 4. <s><small>Prefer pre-installed software(intersection of OSX and Ubuntu)</small></s>(Same reason above, i'll remain trying, but i cann't guarantee)
+ 4. <s><small>Prefer pre-installed software(intersection of OSX and Ubuntu)</small></s>(I'll remain trying, but i cann't guarantee)
 
-    	- <small>use curl rather than wget(because as to OSX, wget is not a built-in command)</small>
+    > <small>use curl rather than wget(because as to OSX, wget is not a built-in command)</small>
 
  5. <small>deal with the difference between BSD & GNU program</small>
 
     - <small>use python script to replace some of these programs in order to reduce the impact causing by these differences (between go python ruby and javascript, only python is supported by both OS in default)</small>
 
 # Pre-arrangement
-+ PATH -- keep `/bin/` at the end of PATH sequence, so avoid using some old version of softwares like `/bin/bash` on macosx, to save energy.
+## PATH related
+keep `/bin/` at the end of PATH sequence, so avoid using some old version of softwares like `/bin/bash` on macosx, to save energy.
 
-+ bash script loading-sequence(also the dependency chain, frome left to right, each layer may or may not depends on the layer on its left side and may or may not be depended by the layer on its right side):
+## Loading-Sequence
+(also the dependency chain, frome left to right, each layer may or may not depends on the layer on its left side and may or may not be depended by the layer on its right side):
 
-	> internal -> mechanism -> (path - runtime) -> (function - alias) -> module -> custom
+> internal -> mechanism -> (path - runtime) -> (function - alias) -> module -> custom
 
  1. <small>internal (written with only then shell-builtin commands & some shared pre-installed programs on both the ubuntu and OSX)</small>
  2. <small>path (package-manager specific & custom-defined 'PATH')</small>
@@ -31,13 +33,32 @@
  4. <small>module (least dependence between each other, dependency autonomy)</small>
  5. <small>no external dependence for executable script</small>
 
-+ naming convention:
- 	- prefix '\_' for function only used internally
+## Naming Convention:
+ 	
+function name with underscore as prefix means this function is internal-use only
 
-+ terminology
-        - when I mention about module in comment/naming or something else, it means someting related to one module
-        - when I mention about modules in comment/naming or something else, it means something related to all modules in a generic way
-        - In another word, module or modules are like scope identifier
+## Terminology
+### module & modules
+1. when I mention about module in comment/naming or something else, it means someting related to one module
+2. when I mention about modules in comment/naming or something else, it means something related to all modules in a generic way
+3. In another word, module or modules are like scope identifier
+
+## annotation
+There are some functions work like java-annotion with `RetentionPolicy.SOURCE`。
+
+```
+_annotation_completion_write() {
+    # like java-annotation, i use this to annotate certain lines in bash file, in
+    # order to process them later
+    return
+}
+
+_annotation_completion_generate() {
+    # like java-annotation, i use this to annotate certain lines in bash file, in
+    # order to process them later
+    return
+}
+```
 
 # TODO & Question & Reference
 + backup shell-command-history to github with encryption

@@ -23,9 +23,9 @@ v_rvm() {
 }
 
 
-_completion_register_write v_rvm alfi
-_completion_register_write v_rvm gem
-_completion_register_write v_rvm pod
-_completion_register_write v_rvm rvm
+_annotation_completion_write v_rvm alfi
+_annotation_completion_write v_rvm gem
+_annotation_completion_write v_rvm pod
+_annotation_completion_write v_rvm rvm
 
 _completion_setup v_rvm

@@ -56,12 +56,12 @@ _python_check_pyenv() {
 }
 
 
-_completion_register_write v_pyenv pip
-_completion_register_write v_pyenv pip list
-_completion_register_write v_pyenv pip show
+_annotation_completion_write v_pyenv pip
+_annotation_completion_write v_pyenv pip list
+_annotation_completion_write v_pyenv pip show
 
-_completion_register_write v_pyenv pyenv
-_completion_register_write v_pyenv python
-_completion_register_write v_pyenv youtube-dl
+_annotation_completion_write v_pyenv pyenv
+_annotation_completion_write v_pyenv python
+_annotation_completion_write v_pyenv youtube-dl
 
 _completion_setup v_pyenv

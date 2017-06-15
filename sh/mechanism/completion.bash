@@ -62,11 +62,15 @@ _completion_generate() {
     fi
 }
 
-_completion_register_write(){
+_annotation_completion_write() {
+    # like java-annotation, i use this to annotate certain lines in bash file, in
+    # order to process them later
     return
 }
 
-_completion_register_generate() {
+_annotation_completion_generate() {
+    # like java-annotation, i use this to annotate certain lines in bash file, in
+    # order to process them later
     return
 }
 
@@ -109,14 +113,14 @@ _completion_setup() {
 completion_generate() {
     while IFS= read -r item
     do
-        # deal with _completion_register_write
+        # deal with _annotation_completion_write
         while IFS= read -r line
         do
             completion_args=$(echo "$line" | cut -d ' ' -f2-)
             _completion_write $completion_args
-        done < <(s -f $item '_completion_register_write')
+        done < <(s -f $item '_annotation_completion_write')
 
-        # deal with _completion_register_generate
+        # deal with _annotation_completion_generate
         while IFS= read -r line
         do
             IFS=' ' read -r -a array <<< "$line"
@@ -125,7 +129,7 @@ completion_generate() {
             completion_dir="$(eval echo ${array[2]})"
             completion_pattern="${array[3]}"
             _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
-        done < <(s -f $item _completion_register_generate)
+        done < <(s -f $item _annotation_completion_generate)
         # filtered out some irrelevant files to boost performance
     done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
 }

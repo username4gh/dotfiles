@@ -20,19 +20,19 @@ _binutils(){
     )
 }
 
-_completion_register_write _binutils addr2line
-_completion_register_write _binutils ar
-_completion_register_write _binutils cxxfilt
-_completion_register_write _binutils elfedit
-_completion_register_write _binutils embedspu
-_completion_register_write _binutils libtool
-_completion_register_write _binutils nm-new
-_completion_register_write _binutils objcopy
-_completion_register_write _binutils objdump
-_completion_register_write _binutils readelf
-_completion_register_write _binutils size
-_completion_register_write _binutils strings
-_completion_register_write _binutils strip-new
-_completion_register_write _binutils sysinfo
+_annotation_completion_write _binutils addr2line
+_annotation_completion_write _binutils ar
+_annotation_completion_write _binutils cxxfilt
+_annotation_completion_write _binutils elfedit
+_annotation_completion_write _binutils embedspu
+_annotation_completion_write _binutils libtool
+_annotation_completion_write _binutils nm-new
+_annotation_completion_write _binutils objcopy
+_annotation_completion_write _binutils objdump
+_annotation_completion_write _binutils readelf
+_annotation_completion_write _binutils size
+_annotation_completion_write _binutils strings
+_annotation_completion_write _binutils strip-new
+_annotation_completion_write _binutils sysinfo
 
 _completion_setup _binutils

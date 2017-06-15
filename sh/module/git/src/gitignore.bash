@@ -32,6 +32,6 @@ git_ignore_init() {
     fi
 }
 
-_completion_register_generate git_ignore_init $MY_DOTFILES_RESOURCES/gitignore gitignore
+_annotation_completion_generate git_ignore_init $MY_DOTFILES_RESOURCES/gitignore gitignore
 
 _completion_setup git_ignore_init
