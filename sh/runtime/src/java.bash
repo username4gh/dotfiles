@@ -4,11 +4,13 @@ _java_bin_init() {
     local fileUrl
     local fileName
 
-    if [[ "$(_check_command java)" == 0 ]];then
+    if ! _is_command_exist java;then
         echo "beginning java init"
-        if [[ "$(_check_os)" == "Darwin" ]];then
+        if _is_darwin;then
             echo "Go 'http://www.oracle.com/technetwork/java/javase/downloads/index.html' to download !"
-        elif [[ "$(_check_os)" == "Linux" ]]; then
+        fi
+
+        if _is_linux; then
             fileUrl=$(_java_8_url_linux)
         fi
 
@@ -26,7 +28,7 @@ _java_init() {
     _java_bin_init
 }
 
-if [[ "$(_check_os)" == "Linux" ]];then
+if _is_linux;then
     export JDK_PATH="$(_autodetect_bin "jdk1\..*")"
     if [[ "${#JDK_PATH}" -eq 0 ]];then
         _sh_log "${BASH_SOURCE[0]}" "jdk has not been installed yet"

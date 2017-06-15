@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [[ "$(_check_os)" == 'Darwin' ]]; then
+if _is_darwin; then
     if [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'macports' ]];then
         # no need to install any '*completion' package, leave it to oh-my-zsh/bash-it
         export PATH="/opt/local/bin:$PATH"

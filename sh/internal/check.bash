@@ -1,79 +1,35 @@
 #! /usr/bin/env bash
 
-# for all func below, '1' means exist
+# https://stackoverflow.com/questions/5431909/bash-functions-return-boolean-to-be-used-in-if
 
-_check_variant() {
-    if [[ "$#" == 1 ]];then
-        if [[ -z "$1" ]]; then
-            echo 0;
-        else
-            echo 1;
-        fi
-    else
-        echo "_check_variant error"
-    fi
+_is_env_exist() {
+    [[ "$#" -eq 1 ]] && [[ ! -z "$1" ]]
 }
 
-_check_dir() {
-    if [[ "$#" == 1 ]];then
-        if [[ -n "$1" ]] && [[ ! -d "$1" ]]; then
-            echo 0;
-        else
-            echo 1;
-        fi
-    else 
-        echo "_check_dir error"
-    fi
+_is_dir_exist() {
+    [[ "$#" -eq 1 ]] && [[ ! -n "$1" ]] && [[ -d "$1" ]]
 }
 
-_check_file() {
-    if [[ "$#" == 1 ]];then
-        if [[ -n "$1" ]] && [[ ! -f "$1" ]]; then
-            echo 0;
-        else
-            echo 1;
-        fi
-    else 
-        echo "_check_file error"
-    fi
+_is_file_exist() {
+    [[ "$#" -eq 1 ]] && [[ ! -n "$1" ]] && [[ -f "$1" ]]
 }
 
-_check_command() {
-    if [[ "$#" == 1 ]];then
-        if ! command -v "$1" > /dev/null; then
-            echo 0;
-        else
-            echo 1;
-        fi
-    else 
-        echo "_check_command error"
-    fi
+_is_darwin() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
 }
 
-_check_os() {
-    if [[ "$#" == 0 ]];then
-        if [[ "$(uname -s)" == "Darwin" ]]; then
-            echo "Darwin";
-            return;
-        elif [[ "$(uname -s)" == "Linux" ]]; then
-            echo "Linux";
-            return;
-        elif [[ "$(uname -s)" == "MINGW32_NT" ]]; then
-            echo "MINGW32_NT";
-        fi
-    else
-        echo "_check_os error"
-    fi
+_is_linux() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]]
 }
 
-_check_root() {
-    if [[ "$#" == 0 ]];then
-        if [[ $(id -u) -ne 0 ]];then
-            echo "0";
-        else
-            echo "1";
-        fi 
-    else 
-        echo "_check_root error"
-    fi
+_is_mingw32_nt() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "MINGW32_NT" ]]
+}
+
+_is_command_exist() {
+    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+}
+
+_is_root() {
+    [[ "$#" -eq 0 ]] && [[ "$(i -iu)" -ne 0 ]]
 }

@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-if [[ "$(_check_os)" == "Darwin" ]];then
+if _is_darwin;then
     #user cache file
     echo "cleaning user cache file from ~/Library/Caches"
     rm -rf ~/Library/Caches/*

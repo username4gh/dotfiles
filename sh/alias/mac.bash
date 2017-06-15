@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-if [[ "$(_check_os)" == "Darwin" ]]; then
+if _is_darwin; then
 
     # IP addresses
     alias ip="dig +short myip.opendns.com @resolver1.opendns.com"

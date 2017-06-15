@@ -3,7 +3,7 @@
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 
-if [[ "$(_check_command 'unzip')" == 1 ]];then
+if _is_command_exist 'unzip';then
     if [[ ! -d "$HOME/.sdkman" ]]; then
         curl -s http://get.sdkman.io | bash
     fi

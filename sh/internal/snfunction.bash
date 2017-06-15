@@ -4,7 +4,9 @@
 _snfunction_on_module_level() {
     method="_$(_file_name_noext $2)_$1"
 
-    if [[ "$(_check_command $method)" == 1 ]];then
+    echo "$method"
+
+    if _is_command_exist "$method" ;then
         echo "  calling $method"
         if [[ "$3" == 'execute' ]];then
             $method

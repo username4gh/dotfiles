@@ -137,7 +137,7 @@ fi
 #shopt -s globstar
 
 # make less more friendly for non-text input files, see lesspipe(1)
-if [[ "$(_check_os)" == "Darwin" ]];then
+if _is_darwin;then
     export LESSOPEN='| /opt/local/bin/lesspipe.sh %s'
 else
     [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"

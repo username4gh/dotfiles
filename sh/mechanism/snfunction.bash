@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
-# sn -- special named
+# sn -- special-named
 
 _init() {
-    local useage='Usage:my_init option \n init:do actual init process \n list:show all modules'
+    local useage='Usage:my_init option \n init:do actual init process \n list:show all modules\n'
     if [[ "$#" == 1 ]];then
         if  [[ "$1" == 'init' ]];then
             _snfunction_on_modules_level _init execute
