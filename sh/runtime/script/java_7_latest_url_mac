@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+curl -s https://lv.binarybabel.org/catalog-api/java/jdk7.txt?p=downloads.dmg

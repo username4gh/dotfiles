@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+# https://lv.binarybabel.org/api
+
+curl -s https://lv.binarybabel.org/catalog-api/java/jdk8.txt?p=downloads.dmg

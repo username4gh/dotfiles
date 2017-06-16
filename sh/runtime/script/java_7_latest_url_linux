@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
-url="http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | sort | uniq | s 7u | head -1)"
-echo $url
-unset url
+# echo "http://ghaffarian.net/downloads/Java/$(curl -s http://ghaffarian.net/downloads/Java/ | s -o "(?<=<a\ href=\").*?(?=\">)" | s x64.tar.gz | sort | uniq | s 7u | head -1)"
+
+curl -s https://lv.binarybabel.org/catalog-api/java/jdk7.txt?p=downloads.tgz
