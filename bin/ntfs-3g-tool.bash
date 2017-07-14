@@ -21,10 +21,11 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
             sudo ntfs-3g $device $2
         fi
     else
-        echo "Usage: command device_qualifier mount_point"
-        echo "For device_qualifier, use `diskutil list` to check candidates"
-        echo "Example: command QPTP /mnt"
-        echo "And for unmount, use `diskutil unmount` to unmount partition first, then use `diskutil unmountDisk` to unmount disk"
+        echo "Usage: $0 <device_qualifier> <mount_point>"
+        echo "Noted: '<>' diamond bracket means the argument is necessitated"
+        echo "Example: $0 QPTP /mnt"
+        echo "For device_qualifier, use 'ls /Volumes' to check candidates"
+        echo "And for unmount, use 'diskutil unmount' to unmount partition first, then use 'diskutil unmountDisk' to unmount disk"
     fi
 else 
     echo "Only works for Darwin"
