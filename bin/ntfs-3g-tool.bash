@@ -17,15 +17,14 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
             echo "plz install ntfs-3g first"
             exit
         else
-            echo "ntfs-3g $device $2"
+            echo "2. ntfs-3g $device $2"
             sudo ntfs-3g $device $2
         fi
     else
         echo "Usage: $0 <device_qualifier> <mount_point>"
         echo "Noted: '<>' diamond bracket means the argument is necessitated"
-        echo "Example: $0 QPTP /mnt"
         echo "For device_qualifier, use 'ls /Volumes' to check candidates"
-        echo "And for unmount, use 'diskutil unmount' to unmount partition first, then use 'diskutil unmountDisk' to unmount disk"
+        echo "And for unmount, use 'diskutil unmountDisk' to unmount disk"
     fi
 else 
     echo "Only works for Darwin"
