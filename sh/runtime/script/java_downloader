@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+curl -LOH 'Cookie: oraclelicense=accept-securebackup-cookie' "$1"
