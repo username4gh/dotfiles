@@ -61,4 +61,6 @@ if _is_darwin; then
     alias list_user_shell="dscl . -read $HOME UserShell"
 
     alias macd="open -a MacDown"
+
+    alias icloud='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
 fi
