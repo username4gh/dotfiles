@@ -62,6 +62,8 @@ _annotation_completion_write v_pyenv pip show
 
 _annotation_completion_write v_pyenv pyenv
 _annotation_completion_write v_pyenv python
+_annotation_completion_write v_pyenv sslocal
+_annotation_completion_write v_pyenv sserver
 _annotation_completion_write v_pyenv youtube-dl
 
 _completion_setup v_pyenv
