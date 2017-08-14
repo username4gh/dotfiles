@@ -13,7 +13,7 @@ _branch(){
     fi
 }
 
-PS1="[\\j] [\${MY_CURRENT_PACKAGE_MANAGER}] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_branch)\\$ "
+PS1="[\\j] \${MY_CURRENT_PACKAGE_MANAGER} \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_branch)\\$ "
 
 # make `pwd` as iterm2 tab title
 PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
