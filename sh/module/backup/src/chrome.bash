@@ -15,8 +15,7 @@ if _is_darwin;then
         if [[ "$(ymdGapInDays "$(ls $MY_BACKUP_DIR | tail -1)")" -gt 7 ]];then
             _sh_log "${BASH_SOURCE[0]}" 'backup chrome browsing history'
             chrome_backup_dest_dir="$(_backup_get_dest_dir)"
-            _backup_chrome_browsing_history "$chrome_backup_dest_dir/"
-            git -C "$chrome_backup_dest_dir" commit -am "save"
+            _backup_chrome_browsing_history "$chrome_backup_dest_dir/" && git -C "$chrome_backup_dest_dir" commit -am save
             unset chrome_backup_dest_dir
         fi
     else
