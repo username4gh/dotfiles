@@ -63,4 +63,9 @@ if _is_darwin; then
     alias macd="open -a MacDown"
 
     alias icloud='cd ~/Library/Mobile\ Documents/com~apple~CloudDocs'
+
+    # socks proxy
+    alias spstatus='networksetup -getsocksfirewallproxy Wi-Fi'
+    alias spon='networksetup -setsocksfirewallproxystate Wi-Fi on'
+    alias spoff='networksetup -setsocksfirewallproxystate Wi-Fi off'
 fi
