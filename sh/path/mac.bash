@@ -14,7 +14,8 @@ if _is_darwin; then
             . /opt/local/etc/profile.d/bash_completion.sh
         fi
     elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
-        export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+        # https://apple.stackexchange.com/questions/69223/how-to-replace-mac-os-x-utilities-with-gnu-core-utilities
+        export PATH="$(find -L /usr/local/opt -type d -iname gnubin | tr '\n' ':')$PATH"
 
         # prefer `homebrew/versions/bash-completion2`, the `bash-completion` package wonn't work properly with other stuff in this dotfile, some function is missing
         if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
