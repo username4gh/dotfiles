@@ -41,29 +41,11 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         sudo hdiutil attach -notremovable -nobrowse -mountpoint ${MOUNTPOINT} ${WORKSPACE}
     }
 
-    help() {
-        cat <<EOF
-        usage: workspace <command>
-        Possible commands:
-        create       Initialize case-sensitive volume (only needed first time)
-        mount        Attach the case-sensitive volume
-        unmount      Detach the case-sensitive volume
-        help         Display this message
-EOF
-    }
-
-    invalid() {
-        printf "workspace: '$1' is not a valid command.\n\n";
-        help
-    }
-
     case "$1" in
         create) create;;
-        mount) attach;;
-        unmount) detach;;
-        help) help;;
-        '') help;;
-        *) invalid $1;;
+        attach) attach;;
+        detach) detach;;
+        *) echo "only support three operations: create/attach/detach";;
     esac
 else
     echo "This tool only works on OSX"
