@@ -19,7 +19,6 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
 
         # https://github.com/Valloric/YouCompleteMe/issues/679
         (cd "$HOME/.vim/bundle/YouCompleteMe";
-        unset PATH;
 
         export CMAKE_MAKE_PROGRAM='/opt/local/bin/cmake'
 
@@ -42,15 +41,23 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
         export CMAKE_C_COMPILER="/opt/local/bin/clang"
         export CMAKE_CXX_COMPILER="/opt/local/bin/clang"
 
-        export PATH="/opt/local/bin:$PATH";
+        unset PATH;
+        export PATH="/bin"
         export PATH="/opt/local/sbin:$PATH";
+        export PATH="/opt/local/bin:$PATH";
         export PATH="/opt/local/libexec/gnubin:$PATH";
-        export PATH="/bin:$PATH"
         echo $PATH
         echo $PATH_TO_LLVM_ROOT
         #python ./install.py)
         python ./install.py --clang-completer)
     else
-        echo "only work with macports"
+        (cd "$HOME/.vim/bundle/YouCompleteMe";
+        unset PATH;
+        export PATH="/bin"
+        export PATH="/usr/bin/:$PATH"
+        export PATH="/usr/local/bin:$PATH";
+        echo $PATH
+        #python ./install.py)
+        python ./install.py --clang-completer)
     fi
 fi
