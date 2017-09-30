@@ -12,6 +12,7 @@ module_init() {
         local current_dir=$(pwd)
         if [[ "$current_dir" == "$MY_SH_MODULE" ]];then
             mkdir -p "$MY_SH_MODULE/$1"
+            mkdir -p "$MY_SH_MODULE/$1/script"
             mkdir -p "$MY_SH_MODULE/$1/src"
 
             _module_generate_init_bash $1 $2
