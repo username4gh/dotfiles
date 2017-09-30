@@ -1,9 +1,5 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_BIN/go" ]]; then
-    mkdir -p "$MY_BIN/go"
-fi
-
 if [[ ! -d "$HOME/go" ]];then
     mkdir -p "$HOME/go"
 fi
