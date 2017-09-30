@@ -9,6 +9,7 @@ export MY_SH_MODULE="$MY_SH/module"
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
 export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
+export MY_LOG_DIR="$MY_DOTFILES/log"
 
 if [[ ! -d "$MY_BIN" ]];then
     mkdir -p "$MY_BIN"
@@ -36,28 +37,40 @@ _sh_log() {
     # $1 -- TAG
     # $2 -- content
     # $3 -- log file
-    if [[ "$#" == 3 ]];then
-        local LOG_DIR="$MY_DOTFILES/log"
-        if [[ -d "$LOG_DIR" ]]; then
-            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> "$LOG_DIR/$3.log"
+    if [[ -d "$MY_LOG_DIR" ]]; then
+        if [[ "$#" == 3 ]];then
+            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> "$MY_LOG_DIR/$3.log"
         fi
     fi
 }
 
+_sh_log_enable() {
+    if [[ ! -d "$MY_LOG_DIR" ]];then
+        mkdir -p "$MY_LOG_DIR"
+    fi
+}
+
+_sh_log_disable() {
+    if [[ -d "$MY_LOG_DIR" ]];then
+        rm -rf "$MY_LOG_DIR"
+    fi
+}
+
 _cache_gen() {
+    local OUTPUT_FILE="$MY_SH/cache.bash"
     # generate cache.bash
     if [[ ! "$1" =~ 'init' ]];then
         # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
         # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
 
-        cat "$1" >> "$MY_SH/cache.bash"
+        cat "$1"  >> "$OUTPUT_FILE"
 
         # append a new line to prevent issue
-        echo -e "\n" >> "$MY_SH/cache.bash"
+        echo -e "\n" >> "$OUTPUT_FILE"
     else
         while IFS= read -r line
         do
-            [[ "$line" =~ 'export PATH' ]] && echo "$line" >> "$MY_SH/cache.bash"
+            [[ "$line" =~ 'export PATH' ]] && echo "$line" >> "$OUTPUT_FILE"
         done < <(cat "$1")
     fi
 }

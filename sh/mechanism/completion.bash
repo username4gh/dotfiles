@@ -114,20 +114,7 @@ _completion_setup() {
     fi
 }
 
-completion_generate() {
-    if [[ ! -f "$MY_SH/cache.bash" ]];then
-        while IFS= read -r file
-        do
-            _completion_process "$file"
-            # filtered out some irrelevant files to boost performance
-        done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
-    else
-        _completion_process "$MY_SH/cache.bash"
-    fi
-}
-
 _completion_process() {
-    echo "$1"
     # deal with _annotation_completion_write
     while IFS= read -r line
     do
@@ -146,3 +133,17 @@ _completion_process() {
         _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
     done < <(s -f $1 '^_annotation_completion_generate[a-zA-Z0-9_\s]+[^(){}]')
 }
+
+completion_generate() {
+    if [[ ! -f "$MY_SH/cache.bash" ]];then
+        echo "this command should only work with the cache.bash"
+        #while IFS= read -r file
+        #do
+        #    _completion_process "$file"
+        #    # filtered out some irrelevant files to boost performance
+        #done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
+    else
+        _completion_process "$MY_SH/cache.bash"
+    fi
+}
+
