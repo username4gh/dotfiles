@@ -2,8 +2,7 @@
 
 (
 _repos_get_url() {
-    (url="$(git -C "$1" config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)')";
-    echo "$url";)
+    echo "$(git -C "$1" config --list | s 'remote.origin.url' | s -o '(?<=remote\.origin.url\=).*?(?=$)')"
 }
 
 if [[ ! "$#" -eq 1 ]];then
