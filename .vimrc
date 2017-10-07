@@ -87,8 +87,8 @@ map <Leader>q <Plug>(unite_exit)<CR>
 map <Leader>Q <Plug>(unite_all_exit)<CR>
 
 " basic editor-stuff
-so $MY_DOTFILES/vim/base.vim
-so $MY_DOTFILES/vim/clipboard.vim
-so $MY_DOTFILES/vim/output.vim
-so $MY_DOTFILES/vim/search.vim
-so $MY_DOTFILES/vim/whitespace.vim
+so ~/.dotfiles/vim/base.vim
+so ~/.dotfiles/vim/clipboard.vim
+so ~/.dotfiles/vim/output.vim
+so ~/.dotfiles/vim/search.vim
+so ~/.dotfiles/vim/whitespace.vim
