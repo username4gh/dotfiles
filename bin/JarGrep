@@ -1,12 +1,10 @@
-#! /usr/bin/env bash
+#! /usr/bin/env python
 # coding=utf-8
 
 import binascii
 import os
 import sys
 import zipfile
-
-ZIP_FILE_PATH = '~/.groovy/jsoup-1.9.2.jar'
 
 # --- basic type
 # here we assume the endian-ess of class file is big-endian
@@ -1069,10 +1067,12 @@ class ZipFilter:
 
 
 def main(argv):
+    print argv
     # jar file to search
-    path = argv[0]
+    path = argv[1]
     # string to search
-    content = argv[1]
+    content = argv[2]
+
 
     if os.path.exists(path) and os.path.isfile(path):
         f = zipfile.ZipFile(path)
