@@ -11,7 +11,7 @@ export ANDROID_NDK="$ANDROID_SDK/ndk-bundle"
 export PATH="$ANDROID_NDK:$PATH"
 export PATH="$ANDROID_SDK/tools:$PATH"
 
-export NEWEST_BUILD_TOOLS_VERSION="$([ -d "$ANDROID_NDK/build-tools" ] && ls -r1 $ANDROID_SDK/build-tools/ | head -1)"
+export NEWEST_BUILD_TOOLS_VERSION="$([ -d "$ANDROID_SDK/build-tools" ] && ls -r1 $ANDROID_SDK/build-tools/ | head -1)"
 export PATH="$ANDROID_SDK/build-tools/$NEWEST_BUILD_TOOLS_VERSION:$PATH"
 export PATH="$ANDROID_SDK/platform-tools:$PATH"
 export PATH="$ANDROID_SDK/platform-tools/systrace:$PATH"
