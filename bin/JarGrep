@@ -6,49 +6,46 @@ import os
 import sys
 import zipfile
 
+
 # --- basic type
 # here we assume the endian-ess of class file is big-endian
 
-class u1:
+class u:
     def __init__(self):
         self.value = None
+
+    def value_in_int(self):
+        try:
+            return int(float.fromhex(binascii.hexlify(self.value)))
+        except ValueError as err:
+            return 0
+
+    def value_in_str(self):
+        return self.value
+
+
+class u1(u):
+    def __init__(self):
+        u.__init__(self)
 
     def read(self, f):
         self.value = f.read(1)
 
-    def value_in_int(self):
-        return int(float.fromhex(binascii.hexlify(self.value)))
 
-    def value_in_str(self):
-        return str(self.value_in_int())
-
-
-class u2:
+class u2(u):
     def __init__(self):
-        self.value = None
+        u.__init__(self)
 
     def read(self, f):
         self.value = f.read(2)
 
-    def value_in_int(self):
-        return int(float.fromhex(binascii.hexlify(self.value)))
 
-    def value_in_str(self):
-        return str(self.value_in_int())
-
-
-class u4:
+class u4(u):
     def __init__(self):
-        self.value = None
+        u.__init__(self)
 
     def read(self, f):
         self.value = f.read(4)
-
-    def value_in_int(self):
-        return int(float.fromhex(binascii.hexlify(self.value)))
-
-    def value_in_str(self):
-        return str(self.value_in_int())
 
 
 # ------------------------------------------ constant pool ------------------------------------------
@@ -148,7 +145,7 @@ class cp_info:
 class class_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.name_index = u2()
 
     def read_info(self, f):
@@ -161,7 +158,7 @@ class class_info(cp_info):
 class field_ref_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
 
@@ -177,7 +174,7 @@ class field_ref_info(cp_info):
 class method_ref_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
 
@@ -193,7 +190,7 @@ class method_ref_info(cp_info):
 class interface_method_ref_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
 
@@ -209,7 +206,7 @@ class interface_method_ref_info(cp_info):
 class string_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.string_index = u2()
 
     def read_info(self, f):
@@ -222,33 +219,33 @@ class string_info(cp_info):
 class integer_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.bytes = u4()
 
     def read_info(self, f):
         self.bytes.read(f)
 
     def dump(self, output):
-        output.append('integer_info: bytes == ' + self.bytes.value)
+        output.append('integer_info: bytes == ' + self.bytes.value_in_str())
 
 
 class float_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.bytes = u4()
 
     def read_info(self, f):
         self.bytes.read(f)
 
     def dump(self, output):
-        output.append('float_info: bytes == ' + self.bytes.value)
+        output.append('float_info: bytes == ' + self.bytes.value_in_str())
 
 
 class long_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.high_bytes = u4()
         self.low_bytes = u4()
 
@@ -257,14 +254,14 @@ class long_info(cp_info):
         self.low_bytes.read(f)
 
     def dump(self, output):
-        output.append('long_info: high_bytes == ' + self.high_bytes.value)
-        output.append('long_info: low_bytes == ' + self.low_bytes.value)
+        output.append('long_info: high_bytes == ' + self.high_bytes.value_in_str())
+        output.append('long_info: low_bytes == ' + self.low_bytes.value_in_str())
 
 
 class double_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.high_bytes = u4()
         self.low_bytes = u4()
 
@@ -273,14 +270,14 @@ class double_info(cp_info):
         self.low_bytes.read(f)
 
     def dump(self, output):
-        output.append('double_info: high_bytes == ' + self.high_bytes.value)
-        output.append('double_info: low_bytes == ' + self.low_bytes.value)
+        output.append('double_info: high_bytes == ' + self.high_bytes.value_in_str())
+        output.append('double_info: low_bytes == ' + self.low_bytes.value_in_str())
 
 
 class name_and_type_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.name_index = u2()
         self.descriptor_index = u2()
 
@@ -296,16 +293,16 @@ class name_and_type_info(cp_info):
 class utf8_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.length = u2()
-        self.bytes = str()
+        self.bytes = ''
 
     def read_info(self, f):
         self.length.read(f)
         for i in range(0, self.length.value_in_int()):
             tmp = u1()
             tmp.read(f)
-            self.bytes += tmp.value
+            self.bytes += tmp.value_in_str()
 
     def dump(self, output):
         output.append('utf8_info: length == ' + self.length.value_in_str())
@@ -315,7 +312,7 @@ class utf8_info(cp_info):
 class method_handle_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.reference_kind = u1()
         self.reference_index = u2()
 
@@ -331,7 +328,7 @@ class method_handle_info(cp_info):
 class method_type_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.descriptor_index = u2()
 
     def read_info(self, f):
@@ -344,7 +341,7 @@ class method_type_info(cp_info):
 class invoke_dynamic_info(cp_info):
     def __init__(self, ci=cp_info()):
         cp_info.__init__(self)
-        self.tag.value = ci.tag.value
+        self.tag = ci.tag
         self.bootstrap_method_attr_index = u2()
         self.name_and_type_index = u2()
 
@@ -353,7 +350,8 @@ class invoke_dynamic_info(cp_info):
         self.name_and_type_index.read(f)
 
     def dump(self, output):
-        output.append('invoke_dynamic_info: bootstrap_method_attr_index == ' + self.bootstrap_method_attr_index.value_in_str())
+        output.append(
+            'invoke_dynamic_info: bootstrap_method_attr_index == ' + self.bootstrap_method_attr_index.value_in_str())
         output.append('invoke_dynamic_info: name_and_type_index == ' + self.name_and_type_index.value_in_str())
 
 
@@ -694,7 +692,7 @@ class deprecated_attribute:
 
 class constant_value_index:
     def __init__(self):
-        self.value = u2();
+        self.value = u2()
 
     def read(self, f):
         self.value.read(f)
@@ -731,8 +729,12 @@ class array_value:
         self.num_values = u2()
         self.values = []  # element_value 数组
 
+    def read(self, f):
+        self.num_values.read(f)
+        pass
 
-class element_value():
+
+class element_value:
     def __init__(self):
         self.tag = u1()
         self.value = None
@@ -753,7 +755,7 @@ class element_value():
 
         if self.tag.value_in_int() == 'e':
             self.value = enum_const_value()
-            self.value.read()
+            self.value.read(f)
 
         if self.tag.value_in_int() == 'c':
             self.value = class_info_index()
@@ -765,7 +767,7 @@ class element_value():
 
         if self.tag.value_in_int() == '[':
             self.value = array_value()
-            self.value.read()
+            self.value.read(f)
 
 
 class element_value_pair:
@@ -785,7 +787,7 @@ class annotation:
         self.type_index.read(f)
         self.num_element_value_pairs.read(f)
         for i in range(0, self.num_element_value_pairs.value_in_int()):
-            self.element_value_pairs.append()
+            self.element_value_pairs.append('')
 
 
 class runtime_visible_annotation_attribute:
@@ -802,7 +804,7 @@ class runtime_visible_annotation_attribute:
         self.num_annotations.read(f)
         self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
         for i in range(self.num_annotations.value_in_int()):
-            self.annotations[i].read()
+            self.annotations[i].read(f)
 
 
 # ------------------------------------------ runtime invisible annotation attribute ------------------------------------
@@ -820,7 +822,7 @@ class runtime_invisible_annotation_attribute:
         self.num_annotations.read(f)
         self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
         for i in range(self.num_annotations.value_in_int()):
-            self.annotations[i].read()
+            self.annotations[i].read(f)
 
 
 # ------------------------------------------ runtime visible parameter annotation attribute ----------------------------
@@ -974,6 +976,7 @@ class JavaClassReader:
         self.major_version.read(f)
 
     def read_constant_pool(self, f):
+        global ci_e
         self.constant_pool_count.read(f)
         self.constant_pool = []
         for i in range(1, self.constant_pool_count.value_in_int() - 1):
@@ -984,29 +987,29 @@ class JavaClassReader:
             elif ci.is_field_ref():
                 ci_e = field_ref_info(ci)
             elif ci.is_method_ref():
-                ci_e = method_ref_info()
+                ci_e = method_ref_info(ci)
             elif ci.is_interface_method_ref():
-                ci_e = interface_method_ref_info()
+                ci_e = interface_method_ref_info(ci)
             elif ci.is_string():
-                ci_e = string_info()
+                ci_e = string_info(ci)
             elif ci.is_integer():
-                ci_e = integer_info()
+                ci_e = integer_info(ci)
             elif ci.is_float():
-                ci_e = float_info()
+                ci_e = float_info(ci)
             elif ci.is_long():
-                ci_e = long_info()
+                ci_e = long_info(ci)
             elif ci.is_double():
-                ci_e = double_info()
+                ci_e = double_info(ci)
             elif ci.is_name_and_type():
-                ci_e = name_and_type_info()
+                ci_e = name_and_type_info(ci)
             elif ci.is_utf8():
-                ci_e = utf8_info()
+                ci_e = utf8_info(ci)
             elif ci.is_method_handle():
-                ci_e = method_handle_info()
+                ci_e = method_handle_info(ci)
             elif ci.is_method_type():
-                ci_e = method_type_info()
+                ci_e = method_type_info(ci)
             elif ci.is_invoke_dynamic():
-                ci_e = invoke_dynamic_info()
+                ci_e = invoke_dynamic_info(ci)
 
             if ci_e is not None:
                 self.output.append("constant_pool_index == " + str(i))
@@ -1039,19 +1042,19 @@ class JavaClassReader:
         self.read_minor_version(f)
         self.read_major_version(f)
         self.read_constant_pool(f)
-        self.read_access_flags(f)
-        self.read_this_class(f)
-        self.read_super_class(f)
-        self.read_interfaces(f)
-        self.read_fields(f)
-        self.read_methods(f)
-        self.read_attributes(f)
+        # self.read_access_flags(f)
+        # self.read_this_class(f)
+        # self.read_super_class(f)
+        # self.read_interfaces(f)
+        # self.read_fields(f)
+        # self.read_methods(f)
+        # self.read_attributes(f)
 
     def search(self, content):
         for line in self.output:
             if content in line:
                 print line
-                return True;
+                return True
         return False
 
 
@@ -1068,11 +1071,15 @@ class ZipFilter:
 
 def main(argv):
     print argv
+
+    if len(argv) < 3:
+        print 'Usage: JarGrep <jar file> <string to search>'
+        return
+
     # jar file to search
     path = argv[1]
     # string to search
     content = argv[2]
-
 
     if os.path.exists(path) and os.path.isfile(path):
         f = zipfile.ZipFile(path)
