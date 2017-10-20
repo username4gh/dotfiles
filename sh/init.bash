@@ -59,7 +59,7 @@ _sh_log_disable() {
 _cache_gen() {
     local OUTPUT_FILE="$MY_SH/cache.bash"
     # generate cache.bash
-    if [[ ! "$1" =~ 'init' ]];then
+    if [[ ! "$1" =~ 'init.bash' ]];then
         # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
         # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
 
