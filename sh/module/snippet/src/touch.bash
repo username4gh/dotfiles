@@ -3,9 +3,10 @@
 _touch() {
     if [[ "$#" == 1 ]];then
         local path=$(_file_path $1)
+        local full_name=$(_file_name $1)
         local name=$(_file_name_noext $1)
 
-        if [[ "${1#*.}" == "$1" ]]; then
+        if [[ "${full_name}" == "${name}" ]]; then
             command touch "$path/$name"
             return
         else
