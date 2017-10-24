@@ -45,7 +45,9 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     call vundle#end()
 
     " colorscheme
-    colorscheme molokai
+    if !empty(glob("~/.vim/bundle/molokai/colors/molokai.vim"))
+        colorscheme molokai
+    endif
 
     " bling/vim-airline
     let g:airline_theme = 'badwolf'
