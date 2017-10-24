@@ -11,7 +11,7 @@ fi
 export PATH="$MY_DOTFILES_RESOURCES/fzy:$PATH"
 
 export ENHANCD_FILTER=fzy
-export ENHANCD_COMMAND='ecd'
+export ENHANCD_COMMAND='z'
 
 if [[ -f "$MY_DOTFILES_RESOURCES/enhancd/init.sh" ]];then
     source "$MY_DOTFILES_RESOURCES/enhancd/init.sh"
