@@ -2,6 +2,8 @@
 # coding=utf-8
 
 import binascii
+import inspect
+import optparse
 import os
 import sys
 import zipfile
@@ -14,13 +16,17 @@ class u:
     def __init__(self):
         self.value = None
 
-    def value_in_int(self):
+    def read(self, f):
+        pass
+
+    def u2int(self):
         try:
+            # read() will set self.value to utf-8 code in string
             return int(float.fromhex(binascii.hexlify(self.value)))
         except ValueError as err:
             return 0
 
-    def value_in_str(self):
+    def u2str(self):
         return self.value
 
 
@@ -58,85 +64,85 @@ class cp_info:
         self.tag.read(f)
 
     def is_class(self):
-        if self.tag.value_in_int() == 7:
+        if self.tag.u2int() == 7:
             return True
         else:
             return False
 
     def is_field_ref(self):
-        if self.tag.value_in_int() == 9:
+        if self.tag.u2int() == 9:
             return True
         else:
             return False
 
     def is_method_ref(self):
-        if self.tag.value_in_int() == 10:
+        if self.tag.u2int() == 10:
             return True
         else:
             return False
 
     def is_interface_method_ref(self):
-        if self.tag.value_in_int() == 11:
+        if self.tag.u2int() == 11:
             return True
         else:
             return False
 
     def is_string(self):
-        if self.tag.value_in_int() == 8:
+        if self.tag.u2int() == 8:
             return True
         else:
             return False
 
     def is_integer(self):
-        if self.tag.value_in_int() == 3:
+        if self.tag.u2int() == 3:
             return True
         else:
             return False
 
     def is_float(self):
-        if self.tag.value_in_int() == 4:
+        if self.tag.u2int() == 4:
             return True
         else:
             return False
 
     def is_long(self):
-        if self.tag.value_in_int() == 5:
+        if self.tag.u2int() == 5:
             return True
         else:
             return False
 
     def is_double(self):
-        if self.tag.value_in_int() == 6:
+        if self.tag.u2int() == 6:
             return True
         else:
             return False
 
     def is_name_and_type(self):
-        if self.tag.value_in_int() == 12:
+        if self.tag.u2int() == 12:
             return True
         else:
             return False
 
     def is_utf8(self):
-        if self.tag.value_in_int() == 1:
+        if self.tag.u2int() == 1:
             return True
         else:
             return False
 
     def is_method_handle(self):
-        if self.tag.value_in_int() == 15:
+        if self.tag.u2int() == 15:
             return True
         else:
             return False
 
     def is_method_type(self):
-        if self.tag.value_in_int() == 16:
+        if self.tag.u2int() == 16:
             return True
         else:
             return False
 
     def is_invoke_dynamic(self):
-        if self.tag.value_in_int() == 18:
+        if self.tag.u2int() == 18:
             return True
         else:
             return False
@@ -151,8 +157,8 @@ class class_info(cp_info):
     def read_info(self, f):
         self.name_index.read(f)
 
-    def dump(self, output):
-        output.append('class_info: name_index == ' + self.name_index.value_in_str())
+    def dump(self):
+        return 'class_info:name_index==' + str(self.name_index.u2int())
 
 
 class field_ref_info(cp_info):
@@ -166,9 +172,10 @@ class field_ref_info(cp_info):
         self.class_index.read(f)
         self.name_and_type_index.read(f)
 
-    def dump(self, output):
-        output.append('field_ref_info: class_index == ' + self.class_index.value_in_str())
-        output.append('field_ref_info: name_and_type_index == ' + self.name_and_type_index.value_in_str())
+    def dump(self):
+        result = 'field_ref_info:class_index==' + str(self.class_index.u2int()) + \
+                 '|name_and_type_index==' + str(self.name_and_type_index.u2int())
+        return result
 
 
 class method_ref_info(cp_info):
@@ -182,9 +189,10 @@ class method_ref_info(cp_info):
         self.class_index.read(f)
         self.name_and_type_index.read(f)
 
-    def dump(self, output):
-        output.append('method_ref_info: class_index == ' + self.class_index.value_in_str())
-        output.append('method_ref_info: name_and_type_index == ' + self.name_and_type_index.value_in_str())
+    def dump(self):
+        result = 'method_ref_info:class_index==' + str(self.class_index.u2int()) + \
+                 '|name_and_type_index ==' + str(self.name_and_type_index.u2int())
+        return result
 
 
 class interface_method_ref_info(cp_info):
@@ -198,9 +206,10 @@ class interface_method_ref_info(cp_info):
         self.class_index.read(f)
         self.name_and_type_index.read(f)
 
-    def dump(self, output):
-        output.append('interface_method_ref_info: class_index == ' + self.class_index.value_in_str())
-        output.append('interface_method_ref_info: name_and_type_index == ' + self.name_and_type_index.value_in_str())
+    def dump(self):
+        result = 'interface_method_ref_info:class_index==' + str(self.class_index.u2int()) + \
+                 '|name_and_type_index==' + str(self.name_and_type_index.u2int())
+        return result
 
 
 class string_info(cp_info):
@@ -212,8 +221,8 @@ class string_info(cp_info):
     def read_info(self, f):
         self.string_index.read(f)
 
-    def dump(self, output):
-        output.append('string_info: string_index == ' + self.string_index.value_in_str())
+    def dump(self):
+        return 'string_info:string_index==' + str(self.string_index.u2int())
 
 
 class integer_info(cp_info):
@@ -225,8 +234,8 @@ class integer_info(cp_info):
     def read_info(self, f):
         self.bytes.read(f)
 
-    def dump(self, output):
-        output.append('integer_info: bytes == ' + self.bytes.value_in_str())
+    def dump(self):
+        return 'integer_info: bytes==' + self.bytes.u2str()
 
 
 class float_info(cp_info):
@@ -238,8 +247,8 @@ class float_info(cp_info):
     def read_info(self, f):
         self.bytes.read(f)
 
-    def dump(self, output):
-        output.append('float_info: bytes == ' + self.bytes.value_in_str())
+    def dump(self):
+        return 'float_info:bytes==' + self.bytes.u2str()
 
 
 class long_info(cp_info):
@@ -253,9 +262,9 @@ class long_info(cp_info):
         self.high_bytes.read(f)
         self.low_bytes.read(f)
 
-    def dump(self, output):
-        output.append('long_info: high_bytes == ' + self.high_bytes.value_in_str())
-        output.append('long_info: low_bytes == ' + self.low_bytes.value_in_str())
+    def dump(self):
+        result = 'long_info:high_bytes==' + self.high_bytes.u2str() + '|low_bytes==' + self.low_bytes.u2str()
+        return result
 
 
 class double_info(cp_info):
@@ -269,9 +278,9 @@ class double_info(cp_info):
         self.high_bytes.read(f)
         self.low_bytes.read(f)
 
-    def dump(self, output):
-        output.append('double_info: high_bytes == ' + self.high_bytes.value_in_str())
-        output.append('double_info: low_bytes == ' + self.low_bytes.value_in_str())
+    def dump(self):
+        result = 'double_info:high_bytes==' + self.high_bytes.u2str() + '|low_bytes==' + self.low_bytes.u2str()
+        return result
 
 
 class name_and_type_info(cp_info):
@@ -285,9 +294,10 @@ class name_and_type_info(cp_info):
         self.name_index.read(f)
         self.descriptor_index.read(f)
 
-    def dump(self, output):
-        output.append('name_and_type_info: name_index == ' + self.name_index.value_in_str())
-        output.append('name_and_type_info: descriptor_index == ' + self.descriptor_index.value_in_str())
+    def dump(self):
+        result = 'name_and_type_info:name_index==' + str(self.name_index.u2int()) + \
+                 '|descriptor_index==' + str(self.descriptor_index.u2int())
+        return result
 
 
 class utf8_info(cp_info):
@@ -299,14 +309,14 @@ class utf8_info(cp_info):
 
     def read_info(self, f):
         self.length.read(f)
-        for i in range(0, self.length.value_in_int()):
+        for i in range(0, self.length.u2int()):
             tmp = u1()
             tmp.read(f)
-            self.bytes += tmp.value_in_str()
+            self.bytes += tmp.u2str()
 
-    def dump(self, output):
-        output.append('utf8_info: length == ' + self.length.value_in_str())
-        output.append('utf8_info: bytes == ' + self.bytes)
+    def dump(self):
+        result = 'utf8_info:length==' + str(self.length.u2int()) + '|bytes==' + self.bytes
+        return result
 
 
 class method_handle_info(cp_info):
@@ -320,9 +330,10 @@ class method_handle_info(cp_info):
         self.reference_kind.read(f)
         self.reference_index.read(f)
 
-    def dump(self, output):
-        output.append('method_handle_info: reference_kind == ' + self.reference_kind.value_in_str())
-        output.append('method_handle_info: reference_index == ' + self.reference_index.value_in_str())
+    def dump(self):
+        result = 'method_handle_info:reference_kind==' + str(self.reference_kind.u2int())
+        result += '|reference_index==' + str(self.reference_index.u2int())
+        return result
 
 
 class method_type_info(cp_info):
@@ -334,8 +345,8 @@ class method_type_info(cp_info):
     def read_info(self, f):
         self.descriptor_index.read(f)
 
-    def dump(self, output):
-        output.append('method_type_info: descriptor_index == ' + self.descriptor_index.value_in_str())
+    def dump(self):
+        return 'method_type_info:descriptor_index==' + str(self.descriptor_index.u2int())
 
 
 class invoke_dynamic_info(cp_info):
@@ -349,18 +360,45 @@ class invoke_dynamic_info(cp_info):
         self.bootstrap_method_attr_index.read(f)
         self.name_and_type_index.read(f)
 
-    def dump(self, output):
-        output.append(
-            'invoke_dynamic_info: bootstrap_method_attr_index == ' + self.bootstrap_method_attr_index.value_in_str())
-        output.append('invoke_dynamic_info: name_and_type_index == ' + self.name_and_type_index.value_in_str())
+    def dump(self):
+        result = 'invoke_dynamic_info:bootstrap_method_attr_index==' + str(self.bootstrap_method_attr_index.u2int())
+        result += '|name_and_type_index==' + str(self.name_and_type_index.u2int())
+        return result
 
 
 # ------------------------------------------ divide line ------------------------------------------
 
-class field_access_flags:
+class access_flags:
     def __init__(self):
         self.value = u2()
 
+    def read(self, f):
+        self.value.read(f)
+
+    def dump(self):
+        result = ''
+
+        for name, value in inspect.getmembers(self):
+            if 'ACC' in name:  # filter out access_flags
+                if self.value.u2int() & value == value:
+                    result += name
+                    result += '|'
+
+        return result.rstrip('|')
+
+
+class class_access_flags(access_flags):
+    ACC_PUBLIC = 0x0001
+    ACC_FINAL = 0x0010
+    ACC_SUPER = 0x0020
+    ACC_INTERFACE = 0x0200
+    ACC_ABSTRACT = 0x0400
+    ACC_SYNTHETIC = 0x1000
+    ACC_ANNOTATION = 0x2000
+    ACC_ENUM = 0x4000
+
+
+class field_access_flags(access_flags):
     ACC_PUBLIC = 0x0001
     ACC_PRIVATE = 0x0002
     ACC_PROTECTED = 0x0004
@@ -371,14 +409,8 @@ class field_access_flags:
     ACC_SYNTHETIC = 0x1000
     ACC_ENUM = 0x4000
 
-    def read(self, f):
-        self.value.read(f)
 
-
-class method_access_flags:
-    def __init__(self):
-        pass
-
+class method_access_flags(access_flags):
     ACC_PUBLIC = 0x0001
     ACC_PRIVATE = 0x0002
     ACC_PROTECTED = 0x0004
@@ -393,22 +425,68 @@ class method_access_flags:
     ACC_SYNTHETIC = 0x1000
 
 
+# ------------------------------------------ divide line ------------------------------------------
+
 class field_info:
     def __init__(self):
-        self.access_flags = u2()
+        self.access_flags = field_access_flags()
         self.name_index = u2()
         self.descriptor_index = u2()
         self.attributes_count = u2()
-        self.attribute_info = []
+        self.attributes = []
+
+    def read(self, f):
+        self.access_flags.read(f)
+        self.name_index.read(f)
+        self.descriptor_index.read(f)
+        self.attributes_count.read(f)
+        for i in range(0, self.attributes_count.u2int()):
+            ai = attribute_info()
+            ai.read(f)
+            self.attributes.append(ai)
+
+    def dump(self):
+        result = 'field_info: access_flags == ' + self.access_flags.dump()
+        result += ' name_index == ' + str(self.name_index.u2int())
+        result += ' descriptor_index == ' + str(self.descriptor_index.u2int())
+        result += ' attributes_count == ' + str(self.attributes_count.u2int())
+        result += ' attributes: '
+
+        for attribute in self.attributes:
+            result += attribute.dump()
+
+        return result
 
 
 class method_info:
     def __init__(self):
-        self.access_flags = u2()
+        self.access_flags = method_access_flags()
         self.name_index = u2()
         self.descriptor_index = u2()
         self.attributes_count = u2()
-        self.attribute_info = []
+        self.attributes = []
+
+    def read(self, f):
+        self.access_flags.read(f)
+        self.name_index.read(f)
+        self.descriptor_index.read(f)
+        self.attributes_count.read(f)
+        for i in range(0, self.attributes_count.u2int()):
+            ai = attribute_info()
+            ai.read(f)
+            self.attributes.append(ai)
+
+    def dump(self):
+        result = 'method_info: access_flags == ' + self.access_flags.dump()
+        result += ' name_index == ' + str(self.name_index.u2int())
+        result += ' descriptor_index == ' + str(self.descriptor_index.u2int())
+        result += ' attributes_count == ' + str(self.attributes_count.u2int())
+        result += ' attributes: '
+
+        for attribute in self.attributes:
+            result += attribute.dump()
+
+        return result
 
 
 # ------------------------------------------ attribute ------------------------------------------
@@ -417,6 +495,21 @@ class attribute_info:
     def __init__(self):
         self.attribute_name_index = u2()
         self.attribute_length = u4()
+        self.info = []
+
+    def read(self, f):
+        self.attribute_name_index.read(f)
+        self.attribute_length.read(f)
+        for i in range(0, self.attribute_length.u2int()):
+            inf = u1()
+            inf.read(f)
+            self.info.append(inf)
+
+    def dump(self):
+        result = "attribute_name_index == " + str(self.attribute_name_index.u2int())
+        result += " attribute_length == " + str(self.attribute_length.u2int())
+
+        return result
 
 
 # ------------------------------------------ constant value attribute ------------------------------------------
@@ -470,7 +563,7 @@ class StackMapTable(attribute_info):
 
     def read_info(self, f):
         self.number_of_entries.read(f)
-        for i in range(0, self.number_of_entries.value_in_int()):
+        for i in range(0, self.number_of_entries.u2int()):
             break
 
 
@@ -539,12 +632,12 @@ class full_frame(stack_map_frame):
     def read_info(self, f):
         self.offset_delta.read(f)
         self.number_of_locals.read(f)
-        for i in range(0, self.number_of_locals.value_in_int()):
+        for i in range(0, self.number_of_locals.u2int()):
             break
 
         self.number_of_stack_items.read(f)
 
-        for i in range(0, self.number_of_stack_items.value_in_int()):
+        for i in range(0, self.number_of_stack_items.u2int()):
             break
 
 
@@ -741,31 +834,31 @@ class element_value:
 
     def read(self, f):
         self.tag.read(f)
-        if self.tag.value_in_int() == 'B' \
-                or self.tag.value_in_int() == 'C' \
-                or self.tag.value_in_int() == 'D' \
-                or self.tag.value_in_int() == 'F' \
-                or self.tag.value_in_int() == 'I' \
-                or self.tag.value_in_int() == 'J' \
-                or self.tag.value_in_int() == 'S' \
-                or self.tag.value_in_int() == 'Z' \
-                or self.tag.value_in_int() == 's':
+        if self.tag.u2int() == 'B' \
+                or self.tag.u2int() == 'C' \
+                or self.tag.u2int() == 'D' \
+                or self.tag.u2int() == 'F' \
+                or self.tag.u2int() == 'I' \
+                or self.tag.u2int() == 'J' \
+                or self.tag.u2int() == 'S' \
+                or self.tag.u2int() == 'Z' \
+                or self.tag.u2int() == 's':
             self.value = constant_value_index()
             self.value.read(f)
 
-        if self.tag.value_in_int() == 'e':
+        if self.tag.u2int() == 'e':
             self.value = enum_const_value()
             self.value.read(f)
 
-        if self.tag.value_in_int() == 'c':
+        if self.tag.u2int() == 'c':
             self.value = class_info_index()
             self.value.read(f)
 
-        if self.tag.value_in_int() == '@':
+        if self.tag.u2int() == '@':
             self.value = annotation_value()
             self.value.read(f)
 
-        if self.tag.value_in_int() == '[':
+        if self.tag.u2int() == '[':
             self.value = array_value()
             self.value.read(f)
 
@@ -786,7 +879,7 @@ class annotation:
     def read(self, f):
         self.type_index.read(f)
         self.num_element_value_pairs.read(f)
-        for i in range(0, self.num_element_value_pairs.value_in_int()):
+        for i in range(0, self.num_element_value_pairs.u2int()):
             self.element_value_pairs.append('')
 
 
@@ -802,8 +895,8 @@ class runtime_visible_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
-        for i in range(self.num_annotations.value_in_int()):
+        self.annotations = [annotation() for i in range(0, self.num_annotations.u2int())]
+        for i in range(self.num_annotations.u2int()):
             self.annotations[i].read(f)
 
 
@@ -820,8 +913,8 @@ class runtime_invisible_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
-        for i in range(self.num_annotations.value_in_int()):
+        self.annotations = [annotation() for i in range(0, self.num_annotations.u2int())]
+        for i in range(self.num_annotations.u2int()):
             self.annotations[i].read(f)
 
 
@@ -834,7 +927,7 @@ class parameter_annotation:
 
     def read(self, f):
         self.num_annotations.read(f)
-        self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
+        self.annotations = [annotation() for i in range(0, self.num_annotations.u2int())]
         for a in self.annotations:
             a.read(f)
 
@@ -850,7 +943,7 @@ class runtime_visible_parameter_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_parameters.read(f)
-        self.parameter_annotations = [parameter_annotation() for i in range(0, self.num_parameters.value_in_int())]
+        self.parameter_annotations = [parameter_annotation() for i in range(0, self.num_parameters.u2int())]
         for pa in self.parameter_annotations:
             pa.read(f)
 
@@ -868,7 +961,7 @@ class runtime_invisible_parameter_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_parameters.read(f)
-        self.parameter_annotations = [parameter_annotation() for i in range(self.num_parameters.value_in_int())]
+        self.parameter_annotations = [parameter_annotation() for i in range(self.num_parameters.u2int())]
         for pa in self.parameter_annotations:
             pa.read(f)
 
@@ -939,47 +1032,71 @@ class runtime_visible_type_annotations_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for i in range(0, self.num_annotations.value_in_int())]
+        self.annotations = [annotation() for i in range(0, self.num_annotations.u2int())]
         for pa in self.annotations:
             pa.read(f)
+
+
+# ------------------------------------------ InfoHolder ------------------------------------------
+
+class InfoHolder:
+    def __init__(self):
+        self.normal = []
+        self.cp = []  # only store constant pool info
+
+    def dump(self):
+        for line in self.cp:
+            print line
+
+
+# ------------------------------------------ ConstantPoolInfoParser ------------------------------------------
+
+# ------------------------------------------ AttributeInfoParser ------------------------------------------
+
+# ------------------------------------------ JavaClass ------------------------------------------------
+
+class JavaClass:
+    def __init__(self):
+        self.magic = u4()
+        self.minor_version = u2()
+        self.major_version = u2()
+        self.constant_pool_count = u2()
+        self.constant_pool = []
+        self.access_flags = class_access_flags()
+        self.this_class = u2()
+        self.super_class = u2()
+        self.interfaces_count = u2()
+        self.interfaces = []
+        self.fields_count = u2()
+        self.fields = []
+        self.methods_count = u2()
+        self.methods = []
+        self.attributes_count = u2()
+        self.attributes = []
 
 
 # ------------------------------------------ JavaClassReader ------------------------------------------
 
 class JavaClassReader:
     def __init__(self):
-        self.output = []
-        self.magic = u4()
-        self.minor_version = u2()
-        self.major_version = u2()
-        self.constant_pool_count = u2()
-        self.constant_pool = []
-        self.access_flags = u2()
-        self.this_class = u2()
-        self.super_class = u2()
-        self.interfaces_count = u2()
-        self.interfaces = [u2()]
-        self.fields_count = u2()
-        self.fields = [field_info()]
-        self.methods_count = u2()
-        self.methods = [method_info()]
-        self.attributes_count = u2()
-        self.attributes = [attribute_info()]
+        self.output = InfoHolder()
+        # divider
+        self.java_class = JavaClass()
 
     def read_magic(self, f):
-        self.magic.read(f)
+        self.java_class.magic.read(f)
 
     def read_minor_version(self, f):
-        self.minor_version.read(f)
+        self.java_class.minor_version.read(f)
 
     def read_major_version(self, f):
-        self.major_version.read(f)
+        self.java_class.major_version.read(f)
 
     def read_constant_pool(self, f):
-        global ci_e
-        self.constant_pool_count.read(f)
-        self.constant_pool = []
-        for i in range(1, self.constant_pool_count.value_in_int() - 1):
+        self.java_class.constant_pool_count.read(f)
+        self.java_class.constant_pool = []
+        for i in range(1, self.java_class.constant_pool_count.u2int()):
+            ci_e = None
             ci = cp_info()
             ci.read(f)
             if ci.is_class():
@@ -1012,51 +1129,84 @@ class JavaClassReader:
                 ci_e = invoke_dynamic_info(ci)
 
             if ci_e is not None:
-                self.output.append("constant_pool_index == " + str(i))
                 ci_e.read_info(f)
-                ci_e.dump(self.output)
+                self.output.cp.append(str(i) + '|' + ci_e.dump())
 
     def read_access_flags(self, f):
-        self.access_flags.read(f)
+        self.java_class.access_flags.read(f)
+        self.output.normal.append("access_flags:" + str(self.java_class.access_flags.dump()))
 
     def read_this_class(self, f):
-        self.this_class.read(f)
+        self.java_class.this_class.read(f)
+        self.output.normal.append("this_class:" + str(self.java_class.this_class.u2int()))
 
     def read_super_class(self, f):
-        self.super_class.read(f)
+        self.java_class.super_class.read(f)
+        self.output.normal.append("super_class:" + str(self.java_class.super_class.u2int()))
 
     def read_interfaces(self, f):
-        pass
+        self.java_class.interfaces_count.read(f)
+        for i in range(0, self.java_class.interfaces_count.u2int()):
+            interface = u2()
+            interface.read(f)
+            self.java_class.interfaces.append(interface)
+            self.output.normal.append("interface:" + str(interface.u2int()))
 
     def read_fields(self, f):
-        pass
+        self.java_class.fields_count.read(f)
+        for i in range(0, self.java_class.fields_count.u2int()):
+            fi = field_info()
+            fi.read(f)
+            self.output.normal.append(fi.dump())
 
     def read_methods(self, f):
-        pass
+        self.java_class.methods_count.read(f)
+        for i in range(0, self.java_class.methods_count.u2int()):
+            mi = method_info()
+            mi.read(f)
+            self.output.normal.append(mi.dump())
 
     def read_attributes(self, f):
-        pass
+        """
+        read attributes inside the ClassFile
+        """
+        self.java_class.attributes_count.read(f)
+        for i in range(0, self.java_class.attributes_count.u2int()):
+            ai = attribute_info()
+            ai.read(f)
+            self.java_class.attributes.append(ai)
+            self.output.normal.append(ai.dump())
 
     def read(self, f):
         self.read_magic(f)
         self.read_minor_version(f)
         self.read_major_version(f)
         self.read_constant_pool(f)
-        # self.read_access_flags(f)
-        # self.read_this_class(f)
-        # self.read_super_class(f)
-        # self.read_interfaces(f)
-        # self.read_fields(f)
-        # self.read_methods(f)
-        # self.read_attributes(f)
+        self.read_access_flags(f)
+        self.read_this_class(f)
+        self.read_super_class(f)
+        self.read_interfaces(f)
+        self.read_fields(f)
+        self.read_methods(f)
+        self.read_attributes(f)
 
-    def search(self, content):
-        for line in self.output:
-            if content in line:
+
+# ------------------------------------------ InfoProcessor ------------------------------------------
+
+class InfoProcessor:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def search(content, string):
+        for line in content:
+            if string in line:
                 print line
                 return True
         return False
 
+
+# ------------------------------------------ ZipFilter ------------------------------------------
 
 class ZipFilter:
     def __init__(self):
@@ -1064,22 +1214,60 @@ class ZipFilter:
 
     @staticmethod
     def is_what_we_need(name):
-        if '.class' in name:
+        if 'com/tencent/smtt/sdk/f.class' in name:
             return True
         return False
 
 
-def main(argv):
-    print argv
+# ------------------------------------------ OptionParser ------------------------------------------
 
-    if len(argv) < 3:
-        print 'Usage: JarGrep <jar file> <string to search>'
-        return
+class OptionParser(optparse.OptionParser):
+    """Option parser that separates using --version from using invalid options.
+
+       By default optparse uses SystemExit with both. This parser uses custom
+       VersionPrinted exception with --version.
+    """
+
+    def print_version(self, f=None):
+        optparse.OptionParser.print_version(self, f)
+        raise VersionPrinted()
+
+
+class VersionPrinted(Exception):
+    pass
+
+
+# ------------------------------------------ parse cmd ------------------------------------------
+
+def _parse_cmdline(cmdline_args):
+    """ Parse the list of command-line options and arguments and return a
+        triple: options, args, parser -- the first two being the result of
+        OptionParser.parse_args, and the third the parser object itself.`
+    """
+    parser = OptionParser(
+        usage='usage: %prog [options] <jar file> <pattern>',
+        description='',
+        prog='JarGrep',
+        add_help_option=False)
+
+    parser.add_option('--help',
+                      action='store_true', dest='help', default=False,
+                      help='Display this information')
+
+    options, args = parser.parse_args(cmdline_args)
+
+    return options, args, parser
+
+
+# ------------------------------------------ main ------------------------------------------
+
+def main(argv):
+    options, args, parser = _parse_cmdline(argv)
 
     # jar file to search
-    path = argv[1]
+    path = args[1]
     # string to search
-    content = argv[2]
+    content = args[2]
 
     if os.path.exists(path) and os.path.isfile(path):
         f = zipfile.ZipFile(path)
@@ -1088,7 +1276,7 @@ def main(argv):
                 member_file = f.open(member)
                 reader = JavaClassReader()
                 reader.read(member_file)
-                if reader.search(content):
+                if InfoProcessor.search(reader.output.cp, content):
                     print member
 
 
