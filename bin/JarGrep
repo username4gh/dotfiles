@@ -1370,21 +1370,7 @@ class Benchmark:
         if Benchmark.is_on:
             Benchmark.end_time = Benchmark.current_time_in_millisecond()
             print tag + "totally consumed " + str(Benchmark.end_time - Benchmark.start_time) + " milliseconds"
-
-
-# ------------------------------------------ helper functions ------------------------------------------
-
-def _deep_first_list_dir(result=set(), path=None):
-    if os.path.exists(path):
-        if os.path.isdir(path):
-            for f in os.listdir(os.path.abspath(path)):
-                if os.path.isfile(f):
-                    result.add(os.path.abspath(f))
-                else:
-                    _deep_first_list_dir(result, f)
-        else:
-            result.add(os.path.abspath(path))
-
+            
 
 # ------------------------------------------ main ------------------------------------------
 
@@ -1408,8 +1394,7 @@ def main(argv):
 
     Benchmark.begin()
 
-    file_list = set()
-    _deep_first_list_dir(file_list, path)
+    file_list = [os.path.join(dp, f) for dp, dn, file_names in os.walk(path) for f in file_names]
     for f in file_list:
         FileProcessor.process(f, content)
 
