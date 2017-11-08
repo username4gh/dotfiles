@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+# coding=UTF-8
+
+import sys
+import zipfile
+
+
+class FileProcessor:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def _is_file_need_be_ignored(name):
+        if '.class' in name:
+            return True
+        return False
+
+    @staticmethod
+    def _is_matched(content, pattern):
+        if pattern is None:
+            return True
+        if pattern in content:
+            return True
+        return False
+
+    @staticmethod
+    def _deal_with_zip_file(path, pattern):
+        f = zipfile.ZipFile(path)
+        for member in f.namelist():
+            if FileProcessor._is_file_need_be_ignored(member):
+                continue
+
+            if FileProcessor._is_matched(member, pattern):
+                print member + ':'
+                member_file = f.open(member)
+                print member_file.read()
+
+    @staticmethod
+    def process(path, pattern):
+        if zipfile.is_zipfile(path):
+            FileProcessor._deal_with_zip_file(path, pattern)
+
+
+def main(argv):
+    path = argv[1]
+    # pattern = 'javax.annotation.processing.Processor'
+    pattern = argv[2]
+
+    FileProcessor.process(path, pattern)
+
+
+sys.exit(main(sys.argv))
