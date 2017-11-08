@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env python
 # coding=UTF-8
 
 import sys
@@ -43,8 +43,8 @@ class FileProcessor:
 
 def main(argv):
     path = argv[1]
-    # pattern = 'javax.annotation.processing.Processor'
-    pattern = argv[2]
+    
+    pattern = argv[2] if len(argv) > 2 else None
 
     FileProcessor.process(path, pattern)
 
