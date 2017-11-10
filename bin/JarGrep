@@ -1394,9 +1394,12 @@ def main(argv):
 
     Benchmark.begin()
 
-    file_list = [os.path.join(dp, f) for dp, dn, file_names in os.walk(path) for f in file_names]
-    for f in file_list:
-        FileProcessor.process(f, content)
+    if os.path.isdir(path):
+        file_list = [os.path.join(dp, f) for dp, dn, file_names in os.walk(path) for f in file_names]
+        for f in file_list:
+            FileProcessor.process(f, content)
+    else:
+        FileProcessor.process(path, content)
 
     if options.benchmark:
         Benchmark.end()
