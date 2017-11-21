@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 
-if [[ ! -d "$MY_DOTFILES_RESOURCES/gitignore" ]];then
-    git clone https://github.com/github/gitignore "$MY_DOTFILES_RESOURCES/gitignore"
-fi
+_gitignore_init() {
+    if [[ ! -d "$MY_DOTFILES_RESOURCES/gitignore" ]];then
+        git clone https://github.com/github/gitignore "$MY_DOTFILES_RESOURCES/gitignore"
+    fi
+}
 
 _gitignore_merge() {
     if [[ "$#" == 2 ]];then

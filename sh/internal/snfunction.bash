@@ -2,14 +2,14 @@
 
 # exec module's function with special name
 _snfunction_on_module_level() {
-    method="_$(_file_name_noext $2)_$1"
+    method="_$(_file_name_noext $2)$1"
 
     echo "$method"
 
     if _is_command_exist "$method" ;then
-        echo "  calling $method"
         if [[ "$3" == 'execute' ]];then
-            $method
+            echo "  calling $method"
+            "$method"
         fi
     fi
 }
@@ -17,7 +17,7 @@ _snfunction_on_module_level() {
 _snfunction_on_modules_level() {
     while IFS= read -r item;
     do
-        echo "module $(_dir_basename $item)"
+        echo "[module: $(_dir_basename $item)]"
         if [[ "$2" == 'execute' ]];then
             _snfunction_on_module_level $1 "$(_dir_basename $item)" execute
         else
