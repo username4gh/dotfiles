@@ -11,7 +11,7 @@ if [[ ! -d "$MY_DEPLOY_BACKUP" ]];then
     mkdir -p "$MY_DEPLOY_BACKUP"
 fi
 
-files=('.bash_profile' '.bash_profile' '.inputrc' '.translate-shell' '.vimrc')
+files=('main.bash' 'main.bash' '.inputrc' '.translate-shell' '.vimrc')
 targets=('.bashrc' '.bash_profile' '.inputrc' '.translate-shell' '.vimrc')
 
 for((i=0; i<${#files[@]}; i++))
