@@ -2,7 +2,7 @@
 
 _groovysh() {
     if [[ ! -f "$HOME/.groovy/groovysh.profile" ]];then
-        cp "$MY_DOTFILES_RESOURCES/groovysh.profile" "$HOME/.groovy/"
+        cp "$MY_DOTFILES/groovysh.profile" "$HOME/.groovy/"
     fi
 
     local JARS="$(find "$HOME/.groovy" -type f -iname "*.jar")"
@@ -13,3 +13,11 @@ _groovysh() {
 }
 
 alias groovysh='_groovysh'
+
+GROOVY_PATH="$(_autodetect_bin "groovy-*")"
+
+if [[ -d "$GROOVY_PATH" ]];then
+    export PATH="$GROOVY_PATH/bin:$PATH"
+fi
+
+unset GROOVY_PATH
