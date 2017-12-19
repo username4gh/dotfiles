@@ -12,9 +12,10 @@ pattern+='|aosp/device'
 pattern+='|aosp/hardware'
 pattern+='|aosp/prebuilts'
 pattern+='|aosp/tools/'
-
+pattern+='|demo'
 pattern+='|examples'
 pattern+='|packages'
+pattern+='|sample'
 pattern+='|sdk'
 pattern+='|test'
 

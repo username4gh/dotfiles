@@ -37,3 +37,8 @@ if _is_linux;then
         export PATH="$JDK_PATH/bin:$PATH"
     fi
 fi
+
+if _is_darwin;then
+    export JAVA_HOME="/Library/Java/JavaVirtualMachines/$(ls /Library/Java/JavaVirtualMachines/ | head -1)/Contents/Home"
+    export JDK_PATH="$JDK_PATH"
+fi

@@ -12,8 +12,6 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     Plugin 'VundleVim/Vundle.vim'
 
-    Plugin 'bling/vim-bufferline'
-    Plugin 'derekwyatt/vim-scala'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'henrik/vim-indexed-search'
     Plugin 'hewes/unite-gtags'
@@ -28,9 +26,6 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     Plugin 'swaroopch/vim-markdown-preview'
     Plugin 'terryma/vim-expand-region'
     Plugin 'terryma/vim-multiple-cursors'
-    Plugin 'tomasr/molokai'
-    Plugin 'vim-airline/vim-airline'
-    Plugin 'vim-airline/vim-airline-themes'
     Plugin 'vim-scripts/JSON.vim'
     Plugin 'tpope/vim-surround'
     Plugin 'vim-ruby/vim-ruby'
@@ -39,7 +34,12 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     " here i use the file existence to switch on-and-off some plugins
     if !empty(glob("~/.vim/HEAVY"))
+        Plugin 'bling/vim-bufferline'
+        Plugin 'derekwyatt/vim-scala'
+        Plugin 'tomasr/molokai'
         Plugin 'Valloric/YouCompleteMe'
+        Plugin 'vim-airline/vim-airline'
+        Plugin 'vim-airline/vim-airline-themes'
     endif
 
     call vundle#end()
