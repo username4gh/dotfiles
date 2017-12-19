@@ -5,6 +5,10 @@ if empty(glob("~/.vim/bundle/Vundle.vim"))
     silent execute '!git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim'
 endif
 
+function _is_on_heavy_mode()
+    return !empty(glob("~/.vim/HEAVY"))
+endfunction
+
 if !empty(glob("~/.vim/bundle/Vundle.vim"))
     " first time open up the vi, remember to use PluginInstall to init plugins"
     set rtp+=~/.vim/bundle/Vundle.vim
@@ -33,7 +37,7 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     Plugin 'vim-scripts/YankRing.vim'
 
     " here i use the file existence to switch on-and-off some plugins
-    if !empty(glob("~/.vim/HEAVY"))
+    if _is_on_heavy_mode()
         Plugin 'bling/vim-bufferline'
         Plugin 'derekwyatt/vim-scala'
         Plugin 'tomasr/molokai'
@@ -45,8 +49,10 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     call vundle#end()
 
     " colorscheme
-    if !empty(glob("~/.vim/bundle/molokai/colors/molokai.vim"))
-        colorscheme molokai
+    if _is_on_heavy_mode()
+        if !empty(glob("~/.vim/bundle/molokai/colors/molokai.vim"))
+            colorscheme molokai
+        endif
     endif
 
     " bling/vim-airline
