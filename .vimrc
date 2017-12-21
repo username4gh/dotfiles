@@ -16,34 +16,34 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     Plugin 'VundleVim/Vundle.vim'
 
+    Plugin 'bling/vim-bufferline'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'henrik/vim-indexed-search'
-    Plugin 'hewes/unite-gtags'
     Plugin 'kelwin/vim-smali'
     Plugin 'majutsushi/tagbar'
     Plugin 'mhinz/vim-signify'
     Plugin 'nathanaelkane/vim-indent-guides'
     Plugin 'octol/vim-cpp-enhanced-highlight'
     Plugin 'Raimondi/delimitMate'
-    Plugin 'Shougo/unite.vim'
-    Plugin 'Shougo/vimproc.vim'
     Plugin 'swaroopch/vim-markdown-preview'
     Plugin 'terryma/vim-expand-region'
     Plugin 'terryma/vim-multiple-cursors'
     Plugin 'vim-scripts/JSON.vim'
     Plugin 'tpope/vim-surround'
+    Plugin 'vim-airline/vim-airline'
+    Plugin 'vim-airline/vim-airline-themes'
     Plugin 'vim-ruby/vim-ruby'
-    Plugin 'vim-scripts/vim-unite-cscope'
-    Plugin 'vim-scripts/YankRing.vim'
 
     " here i use the file existence to switch on-and-off some plugins
     if _is_on_heavy_mode()
-        Plugin 'bling/vim-bufferline'
         Plugin 'derekwyatt/vim-scala'
+        Plugin 'hewes/unite-gtags'
+        Plugin 'Shougo/unite.vim'
+        Plugin 'Shougo/vimproc.vim'
         Plugin 'tomasr/molokai'
         Plugin 'Valloric/YouCompleteMe'
-        Plugin 'vim-airline/vim-airline'
-        Plugin 'vim-airline/vim-airline-themes'
+        Plugin 'vim-scripts/vim-unite-cscope'
+        Plugin 'vim-scripts/YankRing.vim'
     endif
 
     call vundle#end()
