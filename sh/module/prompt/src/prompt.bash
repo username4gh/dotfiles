@@ -274,7 +274,7 @@ if [[ $(whoami) != root ]];then
 
         _prompt_info() {
             if [[ -f "$MY_DOTFILES_RESOURCES/SCM_PROMPT_INFO_ON" ]];then
-                scm_prompt_info $@
+                scm_prompt_info "$@"
             fi
         }
 
@@ -282,7 +282,15 @@ if [[ $(whoami) != root ]];then
         # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
         # http://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
         # http://misc.flogisoft.com/bash/tip_colors_and_formatting
-        PS1="[\\j] [\${MY_CURRENT_PACKAGE_MANAGER}] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_prompt_info '(%s)')\\$ "
+        if _is_Darwin; then
+            if [[ ! -z "$MY_CURRENT_PACKAGE_MANAGER" ]];then
+                PS1="[\\j] [\${MY_CURRENT_PACKAGE_MANAGER}] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_prompt_info '(%s)')\\$ "
+            else
+                PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_prompt_info '(%s)')\\$ "
+            fi
+        else
+            PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \$(_prompt_info '(%s)')\\$ "
+        fi
 
         # make `pwd` as iterm2 tab title
         PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'
@@ -291,7 +299,16 @@ else
     # http://stackoverflow.com/questions/10594786/bash-prompt-history-issue
     # http://superuser.com/questions/232721/how-to-avoid-tilde-in-bash-prompt
     # http://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
-    PS1="[\\j] [\${MY_CURRENT_PACKAGE_MANAGER}] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \\$ "
+    if _is_Darwin; then
+        if [[ ! -z "$MY_CURRENT_PACKAGE_MANAGER" ]];then
+            PS1="[\\j] [\${MY_CURRENT_PACKAGE_MANAGER}] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \\$ "
+        else
+            PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \\$ "
+        fi
+    else
+        PS1="[\\j] \\u \\[\e[32m\\]\${PWD}\\[\e[0m\\] \\$ "
+    fi
+
 
     # make `pwd` as iterm2 tab title
     PROMPT_COMMAND+=' echo -ne "\033]0;${PWD##*/}\007";'

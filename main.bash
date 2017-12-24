@@ -17,15 +17,18 @@ _overrideFunction() {
 
 export MY_CURRENT_SHELL='bash'
 
-if [[ -f '/opt/local/bin/port' ]];then
-    export MY_CURRENT_PACKAGE_MANAGER='macports'
-elif [[ -f '/usr/local/bin/brew' ]];then
-    export MY_CURRENT_PACKAGE_MANAGER='homebrew'
+if [[ "$(uname -s)" == "Darwin" ]];then
+    if [[ -f '/opt/local/bin/port' ]];then
+        export MY_CURRENT_PACKAGE_MANAGER='macports'
+    elif [[ -f '/usr/local/bin/brew' ]];then
+        export MY_CURRENT_PACKAGE_MANAGER='homebrew'
+    else
+        unset MY_CURRENT_PACKAGE_MANAGER
+    fi
 else
     unset MY_CURRENT_PACKAGE_MANAGER
 fi
 
-# integration with my own stuff with bash-it
 if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
-    source "$HOME/.dotfiles/sh/init.bash";
+    source "$HOME/.dotfiles/sh/init.bash"
 fi
