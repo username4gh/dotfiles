@@ -17,8 +17,10 @@ if PY3:
     def str2bytes(s):
         return s.encode('utf-8')
 
+
     def int2byte(i):
         return bytes((i,))
+
 
     def bytes2str(b):
         return b.decode('utf-8')
@@ -79,14 +81,14 @@ class ContentMatcher(object):
                 if self._find_str:
                     # Make the common case faster: there's no match in this line, so
                     # bail out ASAP.
-                    i = line.find(self._find_str, 0)
-                    if i == -1:
+                    index = line.find(self._find_str, 0)
+                    if index == -1:
                         continue
                     col_ranges = []
-                    while i >= 0:
-                        next_start = i + self._find_str_len
-                        col_ranges.append((i, next_start))
-                        i = line.find(self._find_str, next_start)
+                    while index >= 0:
+                        next_start = index + self._find_str_len
+                        col_ranges.append((index, next_start))
+                        index = line.find(self._find_str, next_start)
                 else:
                     col_ranges = [match.span() for match in self._finditer(line) if match]
 
@@ -95,8 +97,8 @@ class ContentMatcher(object):
             except Exception as err:
                 print(err)
 
-    def inverted_matcher(self, fileobj):
-        for line_number, line in enumerate(fileobj, 1):
+    def inverted_matcher(self, file_obj):
+        for line_number, line in enumerate(file_obj, 1):
             # Invert match: only return lines that don't match the
             # pattern anywhere
             try:
@@ -131,18 +133,12 @@ class ContentMatcher(object):
         return regex
 
 
-class OutputFormatter(object):
-    def emit_matching_line(self, match_result):
-        raise NotImplementedError()
-
-
-class DefaultOutputFormatter(OutputFormatter):
+class OutputFormatter:
     def __init__(self,
-                 only_matching=False,
-                 output_stream=None):
+                 only_matching=False):
         self.only_matching = only_matching
 
-        self.output_stream = output_stream or sys.stdout
+        self.output_stream = sys.stdout
 
     def emit_matching_line(self, match_result):
         line = match_result.matching_line
@@ -203,10 +199,10 @@ def parse_cmdline(cmdline_args):
     group_output = optparse.OptionGroup(optparser, 'Output control')
     group_output.add_option('-c', '--count',
                             action='store_true', dest='count', default=False,
-                            help='print only a count of matching lines')
+                            help='print only the count of matching lines')
     group_output.add_option('-o', '--only-matching',
                             action='store_true', dest='only_matching', default=False,
-                            help='show only the part of a line matching PATTERN')
+                            help='show only the part of line that matches PATTERN')
     optparser.add_option_group(group_output)
 
     options, args = optparser.parse_args(cmdline_args)
@@ -225,9 +221,8 @@ def _run(pattern=None,
     """ Returns True if a match was found, False otherwise. """
 
     # Set up a default output formatter, if none is provided
-
     if output_formatter is None:
-        output_formatter = DefaultOutputFormatter(only_matching)
+        output_formatter = OutputFormatter(only_matching)
 
     if pattern is None:
         pattern = b''
@@ -264,6 +259,7 @@ def _run(pattern=None,
                     output_formatter.emit_matching_line(match)
         else:
             if count:
+                # deal with corner case
                 output_formatter.emit('0')
     except (OSError, IOError):
         pass
