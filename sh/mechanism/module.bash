@@ -3,7 +3,7 @@
 _module_generate_init_bash() {
     if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
         cp "$MY_SH/mechanism/module.snippet" "$MY_SH_MODULE/$1/init.bash"
-        r -i "$MY_SH_MODULE/$1/init.bash" -b 'module_name' -a "$1"
+        sed -i -e "s/module_name/$1/g" "$MY_SH_MODULE/$1/init.bash"
     fi
 }
 
