@@ -9,5 +9,10 @@ fi
 
 CURRENT_DIR="${PWD//\//_}";
 export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.index";
+
+if [[ ! -f "$FSEARCHINDEX" ]];then
+    echo "$FSEARCHINDEX not exist"
+fi
+
 s -f "$FSEARCHINDEX" "$@"
 )

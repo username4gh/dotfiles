@@ -1,6 +1,26 @@
 #! /usr/bin/env bash
 
 echo "generating file list for current directory ..."
-find . -type f -iname '*.aidl' -o -iname '*.cc' -o -iname '*.h' -o -iname '*.c' -o -iname '*.cpp' -o -iname '*.java' | s -i -v 'test' | _readlink | sort | uniq > './cscope.files'
+
+white_list='('
+
+white_list+='\.aidl'
+white_list+='|\.cc'
+white_list+='|\.h'
+white_list+='|\.c'
+white_list+='|\.cpp'
+white_list+='|.java'
+white_list+='|\.hpp'
+
+white_list+=')'
+
+black_list='('
+
+black_list+='test'
+
+blac_list+=')'
+
+
+find . -type f | s -i "$white_list" | s -i -v "$black_list" | _readlink | sort | uniq > './cscope.files'
 echo "output: cscope.files"
 
