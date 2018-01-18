@@ -1,5 +1,51 @@
 #! /usr/bin/env bash
 
+if [[ ! -f './cscope.files' ]];then
+    echo "generating file list for current directory ..."
+
+    white_list='('
+    white_list+='\.aidl'
+    white_list+='|\.cc'
+    white_list+='|\.h'
+    white_list+='|\.c'
+    white_list+='|\.cpp'
+    white_list+='|\.java'
+    white_list+='|\.hpp'
+    white_list+=')'
+
+    black_list='('
+    black_list+='test'
+    black_list+=')'
+
+
+    find . -type f | s -i "$white_list" | s -i -v "$black_list" | _readlink | sort | uniq > './cscope.files'
+    echo "output: cscope.files"
+fi
+
+# do some checking
+
+_is_command_exist() {
+    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+}
+
+if ! _is_command_exist 'cscope';then
+   echo "install cscope first" 
+   exit
+fi
+
+
+if ! _is_command_exist 'ctags';then
+   echo "install ctags first" 
+   exit
+fi
+
+if ! _is_command_exist 'gtags';then
+   echo "install gtags first" 
+   exit
+fi
+
+# the indexing process
+
 if [[ -f './cscope.files' ]];then
     echo "cscope indexing ..."
     cscope -bckq -i './cscope.files'
