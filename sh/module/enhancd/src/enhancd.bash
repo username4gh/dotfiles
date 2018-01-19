@@ -12,7 +12,11 @@ _enhancd_init() {
 
 #export PATH="$MY_DOTFILES_RESOURCES/fzy:$PATH"
 
-export ENHANCD_FILTER=percol
+_percol() {
+    percol --match-method regex "$@"
+}
+
+export ENHANCD_FILTER=_percol
 export ENHANCD_COMMAND='z'
 export ENHANCD_USE_FUZZY_MATCH=0
 
