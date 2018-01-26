@@ -4,7 +4,7 @@ files=(GPATH GRTAGS GTAGS cscope.files cscope.in.out cscope.out cscope.po.out ta
 
 for f in "${files[@]}"
 do
-    rm -rvf $f
+    [[ -f "$f" ]] && rm -rvf "$f"
 done
 
 unset files

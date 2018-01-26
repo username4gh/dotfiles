@@ -47,8 +47,8 @@ fi
 # the indexing process
 
 if [[ -f './cscope.files' ]];then
-    echo "cscope indexing ..."
-    cscope -bckq -i './cscope.files'
+    #echo "cscope indexing ..."
+    #cscope -bcekq -i './cscope.files'
 
     echo "ctags indexing ..."
     ctags -L ./cscope.files --tag-relative=yes './tags'

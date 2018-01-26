@@ -42,7 +42,7 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
         Plugin 'Shougo/vimproc.vim'
         Plugin 'tomasr/molokai'
         Plugin 'Valloric/YouCompleteMe'
-        Plugin 'vim-scripts/vim-unite-cscope'
+        "Plugin 'vim-scripts/vim-unite-cscope'
         Plugin 'vim-scripts/YankRing.vim'
     endif
 
@@ -76,20 +76,22 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     map J <Plug>(expand_region_shrink)
 
     " unite-cscope
-    map <Leader>a :Unite cscope/assignments_to_symbol<CR>
-    map <Leader>c :Unite cscope/functions_calling<CR>
-    map <Leader>d :Unite cscope/functions_called_by<CR>
-    map <Leader>e :Unite cscope/egrep_pattern<CR>
-    map <Leader>f :Unite cscope/find_file<CR>
-    map <Leader>g :Unite cscope/global_definition<CR>
-    map <Leader>i :Unite cscope/including_this_file<CR>
-    map <Leader>s :Unite cscope/find_this_symbol<CR>
-    map <Leader>t :Unite cscope/text_string<CR>
+    "map <Leader>a :Unite cscope/assignments_to_symbol<CR>
+    "map <Leader>c :Unite cscope/functions_calling<CR>
+    "map <Leader>d :Unite cscope/functions_called_by<CR>
+    "map <Leader>e :Unite cscope/egrep_pattern<CR>
+    "map <Leader>f :Unite cscope/find_file<CR>
+    "map <Leader>g :Unite cscope/global_definition<CR>
+    "map <Leader>i :Unite cscope/including_this_file<CR>
+    "map <Leader>s :Unite cscope/find_this_symbol<CR>
+    "map <Leader>t :Unite cscope/text_string<CR>
 
     " unite-gtags
     map <Leader>D :Unite gtags/def<CR>
     map <Leader>R :Unite gtags/ref<CR>
     map <Leader>G :Unite gtags/grep<CR>
+
+    " unite
     map <Leader>q <Plug>(unite_exit)<CR>
     map <Leader>Q <Plug>(unite_all_exit)<CR>
 endif
