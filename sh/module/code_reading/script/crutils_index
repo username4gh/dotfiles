@@ -53,7 +53,7 @@ if [[ -f './cscope.files' ]];then
     echo "ctags indexing ..."
     ctags -L ./cscope.files --tag-relative=yes './tags'
 
-    echo "gnu global indexing ..."
+    echo "gnu-global indexing ..."
     # gtags on ubuntu does not support '--skip-unreadable'
     gtags -f ./cscope.files
 else

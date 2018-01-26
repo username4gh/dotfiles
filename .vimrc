@@ -17,6 +17,7 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     Plugin 'VundleVim/Vundle.vim'
 
     Plugin 'bling/vim-bufferline'
+    Plugin 'derekwyatt/vim-scala'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'henrik/vim-indexed-search'
     Plugin 'kelwin/vim-smali'
@@ -36,7 +37,6 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     " here i use the file existence to switch on-and-off some plugins
     if _is_on_heavy_mode()
-        Plugin 'derekwyatt/vim-scala'
         Plugin 'hewes/unite-gtags'
         Plugin 'Shougo/unite.vim'
         Plugin 'Shougo/vimproc.vim'
