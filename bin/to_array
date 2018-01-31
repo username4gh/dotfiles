@@ -1,0 +1,13 @@
+#! /usr/bin/env python
+## coding = utf-8
+
+import sys
+
+f_in = sys.stdin
+
+f_out = sys.stdout
+
+for line in f_in.readlines():
+    sys.stdout.write('\"' + line.strip('\n') + '\",')
+    
+
