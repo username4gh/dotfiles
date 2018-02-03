@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+cat ~/.dotfiles/sh/module/code_reading/data/regex.dat | percol
