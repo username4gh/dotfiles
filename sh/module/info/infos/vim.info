@@ -1,0 +1,167 @@
+# Vim Cheat Sheet
+
+##    Cursor Movement
+
+      h        - move cursor left
+      j        - move cursor down
+      k        - move cursor up
+      l        - move cursor right
+      w        - jump forwards to the start of a word
+      W        - jump forwards to the start of a word (words can contain punctuation)
+      e        - jump forwards to the end of a word
+      E        - jump forwards to the end of a word (words can contain punctuation)
+      b        - jump backwards to the start of a word
+      B        - jump backwards to the start of a word (words can contain punctuation)
+      0        - jump to the start of the line
+      ^        - jump to the first non-blank character of the line
+      $        - jump to the end of the line
+      %        - jump to the matching parenthesis
+      [[       - jump to function start
+      ]]       - jump to function end
+      gg       - go to the first line of the document
+      G        - go to the last line of the document
+      5g       - go to line 5
+      L        - move cursor to bottom of screen
+      ctrl + d - move cursor to half way down the screen
+      ctrl + u - move cursor to half way up the screen
+
+##    Insert Mode - inserting/appending text
+
+      i    - insert before the cursor
+      I    - insert at the beginning of the line
+      a    - insert (append) after the cursor
+      A    - insert (append) at the end of the line
+      o    - append (open) a new line below the current line
+      O    - append (open) a new line above the current line
+      ea   - insert (append) at the end of the word
+      esc  - exit insert mode
+
+##    Editing
+
+      r           - replace a single character
+      j           - join line below to the current one
+      cc          - change (replace) entire line
+      cw          - change (replace) to the end of the word
+      c$          - change (replace) to the end of the line
+      xp          - transpose two letters (delete and paste)
+      u           - undo
+      ctrl  +  r  - redo
+      .           - repeat last command
+
+##    Marking Text (visual mode)
+
+      v           - start visual mode, mark lines, then do a command (like y-yank)
+      V           - start linewise visual mode
+      o           - move to other end of marked area
+      ctrl  +  v  - start visual block mode
+      o           - move to other corner of block(after entering visual block mode)
+      aw          - mark a word
+      ab          - a block with ()
+      ab          - a block with {}
+      ib          - inner block with ()
+      ib          - inner block with {}
+      esc         - exit visual mode
+
+##    Visual Commands
+
+      >>  - shift text right
+      <<  - shift text left
+      y   - yank (copy) marked text
+      d   - delete marked text
+      ~   - switch case
+
+##    Cut and Paste
+
+      yy   - yank (copy) a line
+      2yy  - yank (copy) 2 lines
+      yw   - yank (copy) word
+      y$   - yank (copy) to end of line
+      p    - put (paste) the clipboard after cursor
+      P    - put (paste) before cursor
+      dd   - delete (cut) a line
+      2dd  - delete (cut) 2 lines
+      dw   - delete (cut) word
+      d    - delete (cut) to the end of the line
+      d$   - delete (cut) to the end of the line
+      x    - delete (cut) character
+
+##    Exiting
+
+      :w           - write (save) the file, but don't exit
+      :x           - write (save) and quit
+      :q           - quit (fails if there are unsaved changes)
+      :q!  or  zq  - quit and throw away unsaved changes
+
+##    Search and Replace
+
+      /pattern                              - search for pattern
+      ?pattern                              - search backward for pattern
+      /jo[ha]n                              - search for john or joan
+      /\<pat                                - search for pattern or patrick
+      /pat\>                                - search for expat or spat
+      /fred\|joe                            - search fred or joe
+      /\<\d\d\d\d\>                         - search for exactly 4 digits
+      /^\n\{3}                              - find 3 empty lines
+      :bufdo /searchstr/                    - search in all open files
+      :bufdo %s/something/somethingelse/g   - search something in all the open buffers and replace it withsomethingelse x
+      n                                     - repeat search in same direction
+      N                                     - repeat search in opposite direction
+      :%s/old/new/g                         - replace all old with new throughout file
+      :%s/old/new/gc                        - replace all old with new throughout file with confirmations
+      :s/bill/steve/g                       - replace bill by steve in current line
+      :%s/ *$//g                            - delete all white spaces
+      :g/string/d                           - delete all lines containing string
+      :v/string/d                           - delete all lines which didn’t contain string
+      :%s#<[^>]\+>##g                       - delete html tags but keeps text
+      :%s/^\(.*\)\n\1$/\1/                  - delete lines which appears twice
+      :arg **/*.ext                         - all files in and below current directory
+      :argdo %s/pattern/replace/ge | update - Search and replace in all files in arglist
+
+##   Lowercase and Uppercase
+
+      Vu            - lowercase line
+      VU            - uppercase line
+      g~~           - invert case of a line
+      ~             - invert case of letter under cursor
+      veu           - switch word to lowercase
+      veU           - switch word to uppercase
+      ve~           - modify word case
+      ggvGeu        - set all text to lowercase
+      ggvGe~        - switch case of all text in file
+      :%s/\<./\u&/g - sets first letter of each word to uppercase
+      :%s/\<./\l&/g - sets first letter of each word to lowercase
+      :%s/.*/\u&    - sets first letter of each line to uppercase
+      :%s/.*/\l&    - sets first letter of each line to lowercase
+
+##    Working with Multiple Files
+
+      :e  filename    - edit a file in a new buffer
+      :bnext  or  :bn - go to the next buffer
+      :bprev  or  :bp - go to the previous buffer
+      :bd             - delete a buffer (close a file)
+      :sp  filename   - open a file in a new buffer and split window
+      :vsp  filename  - open a file in a new buffer and vertically split window
+      ctrl  +  ws     - split window
+      ctrl  +  wv     - split window vertically
+      ctrl  +  ww     - switch windows
+      ctrl  +  h      - move cursor to the left window (vertical split)
+      ctrl  +  l      - move cursor to the right window (vertical split)
+      ctrl  +  j      - move cursor to the window below (horizontal split)
+      ctrl  +  k      - move cursor to the window above (horizontal split)
+
+##    Tabs
+
+      :tabnew  filename or  :tabn  filename - open a file in a new tab
+      gt  or  :tabnext  or  :tabn           - move to the next tab
+      gT  or  :tabprev  or  :tabp           - move to the previous tab
+      #gt                                   - move to tab number #
+      :tabmove #                            - move current tab to the #th position (indexed from 0)
+      :tabclose  or  :tabc                  - close the current tab and all its windows
+      :tabonly  or  :tabo                   - close all tabs except for the current one
+
+##   Aligning
+     :%!fmt - align all lines
+
+##   Diff
+     :windo diffthis - compare two or more open buffers
+     :windo diffoff  - turn off diff view
