@@ -1,0 +1,42 @@
+#! /usr/bin/env python
+## coding=utf-8
+
+import re
+import sys
+
+input_src = []
+
+f = sys.stdin
+
+for line in f.readlines():
+    input_src.append(line)
+
+pattern = re.compile('(?<=jdk).*?(?=\.jdk)')
+
+major_version_pattern = re.compile('(?<=^)\d+\.\d+\.\d+(?=_)')
+
+minor_version_pattern = re.compile('(?<=_)\d+(?=$)')
+
+
+def asc_order(x, y):
+    x_processed = pattern.findall(x)[0]
+    y_processed = pattern.findall(y)[0]
+
+    if major_version_pattern.findall(x_processed) > major_version_pattern.findall(y_processed):
+        return 1
+    elif major_version_pattern.findall(x_processed) == major_version_pattern.findall(y_processed):
+        if int(minor_version_pattern.findall(x_processed)[0]) > int(minor_version_pattern.findall(y_processed)[0]):
+            return 1
+        elif int(minor_version_pattern.findall(x_processed)[0]) == int(minor_version_pattern.findall(y_processed)[0]):
+            return 0
+        else:
+            return -1
+    else:
+        return -1
+
+
+def desc_order(x, y):
+    return asc_order(y, x)
+
+
+print sorted(input_src, cmp=desc_order)[0]
