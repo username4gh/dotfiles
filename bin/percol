@@ -4,4 +4,15 @@ if [[ ! -d "$MY_DOTFILES_RESOURCES/percol" ]];then
     git clone https://github.com/mooz/percol "$MY_DOTFILES_RESOURCES/percol"
 fi
 
-(export PATH="$MY_DOTFILES_RESOURCES/percol/bin:$PATH"; percol  --rcfile="$MY_DOTFILES/percol_conf.py" "$@")
+(
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    unset PATH;
+    # sometime other stuff the python in the PATH, so here we use a little bit of hard code to prevent it
+    # sadly percol is only suppory python-2.x
+    # obviously it's not very robust, but it may require a lot of effort to achieve that
+    # so just stick with this right now
+    export PATH="/System/Library/Frameworks/Python.framework/Versions/2.7/bin/";
+fi
+export PATH="$MY_DOTFILES_RESOURCES/percol/bin:$PATH"; 
+percol  --rcfile="$MY_DOTFILES/percol_conf.py" "$@"
+)
