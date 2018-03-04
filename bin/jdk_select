@@ -38,5 +38,12 @@ def asc_order(x, y):
 def desc_order(x, y):
     return asc_order(y, x)
 
+PY3 = sys.version_info[0] == 3
 
-print sorted(input_src, cmp=desc_order)[0]
+if PY3:
+    import functools
+    sorted_input_src = sorted(input_src, key=functools.cmp_to_key(desc_order))
+else:
+    sorted_input_src = sorted(input_src, cmp=desc_order)
+
+sys.stdout.write(sorted_input_src[0])

@@ -5,7 +5,9 @@
 import site
 import sys
 
-def main(argv=sys.argv):
-    print site.USER_BASE
+
+def main():
+    sys.stdout.write(site.USER_BASE)
+
 
 sys.exit(main())
