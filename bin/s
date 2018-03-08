@@ -288,7 +288,8 @@ def main(argv=sys.argv):
              whole_words=options.word_regexp,
              literal_pattern=options.literal,
              invert_match=options.invert_match,
-             count=options.count)
+             count=options.count,
+             only_matching=options.only_matching)
     except KeyboardInterrupt:
         return 'interrupted - exiting'
     except Exception as err:
