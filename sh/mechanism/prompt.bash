@@ -265,6 +265,7 @@ if [[ $(whoami) != root ]];then
         }
 
         prompt_switch_between_light_and_heavy() {
+            # the scm-xx fucntion can cause serious performance issue when encounters huge codebase, so we provide this to easily switch off this functionality
             if [[ -f "$MY_DOTFILES_RESOURCES/SCM_PROMPT_INFO_ON" ]];then
                 rm "$MY_DOTFILES_RESOURCES/SCM_PROMPT_INFO_ON"
             else
