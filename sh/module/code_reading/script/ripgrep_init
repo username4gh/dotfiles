@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+VERSION_CODE="$(curl -s https://github.com/BurntSushi/ripgrep/releases | s 'ripgrep/releases/tag' | s -o '(?<=/tag/).*?(?=\"\>)' | head -n 1)"
+
+OUTPUT_FILE_NAME="ripgrep-$VERSION_CODE-x86_64-apple-darwin.tar.gz"
+
+curl -k -L -C - "https://github.com/BurntSushi/ripgrep/releases/download/$VERSION_CODE/$OUTPUT_FILE_NAME" -o "$HOME/bin/$OUTPUT_FILE_NAME" && tar xf "$HOME/bin/$OUTPUT_FILE_NAME" -C ~/bin

@@ -1,11 +1,5 @@
 #! /usr/bin/env bash
 
-_ripgrep_init() {
-    VERSION_CODE="$(curl -s https://github.com/BurntSushi/ripgrep/releases | s 'ripgrep/releases/tag' | s -o '(?<=/tag/).*?(?=\"\>)' | head -n 1)"
-
-    curl -k -L -C - "https://github.com/BurntSushi/ripgrep/releases/download/$VERSION_CODE/ripgrep-$VERSION_CODE-x86_64-apple-darwin.tar.gz" -o ~/bin/ripgrep.tar.gz && tar xf ~/bin/ripgrep.tar.gz -C ~/bin
-}
-
 RIPGREP_PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin')"
 if [[ "${#RIPGREP_PATH}" -eq 0 ]];then
     _sh_log "${BASH_SOURCE[0]}" "ripgrep has not been installed yet"
