@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 (
-FSEARCH_WORKSPACE="$HOME/.code_reading_utils/file";
+FSEARCH_WORKSPACE="$MY_DOTFILES_RESOURCES/code_reading_utils/file";
 
 if [[ ! -d "$FSEARCH_WORKSPACE" ]];then
     mkdir -p "$FSEARCH_WORKSPACE"

@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 (
-CSEARCH_WROKSPACE="$HOME/.code_reading_utils/code";
+CSEARCH_WROKSPACE="$MY_DOTFILES_RESOURCES/code_reading_utils/code";
 CURRENT_DIR="${PWD//\//_}";
 export CSEARCHINDEX="$CSEARCH_WROKSPACE/$CURRENT_DIR.csearchindex";
 csearch -n "$@"
