@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+# currently, cscope just had poor performance while handling large code-base, so just disable it
+
 if [[ ! -f './cscope.files' ]];then
     echo "generating file list for current directory ..."
 
@@ -22,17 +24,14 @@ if [[ ! -f './cscope.files' ]];then
     echo "output: cscope.files"
 fi
 
-# do some checking
-
 _is_command_exist() {
     [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
 }
 
-if ! _is_command_exist 'cscope';then
-   echo "install cscope first" 
-   exit
-fi
-
+#if ! _is_command_exist 'cscope';then
+#   echo "install cscope first" 
+#   exit
+#fi
 
 if ! _is_command_exist 'ctags';then
    echo "install ctags first" 
