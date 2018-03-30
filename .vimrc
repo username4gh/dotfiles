@@ -20,6 +20,7 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     Plugin 'derekwyatt/vim-scala'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'henrik/vim-indexed-search'
+    Plugin 'jeetsukumaran/vim-buffersaurus'
     Plugin 'kelwin/vim-smali'
     Plugin 'majutsushi/tagbar'
     Plugin 'mhinz/vim-signify'
