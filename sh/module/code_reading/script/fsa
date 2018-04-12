@@ -2,11 +2,15 @@
 
 # fsa - fsearch for aosp
 
+if [[ "$#" -lt 1 ]];then
+    exit
+fi
+
 pattern='('
 
 pattern+='examples'
-pattern+='|packages'
 pattern+='|test'
+
 pattern+='|\.git\\'
 pattern+='|\.html'
 pattern+='|\.py'

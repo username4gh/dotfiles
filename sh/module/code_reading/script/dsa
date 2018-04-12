@@ -2,6 +2,10 @@
 
 # dsa - dsearch for aosp
 
+if [[ "$#" -lt 1 ]];then
+    exit
+fi
+
 pattern='('
 
 pattern+='examples'
