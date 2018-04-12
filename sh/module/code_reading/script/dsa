@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# fsa - fsearch for aosp
+# dsa - dsearch for aosp
 
 pattern='('
 

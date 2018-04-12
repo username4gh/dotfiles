@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# csfa - csearch for aosp
+# csa - csearch for aosp
 
 
 pattern='('
