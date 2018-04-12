@@ -8,6 +8,6 @@ if [[ ! -d "$FSEARCH_WORKSPACE" ]];then
 fi
 
 CURRENT_DIR="${PWD//\//_}";
-export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.index";
+export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.file.index";
 find . -type f | _readlink | sort | uniq > $FSEARCHINDEX
 )
