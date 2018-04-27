@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+# search_chrome_history_backup "select url from urls where url like '%closure%'"
+# do not omit the double-quote and single-quote
+
+while read -r hisfile
+do
+    sqlite3 "$hisfile" "$@"
+done < <(find "$MY_DOTFILES_RESOURCES/my-backup" -type f | s 'History\d*')
+
