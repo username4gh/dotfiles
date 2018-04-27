@@ -4,8 +4,9 @@
 _backup_chrome_browsing_history() {
     if [[ "$#" -eq 1 ]];then
         if _is_darwin;then
-            local HISTORY_FILE="$(find /Users/$USER/Library/Application\ Support -mindepth 1 -maxdepth 1 -type d -name "*Google*")"
-            (cd "$HISTORY_FILE"; rsync --recursive --progress --verbose "$(find ./Chrome/ -iname History)" "$1")
+            local GOOGLE_CHROME_DIR="/Users/$USER/Library/Application Support/Google/Chrome/"
+            # here i assume that i only use the default profile
+            (cd "$GOOGLE_CHROME_DIR"; rsync --recursive --progress --verbose "$(find ./Default -iname History)" "$1")
         fi
     fi
 }
