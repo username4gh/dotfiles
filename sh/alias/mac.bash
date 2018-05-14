@@ -68,4 +68,8 @@ if _is_darwin; then
     alias spstatus='networksetup -getsocksfirewallproxy Wi-Fi'
     alias spon='networksetup -setsocksfirewallproxystate Wi-Fi on'
     alias spoff='networksetup -setsocksfirewallproxystate Wi-Fi off'
+
+    # spctl
+    alias spctl_master_disable='sudo spctl --master-disable'
+    alias spctl_master_enable='sudo spctl --master-enable'
 fi
