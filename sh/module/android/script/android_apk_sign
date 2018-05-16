@@ -7,6 +7,6 @@ else
     keystore="$1"
     apk="$2"
     alias_name="$3"
-    cp -v "$apk" "$apk.signed"
-    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $keystore $apk.signed $alias_name || rm -v "$apk.signed"
+    cp -v "$apk" "signed_$apk"
+    jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore $keystore $apk.signed $alias_name || rm -v "signed_$apk"
 fi
