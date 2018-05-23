@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+# https://stackoverflow.com/questions/11598152/how-do-i-pull-the-sqlite-database-from-the-android-device
+
+adb shell "run-as $1 chmod 666 /data/data/$1/databases/$2"
+adb pull "/data/data/$1/databases/$2" .
+adb shell "run-as $1 chmod 600 /data/data/$1/databases/$2"
