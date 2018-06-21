@@ -11,7 +11,7 @@ if _is_linux;then
 fi
 
 if _is_darwin;then
-    export JAVA_HOME="/Library/Java/JavaVirtualMachines/$(ls /Library/Java/JavaVirtualMachines/ | jdk_select)/Contents/Home"
+    export JAVA_HOME="/Library/Java/JavaVirtualMachines/$(ls /Library/Java/JavaVirtualMachines/ | jdk_select_latest)/Contents/Home"
     export JDK_PATH="$JDK_PATH"
 fi
 
