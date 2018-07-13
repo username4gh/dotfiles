@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]];then 
+    echo "$(location https://github.com/txthinking/brook/releases/latest)/brook_macos_amd64"
+fi
+
+if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]];then
+    echo "$(location https://github.com/txthinking/brook/releases/latest)/brook"
+fi
