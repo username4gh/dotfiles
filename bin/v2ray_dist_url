@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
 if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]];then 
-    echo "$(location https://github.com/v2ray/v2ray-core/releases/latest)/v2ray-macos.zip"
+    echo "$(location https://github.com/v2ray/v2ray-core/releases/latest | sed 's/tag/download/g')/v2ray-macos.zip"
 fi
 
 if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]];then
-    echo "$(location https://github.com/v2ray/v2ray-core/releases/latest)/v2ray-linux-64.zip"
+    echo "$(location https://github.com/v2ray/v2ray-core/releases/latest | sed 's/tag/download/g')/v2ray-linux-64.zip"
 fi
