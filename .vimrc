@@ -99,9 +99,7 @@ endif
 
 filetype plugin indent on
 
-" basic editor-stuff
-so ~/.dotfiles/vim/base.vim
-so ~/.dotfiles/vim/clipboard.vim
-so ~/.dotfiles/vim/output.vim
-so ~/.dotfiles/vim/search.vim
-so ~/.dotfiles/vim/whitespace.vim
+" extra configuration
+for f in split(glob("$MY_DOTFILES/vim/*.vim"), '\n')
+    exe 'source' f
+endfor
