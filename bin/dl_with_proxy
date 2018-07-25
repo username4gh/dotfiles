@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+(
+if [[ "$#" -eq 1 ]];then
+    FILE_NAME="${1##*/}"
+
+    echo "[dl] : downloading $FILE_NAME ..."
+
+    http_proxy=http://127.0.0.1:49156
+    
+    https_proxy=https://127.0.0.1:49156
+
+    curl -k -L -C - "$1" -o ./$FILE_NAME
+
+    unset FILE_NAME
+else
+    "Usage: dl <url>"
+fi
+)
