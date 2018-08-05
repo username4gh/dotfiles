@@ -159,7 +159,9 @@ map <F1> :buffers<CR>
 " toggle line number
 nnoremap <F2> :set number!<CR>
 
-nnoremap <F3> :set relativenumber!<CR>
+" nnoremap <F3> :set relativenumber!<CR>
+" format json
+nnoremap <F3> :%!jq '.'<CR>
 
 set pastetoggle=<F4>
 
