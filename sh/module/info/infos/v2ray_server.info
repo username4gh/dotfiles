@@ -1,0 +1,20 @@
+{
+  "inbound": {
+    "port": <port_number>,
+    "protocol": "vmess",
+    "settings": {
+      "clients": [
+        {
+          "id": "<uuid>"
+        }
+      ]
+    },
+    "streamSettings": {
+      "network": "kcp"
+    }
+  },
+  "outbound": {
+    "protocol": "freedom",
+    "settings": {}
+  }
+}

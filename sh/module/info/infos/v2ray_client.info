@@ -1,0 +1,53 @@
+{
+    "log": {
+        "loglevel": "info"
+    },
+    "inbound": {
+        "port": 1080,
+        "listen": "127.0.0.1",
+        "protocol": "socks",
+        "domainOverride": [
+            "tls",
+            "http"
+        ],
+        "settings": {
+            "auth": "noauth",
+            "udp": true
+        }
+    },
+    "outbound": {
+        "protocol": "vmess",
+        "settings": {
+            "vnext": [
+                {
+                    "address": "<server_address>",
+                    "port": <port_number>,
+                    "users": [
+                        {
+                            "id": "<uuid>"
+                        }
+                    ]
+                }
+            ]
+        },
+        "streamSettings": {
+            "network": "kcp"
+        }
+    },
+    "routing": {
+        "strategy": "rules",
+        "settings": {
+            "domainStrategy": "IPIfNonMatch",
+            "rules": [
+                {
+                    "type": "chinasites",
+                    "outboundTag": "freedom"
+                },
+                {
+                    "type": "chinaip",
+                    "outboundTag": "freedom"
+                }
+            ]
+        }
+    }
+}
