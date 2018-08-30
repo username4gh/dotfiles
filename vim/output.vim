@@ -18,3 +18,6 @@ function! OutputSplitWindow(...)
 endfunction
 
 command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
+
+" list the mapping
+nnoremap <Leader>K :Output map<CR>

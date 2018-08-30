@@ -5,7 +5,7 @@ if empty(glob("~/.vim/bundle/Vundle.vim"))
     silent execute '!git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim'
 endif
 
-function _is_on_heavy_mode()
+function! _is_on_heavy_mode()
     return !empty(glob("~/.vim/HEAVY"))
 endfunction
 
@@ -16,50 +16,68 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     Plugin 'VundleVim/Vundle.vim'
 
-    Plugin 'bling/vim-bufferline'
     Plugin 'derekwyatt/vim-scala'
     Plugin 'easymotion/vim-easymotion'
+    Plugin 'haya14busa/incsearch.vim'
+    Plugin 'haya14busa/incsearch-fuzzy.vim'
+    Plugin 'haya14busa/incsearch-easymotion.vim'
     Plugin 'henrik/vim-indexed-search'
     Plugin 'jeetsukumaran/vim-buffersaurus'
     Plugin 'kelwin/vim-smali'
-    Plugin 'majutsushi/tagbar'
     Plugin 'mhinz/vim-signify'
     Plugin 'nathanaelkane/vim-indent-guides'
     Plugin 'octol/vim-cpp-enhanced-highlight'
     Plugin 'Raimondi/delimitMate'
-    Plugin 'swaroopch/vim-markdown-preview'
     Plugin 'terryma/vim-expand-region'
     Plugin 'terryma/vim-multiple-cursors'
     Plugin 'vim-scripts/JSON.vim'
     Plugin 'tpope/vim-surround'
-    Plugin 'vim-airline/vim-airline'
-    Plugin 'vim-airline/vim-airline-themes'
     Plugin 'vim-ruby/vim-ruby'
 
     " here i use the file existence to switch on-and-off some plugins
     if _is_on_heavy_mode()
-        Plugin 'hewes/unite-gtags'
-        Plugin 'Shougo/unite.vim'
-        Plugin 'Shougo/vimproc.vim'
-        Plugin 'tomasr/molokai'
+        Plugin 'majutsushi/tagbar'
+        Plugin 'ozelentok/denite-gtags'
+        Plugin 'Shougo/denite.nvim'
         Plugin 'Valloric/YouCompleteMe'
-        "Plugin 'vim-scripts/vim-unite-cscope'
         Plugin 'vim-scripts/YankRing.vim'
     endif
 
     call vundle#end()
 
-    " colorscheme
-    if _is_on_heavy_mode()
-        if !empty(glob("~/.vim/bundle/molokai/colors/molokai.vim"))
-            colorscheme molokai
-        endif
-    endif
-
     " bling/vim-airline
-    let g:airline_theme = 'badwolf'
+    " let g:airline_theme = 'badwolf'
 
+    " easymotion
     map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
+    " Bonus fuzzy-search with EasyMotion
+    function! s:config_easyfuzzymotion(...) abort
+        return extend(copy({
+                    \   'converters': [incsearch#config#fuzzyword#converter()],
+                    \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+                    \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+                    \   'is_expr': 0,
+                    \   'is_stay': 1
+                    \ }), get(a:, 1, {}))
+    endfunction
+
+    noremap <silent><expr> <Space>/ incsearch#go(<SID>config_easyfuzzymotion())
+
+    " incsearch
+    map /  <Plug>(incsearch-forward)
+    map ?  <Plug>(incsearch-backward)
+    map g/ <Plug>(incsearch-stay)
+    let g:incsearch#auto_nohlsearch = 1
+    map n  <Plug>(incsearch-nohl-n)
+    map N  <Plug>(incsearch-nohl-N)
+    map *  <Plug>(incsearch-nohl-*)
+    map #  <Plug>(incsearch-nohl-#)
+    map g* <Plug>(incsearch-nohl-g*)
+    map g# <Plug>(incsearch-nohl-g#)
+    " incsearch-fuzzy
+    map f/ <Plug>(incsearch-fuzzy-/)
+    map f? <Plug>(incsearch-fuzzy-?)
+    map fg/ <Plug>(incsearch-fuzzy-stay)
 
     " tagbar
     nnoremap <F10> :TagbarToggle<CR>
@@ -76,25 +94,10 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
     map K <Plug>(expand_region_expand)
     map J <Plug>(expand_region_shrink)
 
-    " unite-cscope
-    "map <Leader>a :Unite cscope/assignments_to_symbol<CR>
-    "map <Leader>c :Unite cscope/functions_calling<CR>
-    "map <Leader>d :Unite cscope/functions_called_by<CR>
-    "map <Leader>e :Unite cscope/egrep_pattern<CR>
-    "map <Leader>f :Unite cscope/find_file<CR>
-    "map <Leader>g :Unite cscope/global_definition<CR>
-    "map <Leader>i :Unite cscope/including_this_file<CR>
-    "map <Leader>s :Unite cscope/find_this_symbol<CR>
-    "map <Leader>t :Unite cscope/text_string<CR>
-
-    " unite-gtags
-    map <Leader>D :Unite gtags/def<CR>
-    map <Leader>R :Unite gtags/ref<CR>
-    map <Leader>G :Unite gtags/grep<CR>
-
-    " unite
-    map <Leader>q <Plug>(unite_exit)<CR>
-    map <Leader>Q <Plug>(unite_all_exit)<CR>
+    " denite
+    map <Leader>B :Denite buffer<CR>
+    map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
+    map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<CR>
 endif
 
 filetype plugin indent on
