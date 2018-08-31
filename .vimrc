@@ -9,7 +9,7 @@ function! _is_on_heavy_mode()
     return !empty(glob("~/.vim/HEAVY"))
 endfunction
 
-let s:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
+let g:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
 
 call plug#begin('~/.vim/plugged')
 
@@ -42,7 +42,7 @@ if _is_on_heavy_mode()
     Plug 'Shougo/denite.nvim'
     Plug 'Valloric/YouCompleteMe'
     Plug 'vim-scripts/YankRing.vim'
-    Plug s:vim_denite_codesearch
+    Plug g:vim_denite_codesearch
     " denite
     map <Leader>B :Denite buffer<CR>
     map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
