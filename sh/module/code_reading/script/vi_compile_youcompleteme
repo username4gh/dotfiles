@@ -17,9 +17,13 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
             echo "With Macports, I use the cmake as the CMAKE_MAKE_PROGRAM"
         fi
 
-        # https://github.com/Valloric/YouCompleteMe/issues/679
-        (cd "$HOME/.vim/bundle/YouCompleteMe";
+        if [[ "$(basename ${PWD})" != 'YouCompleteMe' ]];then
+            echo "You have to execute this script while you are under the YouCompleteMe root directory"
+            exit
+        fi
 
+        # https://github.com/Valloric/YouCompleteMe/issues/679
+        (
         export CMAKE_MAKE_PROGRAM='/opt/local/bin/cmake'
 
         # in order to \'enable --clang-completer\', I use the `port install llvm-3.9`, and then un-comment below too line
@@ -49,15 +53,22 @@ if [[ "$(uname -s)" == 'Darwin' ]];then
         echo $PATH
         echo $PATH_TO_LLVM_ROOT
         #python ./install.py)
-        python ./install.py --clang-completer)
+        python ./install.py --clang-completer
+        )
     else
-        (cd "$HOME/.vim/bundle/YouCompleteMe";
+        if [[ "$(basename ${PWD})" != 'YouCompleteMe' ]];then
+            echo "You have to execute this script while you are under the YouCompleteMe root directory"
+            exit
+        fi
+
+        (
         unset PATH;
         export PATH="/bin"
         export PATH="/usr/bin/:$PATH"
         export PATH="/usr/local/bin:$PATH";
         echo $PATH
         #python ./install.py)
-        python ./install.py --clang-completer)
+        python ./install.py --clang-completer
+        )
     fi
 fi

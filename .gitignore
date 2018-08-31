@@ -15,3 +15,4 @@ sh/custom
 sh/custom/
 sh/module/conf.d
 sh/module/init.bash
+__pycache__

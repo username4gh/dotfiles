@@ -1,37 +1,38 @@
 filetype off
 
-if empty(glob("~/.vim/bundle/Vundle.vim"))
-    silent execute '!git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim'
+if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
+    silent execute '!curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 endif
 
 function _is_on_heavy_mode()
     return !empty(glob("~/.vim/HEAVY"))
 endfunction
 
-let g:vim_extra='file://'.expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
+let g:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
 
-if !empty(glob("~/.vim/bundle/Vundle.vim"))
-    " first time open up the vi, remember to use PluginInstall to init plugins"
-    set rtp+=~/.vim/bundle/Vundle.vim
-    call vundle#begin()
-    Plugin 'VundleVim/Vundle.vim'
+call plug#begin('~/.local/share/nvim/plugged')
 
-    Plugin 'bling/vim-bufferline'
-    Plugin 'easymotion/vim-easymotion'
-    Plugin 'haya14busa/incsearch.vim'
-    Plugin 'haya14busa/incsearch-fuzzy.vim'
-    Plugin 'haya14busa/incsearch-easymotion.vim'
-    Plugin 'majutsushi/tagbar'
-    Plugin 'Shougo/denite.nvim'
-    Plugin 'terryma/vim-expand-region'
-    Plugin 'terryma/vim-multiple-cursors'
-    Plugin 'tpope/vim-surround'
-    Plugin '~/.vim/bundle/vim-denite-codesearch/.git'
+Plug 'bling/vim-bufferline'
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch-fuzzy.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
+Plug 'majutsushi/tagbar'
+Plug 'Shougo/denite.nvim'
+Plug 'terryma/vim-expand-region'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'tpope/vim-surround'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug g:vim_denite_codesearch
 
-    call vundle#end()
-endif
+call plug#end()
 
 filetype plugin indent on
+
+syntax on
+color dracula
 
 " tagbar
 nnoremap <F10> :TagbarToggle<CR>
@@ -82,7 +83,6 @@ map J <Plug>(expand_region_shrink)
 map <Leader>B :Denite buffer<CR>
 map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
 map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<CR>
-map <Leader>F :Denite file_rec<CR>
 map <Leader>fs :Denite fsearch<CR>
 map <Leader>cs :Denite csearch<CR>
 " extra configuration
