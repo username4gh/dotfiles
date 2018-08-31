@@ -16,6 +16,7 @@ if !empty(glob("~/.vim/bundle/Vundle.vim"))
 
     Plugin 'VundleVim/Vundle.vim'
 
+    Plugin 'bling/vim-bufferline'
     Plugin 'derekwyatt/vim-scala'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'haya14busa/incsearch.vim'

@@ -8,24 +8,33 @@ function _is_on_heavy_mode()
     return !empty(glob("~/.vim/HEAVY"))
 endfunction
 
+let g:vim_extra='file://'.expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
+
 if !empty(glob("~/.vim/bundle/Vundle.vim"))
     " first time open up the vi, remember to use PluginInstall to init plugins"
     set rtp+=~/.vim/bundle/Vundle.vim
     call vundle#begin()
+    Plugin 'VundleVim/Vundle.vim'
 
+    Plugin 'bling/vim-bufferline'
     Plugin 'easymotion/vim-easymotion'
     Plugin 'haya14busa/incsearch.vim'
     Plugin 'haya14busa/incsearch-fuzzy.vim'
     Plugin 'haya14busa/incsearch-easymotion.vim'
+    Plugin 'majutsushi/tagbar'
     Plugin 'Shougo/denite.nvim'
     Plugin 'terryma/vim-expand-region'
     Plugin 'terryma/vim-multiple-cursors'
     Plugin 'tpope/vim-surround'
+    Plugin '~/.vim/bundle/vim-denite-codesearch/.git'
 
     call vundle#end()
 endif
 
 filetype plugin indent on
+
+" tagbar
+nnoremap <F10> :TagbarToggle<CR>
 
 " easymotion
 map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
@@ -73,7 +82,9 @@ map J <Plug>(expand_region_shrink)
 map <Leader>B :Denite buffer<CR>
 map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
 map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<CR>
-
+map <Leader>F :Denite file_rec<CR>
+map <Leader>fs :Denite fsearch<CR>
+map <Leader>cs :Denite csearch<CR>
 " extra configuration
 for f in split(glob("$MY_DOTFILES/vim/*.vim"), '\n')
     exe 'source' f
