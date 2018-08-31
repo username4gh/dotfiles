@@ -6,7 +6,10 @@ CURRENT_DIR="${PWD//\//_}";
 export CSEARCHINDEX="$CSEARCH_WROKSPACE/$CURRENT_DIR.csearchindex";
 
 if [[ -f "$CSEARCHINDEX" ]];then
-    csearch -n "$@"
+    pattern='('
+    pattern+='no such file or directory'
+    pattern+=')'
+    csearch -n "$@" |& s -i -v "$pattern"
 else
     echo "plz do _cindex first"
 fi

@@ -28,8 +28,6 @@ pattern+='|\.xml'
 pattern+='|\.txt'
 pattern+='|\.py'
 
-pattern+='|no such file or directory'
-
 pattern+=')'
 
 _csearch "$@" |& s -i -v "$pattern"
