@@ -154,21 +154,21 @@ set fileencodings=utf-8,gbk,cp936,latin-1
 set fileformat=unix
 set fileformats=unix,dos,mac
 
+" show all the buffers
 map <F1> :buffers<CR>
 
 " toggle line number
 nnoremap <F2> :set number!<CR>
 
-" nnoremap <F3> :set relativenumber!<CR>
+" buffer navigation
+nnoremap <F3> :bp<CR>
+nnoremap <F4> :bn<CR>
+
+set pastetoggle=<F6>
+
 " format json
-nnoremap <F3> :%!jq '.'<CR>
+nnoremap <F7> :%!jq '.'<CR>
 
-set pastetoggle=<F4>
-
-nnoremap <F5> :w !sudo tee % > /dev/null
-
-nnoremap <F6> :bp<CR>
-nnoremap <F7> :bn<CR>
-
-nnoremap <F8> 20j<CR>
-nnoremap <F9> 20k<CR>
+"nnoremap <F7> :w !sudo tee % > /dev/null
+"nnoremap <F8> 20j<CR>
+"nnoremap <F9> 20k<CR>
