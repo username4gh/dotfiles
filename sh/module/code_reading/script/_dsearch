@@ -1,18 +1,22 @@
 #! /usr/bin/env bash
 
 (
-FSEARCH_WORKSPACE="$MY_DOTFILES_RESOURCES/code_reading_utils/file";
+SEARCH_WORKSPACE="$MY_DOTFILES_RESOURCES/code_reading_utils/file";
 
-if [[ ! -d "$FSEARCH_WORKSPACE" ]];then
-    mkdir -p "$FSEARCH_WORKSPACE"
+if [[ ! -d "$SEARCH_WORKSPACE" ]];then
+    mkdir -p "$SEARCH_WORKSPACE"
 fi
 
 CURRENT_DIR="${PWD//\//_}";
-export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.dir.index";
+export SEARCHINDEX="$SEARCH_WORKSPACE/$CURRENT_DIR.dir.index";
 
-if [[ ! -f "$FSEARCHINDEX" ]];then
+if [[ ! -f "$SEARCHINDEX" ]];then
     echo "plz do _dindex first"
 else
-    s -f "$FSEARCHINDEX" "$@"
+    if [[ "$#" -eq 0 ]];then
+        cat "$SEARCHINDEX"
+    else
+        s -f "$SEARCHINDEX" "$@"
+    fi
 fi
 )

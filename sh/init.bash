@@ -23,9 +23,10 @@ if [[ ! -d "$MY_PRIVATE_BIN" ]];then
     mkdir -p "$MY_PRIVATE_BIN"
 fi
 
-# reset to avoid issue causing by repeat sourcing
+# reset to avoid issue caused by sourcing repeatly
+PATH_HOLDER="$PATH"
 unset PATH
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$PATH_HOLDER"
 
 export PATH="$MY_BUNDLED_BIN:$PATH"
 export PATH="$MY_PRIVATE_BIN:$PATH"

@@ -15,7 +15,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'bling/vim-bufferline'
 Plug 'derekwyatt/vim-scala'
-Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-fuzzy.vim'
@@ -30,6 +29,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'Raimondi/delimitMate'
 Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'tomasr/molokai'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/JSON.vim'
@@ -90,6 +90,8 @@ map f? <Plug>(incsearch-fuzzy-?)
 map fg/ <Plug>(incsearch-fuzzy-stay)
 
 " tagbar
+let g:tagbar_sort = 0
+let g:tagbar_compact = 1
 nnoremap <F10> :TagbarToggle<CR>
 
 " terryma/vim-multiple-cursors
@@ -107,7 +109,7 @@ map J <Plug>(expand_region_shrink)
 filetype plugin indent on
 
 syntax on
-color dracula
+color molokai
 
 " extra configuration
 for f in split(glob("$MY_DOTFILES/vim/*.vim"), '\n')

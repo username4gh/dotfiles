@@ -13,7 +13,6 @@ let g:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
 call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'bling/vim-bufferline'
-Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-fuzzy.vim'
@@ -23,6 +22,7 @@ Plug 'majutsushi/tagbar'
 Plug 'Shougo/denite.nvim'
 Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'tomasr/molokai'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -33,7 +33,7 @@ call plug#end()
 filetype plugin indent on
 
 syntax on
-color dracula
+color molokai
 
 " tagbar
 nnoremap <F10> :TagbarToggle<CR>
