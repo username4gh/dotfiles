@@ -24,7 +24,7 @@ if [[ ! -d "$MY_PRIVATE_BIN" ]];then
 fi
 
 # reset to avoid issue caused by sourcing repeatly
-PATH_HOLDER="$PATH"
+PATH_HOLDER="$PATH" # hold the path for later use
 unset PATH
 export PATH="$PATH_HOLDER"
 
