@@ -16,6 +16,8 @@ if _is_darwin; then
     elif [[ "$MY_CURRENT_PACKAGE_MANAGER" == 'homebrew' ]];then
         # https://apple.stackexchange.com/questions/69223/how-to-replace-mac-os-x-utilities-with-gnu-core-utilities
         # export PATH="$(find -L /usr/local/opt -type d -iname gnubin | tr '\n' ':')$PATH"
+        # https://docs.brew.sh/FAQ
+        export PATH="/usr/local/bin:$PATH"
         export PATH="/usr/local/sbin:$PATH"
         export PATH="/usr/local/opt/qt/bin:$PATH"
 

@@ -3,13 +3,11 @@ export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 
 export MY_DOTFILES="$HOME/.dotfiles"
 export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
-export MY_SH="$MY_DOTFILES/sh"
-export MY_RUNTIME="$MY_SH/runtime"
-export MY_SH_MODULE="$MY_SH/module"
+export MY_SH_MODULE="$MY_DOTFILES/sh/module"
+export MY_LOG_DIR="$MY_DOTFILES/log"
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
 export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
-export MY_LOG_DIR="$MY_DOTFILES/log"
 
 if [[ ! -d "$MY_BIN" ]];then
     mkdir -p "$MY_BIN"
@@ -26,12 +24,11 @@ fi
 # reset to avoid issue caused by sourcing repeatly
 PATH_HOLDER="$PATH" # hold the path for later use
 unset PATH
-export PATH="$PATH_HOLDER"
+unset PROMPT_COMMAND
 
+export PATH="$PATH_HOLDER"
 export PATH="$MY_BUNDLED_BIN:$PATH"
 export PATH="$MY_PRIVATE_BIN:$PATH"
-
-unset PROMPT_COMMAND
 
 # for internal function, no `Usage`, only print log
 _sh_log() {
@@ -59,21 +56,38 @@ _sh_log_disable() {
 
 _cache_gen() {
     local OUTPUT_FILE="$MY_SH/cache.bash"
-    # generate cache.bash
-    if [[ ! "$1" =~ 'init.bash' ]];then
-        # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
-        # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
+    
+    echo "# $1" >> "$OUTPUT_FILE"
 
-        cat "$1"  >> "$OUTPUT_FILE"
-
-        # append a new line to prevent issue
-        echo -e "\n" >> "$OUTPUT_FILE"
-    else
+    if [[ "$1" =~ 'init.bash' ]];then
+        # <MODULE>/init.bash
         while IFS= read -r line
         do
             [[ "$line" =~ 'export PATH' ]] && echo "$line" >> "$OUTPUT_FILE"
         done < <(cat "$1")
+    else
+
+        # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
+        # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
+
+        while IFS= read -r line
+        do
+            if [[ "$line" =~ '#!' ]];then
+                # ignore the shebang line
+                continue
+            fi
+
+            if [[ "$line" =~ '_annotation_completion_write ' ]];then
+                # ignore the completion annotation line
+                continue
+            fi
+
+            echo "$line" >> "$OUTPUT_FILE"
+        done < <(cat "$1")
     fi
+
+    # append a new line to prevent issue
+    echo -e "\n" >> "$OUTPUT_FILE"
 }
 
 _load_sh_files() {
@@ -93,8 +107,6 @@ _load_sh_files() {
             done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
         fi
         unset -v file
-    else
-        _sh_log "$MY_SH/init.bash"  '_load_sh_files'
     fi
 }
 
