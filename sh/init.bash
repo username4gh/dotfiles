@@ -58,7 +58,7 @@ _sh_log_disable() {
 
 _cache_gen() {
     local OUTPUT_FILE="$MY_SH/cache.bash"
-    
+
     echo "# $1" >> "$OUTPUT_FILE"
 
     if [[ "$1" =~ 'init.bash' ]];then
@@ -72,20 +72,25 @@ _cache_gen() {
         # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
         # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
 
-        while IFS= read -r line
-        do
-            if [[ "$line" =~ '#!' ]];then
-                # ignore the shebang line
-                continue
-            fi
+        #while IFS= read -r line
+        #do
+        #    if [[ "$line" =~ '#! /usr/bin/env bash' ]];then
+        #        # ignore the shebang line
+        #        continue
+        #    fi
 
-            if [[ "$line" =~ '_annotation_completion_write ' ]];then
-                # ignore the completion annotation line
-                continue
-            fi
+        #    if [[ "$line" =~ '_annotation_completion_write[:space:]' ]];then
+        #        # ignore the completion annotation line
+        #        continue
+        #    fi
 
-            echo "$line" >> "$OUTPUT_FILE"
-        done < <(cat "$1")
+        #    if [[ "$line" =~ '_completion_setup[:space:]' ]];then
+        #        continue
+        #    fi
+
+        #    echo "$line" >> "$OUTPUT_FILE"
+        #done < <(cat "$1")
+        cat "$1" >> "$OUTPUT_FILE"
     fi
 
     # append a new line to prevent issue
