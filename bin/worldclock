@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+FORMAT=+%Y-%m-%d-%H:%M:%S%Z
+
+ZONES="unix America/Los_Angeles UTC Europe/London Asia/Shanghai Asia/Tokyo"
+
+for TZ in $ZONES ; do
+    if [ $TZ = "unix" ] ; then
+        TIME=$(TZ=$TZ date +%s)
+    else
+        TIME=$(TZ=$TZ date $FORMAT)
+    fi
+    echo -e $TIME "\t" $TZ
+done
