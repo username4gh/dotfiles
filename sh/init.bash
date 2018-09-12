@@ -3,7 +3,8 @@ export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 
 export MY_DOTFILES="$HOME/.dotfiles"
 export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
-export MY_SH_MODULE="$MY_DOTFILES/sh/module"
+export MY_SH="$MY_DOTFILES/sh"
+export MY_SH_MODULE="$MY_SH/module"
 export MY_LOG_DIR="$MY_DOTFILES/log"
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
@@ -23,6 +24,7 @@ fi
 
 # reset to avoid issue caused by sourcing repeatly
 PATH_HOLDER="$PATH" # hold the path for later use
+
 unset PATH
 unset PROMPT_COMMAND
 
@@ -103,7 +105,7 @@ _load_sh_files() {
             do
                 _cache_gen "$file"
 
-                [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file";
+                [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
             done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
         fi
         unset -v file
