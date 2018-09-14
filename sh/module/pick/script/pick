@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+"$MY_DOTFILES_RESOURCES/pick/pick.sh"

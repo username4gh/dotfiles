@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+if [[ ! -d "$MY_DOTFILES_RESOURCES/pick" ]];then
+    git -C "$MY_DOTFILES_RESOURCES" clone https://github.com/bernardorufino/pick
+fi
