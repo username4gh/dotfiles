@@ -3,7 +3,7 @@
 _module_generate_init_bash() {
     if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
         cp "$MY_SH/mechanism/module.snippet" "$MY_SH_MODULE/$1/init.bash"
-        sed -i -e "s/module_name/$1/g" "$MY_SH_MODULE/$1/init.bash"
+        r -l "lambda x: x.replace('module_name', '"$1"')" "$MY_SH_MODULE/$1/init.bash" "$MY_SH_MODULE/$1/init.bash"
     fi
 }
 
@@ -15,7 +15,7 @@ module_init() {
             mkdir -p "$MY_SH_MODULE/$1/script"
             mkdir -p "$MY_SH_MODULE/$1/src"
 
-            _module_generate_init_bash $1 $2
+            _module_generate_init_bash "$1" "$2"
         else
             echo "Usage: _package_init can only be used while current_dir is $MY_SH_MODULE"
         fi
