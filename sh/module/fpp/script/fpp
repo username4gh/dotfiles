@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-
-(export PATH="$MY_DOTFILES_RESOURCES/PathPicker:$PATH"; fpp "$@")
