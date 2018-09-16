@@ -6,10 +6,8 @@ _python_pip_uninstall_all() {
 
     while IFS= read -r item
     do
-        if [[ "$item" != 'pip' ]] && [[ "$item" != 'setuptools' ]] && [[ "$item" != 'lxml' ]];then
-            pip uninstall -y "$item"
-        fi
-    done < <(pip list | s -o '(?<=^).*?(?=\ \()')
+        pip uninstall -y "$item"
+    done < <(pip list --format freeze | s -o '(?<=^).*?(?==)' | s -v '(lxml|pip|setuptools)')
 }
 
 _python_pip_upgrade_all() {
@@ -20,7 +18,7 @@ _python_pip_upgrade_all() {
     while IFS= read -r item;
     do
         echo "Upgrading $item"
-        pip install --upgrade "$item"
+        pip install --user --upgrade "$item"
     done < <(pip list --outdated | s -o '(?<=^).*?(?=\ \()')
 }
 
