@@ -1,30 +1,38 @@
 #! /usr/bin/env python
 # coding=utf-8
 
+from __future__ import print_function
 import sys
 
+PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
 
 def main(argv):
-    if not PY3:
-        import urllib2
-        # https://stackoverflow.com/questions/554446/how-do-i-prevent-pythons-urllib2-from-following-a-redirect
-        class NoRedirection(urllib2.HTTPErrorProcessor):
+    if PY2:
+        import urllib2 as urllib
+    elif PY3:
+        import urllib.request as urllib
+    else:
+        return
 
-            def __init__(self):
-                pass
+    # https://stackoverflow.com/questions/554446/how-do-i-prevent-pythons-urllib2-from-following-a-redirect
+    class NoRedirection(urllib.HTTPErrorProcessor):
 
-            def http_response(self, request, response):
-                return response
+        def __init__(self):
+            pass
 
-            https_response = http_response
+        def http_response(self, request, response):
+            return response
 
-        opener = urllib2.build_opener(NoRedirection)
-        urllib2.install_opener(opener)
+        https_response = http_response
 
-        r = urllib2.urlopen(argv[1])
-        print r.info()['Location']
+    opener = urllib.build_opener(NoRedirection)
+    urllib.install_opener(opener)
+
+    r = urllib.urlopen(argv[1])
+
+    print (r.info()['location'])
 
 
 if __name__ == "__main__":
