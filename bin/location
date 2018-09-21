@@ -32,7 +32,7 @@ def main(argv):
 
     r = urllib.urlopen(argv[1])
 
-    print (r.info()['location'])
+    print (r.info()['Location'])
 
 
 if __name__ == "__main__":
