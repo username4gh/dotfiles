@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-RIPGREP_PATH="$(_autodetect_bin 'ripgrep-.*-apple-darwin')"
+RIPGREP_PATH="$(_autodetect_bin 'ripgrep')"
 if [[ "${#RIPGREP_PATH}" -eq 0 ]];then
     _sh_log "${BASH_SOURCE[0]}" "ripgrep has not been installed yet"
 else
