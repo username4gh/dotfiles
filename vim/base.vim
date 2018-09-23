@@ -164,6 +164,9 @@ nnoremap <F2> :set number!<CR>
 nnoremap <F3> :bp<CR>
 nnoremap <F4> :bn<CR>
 
+" repeat last command
+nnoremap <F5> :@:<CR>
+
 set pastetoggle=<F6>
 
 " format json
