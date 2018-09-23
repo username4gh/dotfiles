@@ -45,11 +45,11 @@ if _is_on_heavy_mode()
     Plug 'vim-scripts/YankRing.vim'
     Plug g:vim_denite_codesearch
     " denite
-    map <Leader>B :Denite buffer<CR>
-    map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
-    map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<CR>
-    map <Leader>fs :Denite fsearch<CR>
-    map <Leader>cs :Denite csearch<CR>
+    map <Leader>B :Denite buffer -highlight-mode-insert=Search<CR>
+    map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def -highlight-mode-insert=Search<CR>
+    map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref -highlight-mode-insert=Search<CR>
+    map <Leader>fs :Denite fsearch -highlight-mode-insert=Search<CR>
+    map <Leader>cs :Denite csearch -highlight-mode-insert=Search<CR>
 
 endif
 

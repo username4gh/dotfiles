@@ -1,4 +1,4 @@
-filetype off
+filetype 
 
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
     silent execute '!curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -82,11 +82,11 @@ map K <Plug>(expand_region_expand)
 map J <Plug>(expand_region_shrink)
 
 " denite
-map <Leader>B :Denite buffer<CR>
-map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def<CR>
-map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref<CR>
-map <Leader>fs :Denite fsearch<CR>
-map <Leader>cs :Denite csearch<CR>
+map <Leader>B :Denite buffer -highlight-mode-insert=Search<CR>
+map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def -highlight-mode-insert=Search<CR>
+map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref -highlight-mode-insert=Search<CR>
+map <Leader>fs :Denite fsearch -highlight-mode-insert=Search<CR>
+map <Leader>cs :Denite csearch -highlight-mode-insert=Search<CR>
 " extra configuration
 for f in split(glob("$MY_DOTFILES/vim/*.vim"), '\n')
     exe 'source' f
