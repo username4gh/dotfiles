@@ -1,4 +1,5 @@
-filetype 
+filetype off
+syntax off
 
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
     silent execute '!curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
@@ -32,8 +33,8 @@ Plug g:vim_denite_codesearch
 call plug#end()
 
 filetype plugin indent on
-
 syntax on
+
 color molokai
 
 " tagbar
