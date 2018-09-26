@@ -79,7 +79,8 @@ _annotation_completion_generate() {
 + performance
  1. lazy-loading like technique to reduce the 'sourcing' overhead
 
-  		- prefer script over function, scripts does not directly effect the sourcing process -- also this will be good for debugging (every time you change a function you have to source again to see if it works)
+  		- Prefer script over function, scripts does not directly effect the sourcing process -- also this will be good for debugging (every time you change a function you have to source again to see if it works)
+                - Use function over script in such condition: the code is part of sourcing process, because according to [Shell-Functions](https://www.gnu.org/software/bash/manual/html_node/Shell-Functions.html#Shell-Functions), bash execute function in current shell context, no new process is created to interpret them, and script do raise new process, so it's apperantly function is with a lighter overhead execution-wise.
 
  2. caching source-chain to boost later bootstrap process (reducing usage of function like '_load_sh_files')
  3. <s>global environment variable to avoid repeat-initialization while opening multiple-tab inside iterm2/terminal</s>(open a new tab inside iterm2/terminal will create a new bash process, i might have mis-conjectured something)
