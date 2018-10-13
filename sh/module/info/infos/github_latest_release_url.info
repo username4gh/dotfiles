@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+REPO_URL= # <repo url>
+RELEASE_TAG_URL="$(location "$REPO_URL"/releases/latest | sed 's/tag/download/g')"
+
+if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]];then 
+    echo "$RELEASE_TAG_URL/" # <full file name>
+fi
+
+if [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]];then
+    echo "$RELEASE_TAG_URL/" # <full file name>
+fi
