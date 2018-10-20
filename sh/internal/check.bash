@@ -33,3 +33,7 @@ _is_command_exist() {
 _is_root() {
     [[ "$#" -eq 0 ]] && [[ "$(i -iu)" -ne 0 ]]
 }
+
+_is_termux() {
+    _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
+}
