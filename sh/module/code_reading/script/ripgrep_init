@@ -1,19 +1,15 @@
 #! /usr/bin/env bash
 
-_is_darwin() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
-}
+OUTPUT_FILE_NAME="ripgrep-temp.tar.gz"
 
-_is_linux() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]]
-}
+INPUT_URL="$(github_get_latest_asset BurntSushi/ripgrep | percol)"
 
-VERSION_CODE="$(location https://github.com/BurntSushi/ripgrep/releases/latest | s -o "(?<=tag/).*(?=$)")"
-
-if _is_darwin;then
-    OUTPUT_FILE_NAME="ripgrep-$VERSION_CODE-x86_64-apple-darwin.tar.gz"
-elif _is_linux;then
-    OUTPUT_FILE_NAME="ripgrep-$VERSION_CODE-i686-unknown-linux-musl.tar.gz"
+if [[ ! -z "$INPUT_URL" ]];then
+    # https://www.davidpashley.com/articles/writing-robust-shell-scripts/
+    trap "rm -vf $HOME/bin/$OUTPUT_FILE_NAME; exit" INT TERM EXIT
+    curl -k -L -C - "$INPUT_URL" -o "$HOME/bin/$OUTPUT_FILE_NAME" && tar xf "$HOME/bin/$OUTPUT_FILE_NAME" -C ~/bin
+    rm -vf "$HOME/bin/$OUTPUT_FILE_NAME"
+    trap - INT TERM EXIT
+else
+    echo "need pick a valid url"
 fi
-
-curl -k -L -C - "https://github.com/BurntSushi/ripgrep/releases/download/$VERSION_CODE/$OUTPUT_FILE_NAME" -o "$HOME/bin/$OUTPUT_FILE_NAME" && tar xf "$HOME/bin/$OUTPUT_FILE_NAME" -C ~/bin
