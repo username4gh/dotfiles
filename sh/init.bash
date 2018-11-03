@@ -22,13 +22,10 @@ if [[ ! -d "$MY_PRIVATE_BIN" ]];then
     mkdir -p "$MY_PRIVATE_BIN"
 fi
 
-# reset to avoid issue caused by sourcing repeatly
-PATH_HOLDER="$PATH" # hold the path for later use
-
-unset PATH
+# unset to avoid issue caused by repeatly sourcing .bashrc
 unset PROMPT_COMMAND
 
-export PATH="$PATH_HOLDER"
+#export PATH="$PATH_HOLDER"
 export PATH="$MY_BUNDLED_BIN:$PATH"
 export PATH="$MY_PRIVATE_BIN:$PATH"
 
@@ -177,3 +174,6 @@ else
 fi
 
 source "$MY_DOTFILES/.profile"
+
+# deduplicate to avoid issue caused by sourcing repeatly
+export PATH="$(clean_path_variable)" # hold the path for later use
