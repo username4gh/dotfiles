@@ -7,7 +7,12 @@ import os
 import sys
 
 # http://code.activestate.com/recipes/576696/
-import collections
+try:
+    # fix DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is
+    # deprecated, and in 3.8 it will stop working
+    from collections.abc import MutableSet
+except ImportError:
+    from collections import MutableSet
 from weakref import proxy
 
 
@@ -15,7 +20,7 @@ class Link(object):
     __slots__ = 'prev', 'next', 'key', '__weakref__'
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(MutableSet):
     """Set that remembers the order elements were added"""
     # Big-O running times for all methods are the same as for regular sets.
     # The internal self.__map dictionary maps keys to links in a doubly linked list.
