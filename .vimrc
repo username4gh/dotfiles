@@ -51,7 +51,7 @@ if _is_on_heavy_mode()
     map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref -highlight-mode-insert=Search<CR>
     map <Leader>fs :Denite fsearch -highlight-mode-insert=Search<CR>
     map <Leader>cs :Denite csearch -highlight-mode-insert=Search<CR>
-
+    map <Leader>ec :Denite command -highlight-mode-insert=Search<CR>
 endif
 
 call plug#end()
