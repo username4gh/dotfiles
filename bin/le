@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+# https://stackoverflow.com/questions/1842254/how-can-i-find-all-of-the-distinct-file-extensions-in-a-folder-hierarchy
+find . -maxdepth 1 -type f | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u
