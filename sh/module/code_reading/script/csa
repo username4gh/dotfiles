@@ -6,30 +6,6 @@ if [[ "$#" -lt 1 ]];then
     exit
 fi
 
-pattern='('
-
-pattern+='aosp/cts'
-pattern+='|aosp/developers'
-pattern+='|aosp/development'
-pattern+='|aosp/device'
-pattern+='|aosp/hardware'
-pattern+='|aosp/prebuilts'
-pattern+='|aosp/tools/'
-pattern+='|demo'
-pattern+='|examples'
-pattern+='|packages'
-pattern+='|sample'
-pattern+='|sdk'
-pattern+='|test'
-
-pattern+='|\.html'
-pattern+='|\.js'
-pattern+='|\.xml'
-pattern+='|\.txt'
-pattern+='|\.py'
-
-pattern+=')'
-
-_csearch "$@" |& s -i -v "$pattern"
+_csearch "$@" |& s -i -v "$(_aosp_filtering_pattern)"
 
 unset pattern

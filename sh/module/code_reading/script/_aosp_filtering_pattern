@@ -1,0 +1,35 @@
+#! /usr/bin/env bash
+
+pattern='('
+
+pattern+='aosp/bootable'
+pattern+='|aosp/build'
+pattern+='|aosp/compatibility'
+pattern+='|aosp/cts'
+pattern+='|aosp/developers'
+pattern+='|aosp/development'
+pattern+='|aosp/device'
+pattern+='|aosp/docs'
+pattern+='|aosp/external'
+pattern+='|aosp/hardware'
+pattern+='|aosp/packages'
+pattern+='|aosp/pdk'
+pattern+='|aosp/prebuilts'
+pattern+='|aosp/sdk'
+pattern+='|aosp/toolchain'
+pattern+='|aosp/tools/'
+
+pattern+='|demo'
+pattern+='|examples'
+pattern+='|sample'
+pattern+='|test'
+
+pattern+='|\.html'
+pattern+='|\.js'
+pattern+='|\.xml'
+pattern+='|\.txt'
+pattern+='|\.py'
+
+pattern+=')'
+
+echo "$pattern"
