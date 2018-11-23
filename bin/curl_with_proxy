@@ -1,7 +1,0 @@
-#! /usr/bin/env bash
-
-(
-http_proxy=http://127.0.0.1:49156
-https_proxy=https://127.0.0.1:49156
-curl "$@"
-)
