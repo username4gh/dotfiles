@@ -10,8 +10,9 @@ function _is_on_heavy_mode()
 endfunction
 
 let g:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
+let g:nvim_plug_dir='~/.local/share/nvim/plugged'
 
-call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin(g:nvim_plug_dir)
 
 Plug 'bling/vim-bufferline'
 Plug 'easymotion/vim-easymotion'
@@ -24,7 +25,7 @@ Plug 'ozelentok/denite-gtags'
 Plug 'Shougo/denite.nvim'
 Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'tomasr/molokai'
+Plug 'tomasr/molokai', {'do': ':color molokai'}
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -34,8 +35,6 @@ call plug#end()
 
 filetype plugin indent on
 syntax on
-
-color molokai
 
 " tagbar
 nnoremap <F10> :TagbarToggle<CR>

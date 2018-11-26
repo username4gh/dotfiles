@@ -30,7 +30,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'Raimondi/delimitMate'
 Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'tomasr/molokai'
+Plug 'tomasr/molokai', {'do': ':color molokai'}
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/JSON.vim'
@@ -110,7 +110,6 @@ map J <Plug>(expand_region_shrink)
 filetype plugin indent on
 
 syntax on
-color molokai
 
 " extra configuration
 for f in split(glob("$MY_DOTFILES/vim/*.vim"), '\n')
