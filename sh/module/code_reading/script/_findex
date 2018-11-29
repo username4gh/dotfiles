@@ -9,5 +9,5 @@ fi
 
 CURRENT_DIR="${PWD//\//_}";
 export FSEARCHINDEX="$FSEARCH_WORKSPACE/$CURRENT_DIR.file.index";
-find . -type f | _readlink | sort | uniq > $FSEARCHINDEX
+find . -not -path '*/\.*' -type f | _readlink | sort | uniq > $FSEARCHINDEX
 )
