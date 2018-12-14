@@ -6,6 +6,6 @@ if [[ "$#" -lt 1 ]];then
     exit
 fi
 
-_fsearch "$@" | s -i -v "$(_aosp_filtering_pattern)"
+_fsearch "$@" | pythongrep -i -v "$(_aosp_filtering_pattern)"
 
 unset pattern

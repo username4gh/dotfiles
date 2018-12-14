@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
-BINUTILS=$(curl -s http://ftp.gnu.org/gnu/binutils/ | s 'binutils-.*\.tar\.gz' | s -v 'patch' | s -o '(?<=gz\"\>).*(?=\.tar\.gz\<\/a)' | sort -rV | head -1)
+BINUTILS=$(curl -s http://ftp.gnu.org/gnu/binutils/ | pythongrep 'binutils-.*\.tar\.gz' | pythongrep -v 'patch' | pythongrep -o '(?<=gz\"\>).*(?=\.tar\.gz\<\/a)' | sort -rV | head -1)
 echo "http://ftp.gnu.org/gnu/binutils/$BINUTILS.tar.gz"
 unset BINUTILS

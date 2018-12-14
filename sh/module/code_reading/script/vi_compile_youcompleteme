@@ -3,12 +3,12 @@
 if [[ "$(uname -s)" == 'Darwin' ]];then
     if [[ -f "/opt/local/bin/port" ]];then
         echo "check https://github.com/Valloric/YouCompleteMe/issues/8"
-        if [[ "$(port select --list python | s active | s -o '(?<=^).*?(?=\()')" == 'none' ]];then
+        if [[ "$(port select --list python | pythongrep active | pythongrep -o '(?<=^).*?(?=\()')" == 'none' ]];then
             echo "With Macports, please do 'sudo port select --set python python27'";
             exit
         fi
 
-        #if [[ "$(port select --list gcc | s active | s -o '(?<=^).*?(?=\()')" == 'none' ]];then
+        #if [[ "$(port select --list gcc | pythongrep active | pythongrep -o '(?<=^).*?(?=\()')" == 'none' ]];then
         #    echo "With Macports, I use the gcc49 as CMAKE_C_COMPILER & CMAKE_CXX_COMPILER"
         #    exit
         #fi

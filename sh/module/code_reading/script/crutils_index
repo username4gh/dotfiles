@@ -20,7 +20,7 @@ if [[ ! -f './cscope.files' ]];then
     black_list+=')'
 
 
-    find . -type f | s -i "$white_list" | s -i -v "$black_list" | _readlink | sort | uniq > './cscope.files'
+    find . -type f | pythongrep -i "$white_list" | pythongrep -i -v "$black_list" | _readlink | sort | uniq > './cscope.files'
     echo "output: cscope.files"
 fi
 

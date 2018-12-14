@@ -1,8 +1,8 @@
-#! /usr/bin/env bash
+h/mechanism/completion.bash! /usr/bin/env bash
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     if [[ "$#" -eq 2 ]];then
-        device=/dev/disk$(diskutil list | s -i $1 | s -o '(?<=disk).*?(?=$)')
+        device=/dev/disk$(diskutil list | pythongrep -i $1 | pythongrep -o '(?<=disk).*?(?=$)')
         echo $device
 
         if [[ ! -e "$device" ]];then

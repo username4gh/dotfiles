@@ -20,6 +20,6 @@ pattern+='|\.xml'
 
 pattern+=')'
 
-_fsearch "$@" | s -i -v "$pattern"
+_fsearch "$@" | pythongrep -i -v "$pattern"
 
 unset pattern

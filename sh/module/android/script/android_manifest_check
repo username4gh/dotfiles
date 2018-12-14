@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-manifest_list=($(find . -iname *AndroidManifest.xml | s -v build))
+manifest_list=($(find . -iname *AndroidManifest.xml | pythongrep -v build))
 size=${#manifest_list[@]}
 max_index=$(($size-1))
 echo -e "\e[31mfollowing activities was not registered in the AndroidManifest.xml:\e[0m"
@@ -12,7 +12,7 @@ do
     keyword=${file_basename%\.*}
     for ((i = 0; i < size; i++));
     do
-        if [[ ! -z "$(s -f ${manifest_list[$i]} $keyword)" ]];then
+        if [[ ! -z "$(pythongrep -f ${manifest_list[$i]} $keyword)" ]];then
             flag='exist'
             continue
         else

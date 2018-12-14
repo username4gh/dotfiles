@@ -168,7 +168,7 @@ def parse_cmdline(cmdline_args):
     option_parser = optparse.OptionParser(
         usage='usage: %prog [options] <pattern>',
         description='Grep like tool',
-        prog='s',
+        prog='pythongrep',
         add_help_option=False)  # -h is a real option
 
     option_parser.add_option('-h', '--help',

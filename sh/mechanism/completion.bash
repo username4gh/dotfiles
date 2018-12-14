@@ -58,7 +58,7 @@ _completion_generate() {
         while IFS= read -r item
         do
             _completion_write $1 $(basename $item | cut -d '.' -f1)
-        done < <(find "$2" -maxdepth 1 -type f | s "$3")
+        done < <(find "$2" -maxdepth 1 -type f | pythongrep "$3")
     fi
 }
 
@@ -120,7 +120,7 @@ _completion_process() {
     do
         completion_args=$(echo "$line" | cut -d ' ' -f2-)
         _completion_write $completion_args
-    done < <(s -f $1 '^_annotation_completion_write[a-zA-Z0-9_\s]+[^(){}]')
+    done < <(pythongrep -f $1 '^_annotation_completion_write[a-zA-Z0-9_\s]+[^(){}]')
 
     # deal with _annotation_completion_generate
     while IFS= read -r line
@@ -131,7 +131,7 @@ _completion_process() {
         completion_dir="$(eval echo ${array[2]})"
         completion_pattern="${array[3]}"
         _completion_generate "$completion_target" "$completion_dir" "$completion_pattern"
-    done < <(s -f $1 '^_annotation_completion_generate[a-zA-Z0-9_\s]+[^(){}]')
+    done < <(pythongrep -f $1 '^_annotation_completion_generate[a-zA-Z0-9_\s]+[^(){}]')
 }
 
 completion_generate() {
@@ -141,7 +141,7 @@ completion_generate() {
         #do
         #    _completion_process "$file"
         #    # filtered out some irrelevant files to boost performance
-        #done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | s 'src')
+        #done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | pythongrep 'src')
     else
         _completion_process "$MY_SH/cache.bash"
     fi

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-latest_version_code=$(curl -s https://maven.apache.org/download.cgi | s -o '(?<=Apache\ Maven\ ).*?(?=\ is\ the\ latest\ release\ and\ recommended\ version\ for\ all\ users\.)')
+latest_version_code=$(curl -s https://maven.apache.org/download.cgi | pythongrep -o '(?<=Apache\ Maven\ ).*?(?=\ is\ the\ latest\ release\ and\ recommended\ version\ for\ all\ users\.)')
 _conf_write 'maven' $latest_version_code
 echo "http://mirrors.hust.edu.cn/apache/maven/maven-3/$latest_version_code/binaries/apache-maven-$latest_version_code-bin.tar.gz"
 unset latest_version_code

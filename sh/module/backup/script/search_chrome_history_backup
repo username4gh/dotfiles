@@ -6,5 +6,5 @@
 while read -r hisfile
 do
     sqlite3 "$hisfile" "$@"
-done < <(find "$MY_DOTFILES_RESOURCES/my-backup" -type f | s 'History\d*')
+done < <(find "$MY_DOTFILES_RESOURCES/my-backup" -type f | pythongrep 'History\d*')
 

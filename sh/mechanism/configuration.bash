@@ -17,7 +17,7 @@ _conf_read() {
     # $1 --> variant name
     if [[ "$#" == 1 ]];then
         if [[ -f "$MY_SH/.conf" ]];then
-            echo $(s -f "$MY_SH/.conf" -w "$1" | s -o '(?<=]).*?(?=$)')
+            echo $(pythongrep -f "$MY_SH/.conf" -w "$1" | pythongrep -o '(?<=]).*?(?=$)')
         fi
     else
         echo "Usage: _conf_read key"

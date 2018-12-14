@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-latest_version_code=$(curl -s https://jsoup.org/news/ | s "/news/release" | s -o "(?<=href=\").*?(?=\">)" | head -1 | s -o "(?<=/news/release-).*")
+latest_version_code=$(curl -s https://jsoup.org/news/ | pythongrep "/news/release" | pythongrep -o "(?<=href=\").*?(?=\">)" | head -1 | pythongrep -o "(?<=/news/release-).*")
 
 echo "https://jsoup.org/packages/jsoup-$latest_version_code.jar"
 

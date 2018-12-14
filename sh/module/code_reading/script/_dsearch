@@ -16,7 +16,7 @@ else
     if [[ "$#" -eq 0 ]];then
         cat "$SEARCHINDEX"
     else
-        s -f "$SEARCHINDEX" "$@"
+        pythongrep -f "$SEARCHINDEX" "$@"
     fi
 fi
 )

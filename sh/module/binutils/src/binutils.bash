@@ -5,7 +5,7 @@
 _binutils(){
     local binutils
 
-    binutils=$(find $MY_BIN -maxdepth 1 -type d  | s 'binutils-.*')
+    binutils=$(find $MY_BIN -maxdepth 1 -type d  | pythongrep 'binutils-.*')
 
     (
     COMMAND=$1

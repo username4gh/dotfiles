@@ -228,14 +228,14 @@ if [[ $(whoami) != root ]];then
                 # Mercurial holds it's current branch in .hg/branch file
                 SCM_BRANCH=$(cat "$HG_ROOT/branch")
             else
-                SCM_BRANCH=$(hg summary 2> /dev/null | s branch: | awk '{print $2}')
+                SCM_BRANCH=$(hg summary 2> /dev/null | pythongrep branch: | awk '{print $2}')
             fi
 
             if [ -f "$HG_ROOT/dirstate" ]; then
                 # Mercurial holds various information about the working directory in .hg/dirstate file. More on http://mercurial.selenic.com/wiki/DirState
                 SCM_CHANGE=$(hexdump -n 10 -e '1/1 "%02x"' "$HG_ROOT/dirstate" | cut -c-12)
             else
-                SCM_CHANGE=$(hg summary 2> /dev/null | s parent: | awk '{print $2}')
+                SCM_CHANGE=$(hg summary 2> /dev/null | pythongrep parent: | awk '{print $2}')
             fi
         }
 

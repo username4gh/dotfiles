@@ -7,7 +7,7 @@ _python_pip_uninstall_all() {
     while IFS= read -r item
     do
         pip uninstall -y "$item"
-    done < <(pip list --format freeze | s -o '(?<=^).*?(?==)' | s -v '(lxml|pip|setuptools)')
+    done < <(pip list --format freeze | pythongrep -o '(?<=^).*?(?==)' | pythongrep -v '(lxml|pip|setuptools)')
 }
 
 _python_pip_upgrade_all() {
@@ -19,7 +19,7 @@ _python_pip_upgrade_all() {
     do
         echo "Upgrading $item"
         pip install --user --upgrade "$item"
-    done < <(pip list --outdated | s -o '(?<=^).*?(?=\ \()')
+    done < <(pip list --outdated | pythongrep -o '(?<=^).*?(?=\ \()')
 }
 
 _python_pip_check_package() {
