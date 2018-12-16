@@ -9,7 +9,6 @@ import sys
 from optparse import OptionParser, OptionGroup
 
 # Constants -------------------------------------------------------------------
-VERSION = ('1', '0', '0')
 CASE_SENSITIVE = 1
 CASE_INSENSITIVE = 2
 CASE_SMART = 3
@@ -31,10 +30,6 @@ TYPES_REAL = TYPES_FILE_REAL | TYPES_DIR_REAL
 TYPES_SYMLINK = TYPES_FILE_SYMLINK | TYPES_DIR_SYMLINK
 
 TYPES_ALL = TYPES_FILE | TYPES_DIR
-
-IGNORE_SYNTAX_REGEX = 1
-IGNORE_SYNTAX_GLOB = 2
-IGNORE_SYNTAX_LITERAL = 3
 
 # Global Options --------------------------------------------------------------
 options = None
@@ -58,44 +53,6 @@ def warn(s):
     sys.stderr.write('warning: ' + s + '\n')
 
 
-# Ignore Files ----------------------------------------------------------------
-def compile_re(line):
-    try:
-        r = re.compile(line)
-        return lambda s: r.search(s)
-    except:
-        warn('could not compile regular expression "%s"' % line)
-        return lambda s: False
-
-
-def glob_to_re(glob):
-    pat = ''
-
-    chs = list(glob)
-    while chs:
-        ch = chs.pop(0)
-        if ch == '\\':
-            pat += re.escape(chs.pop(0))
-        elif ch == '?':
-            pat += '.'
-        elif ch == '*':
-            if chs and chs[0] == '*':
-                chs.pop(0)
-                pat += '.*'
-            else:
-                pat += '[^/]*'
-        elif ch == '[':
-            pat += '['
-            ch = chs.pop(0)
-            while chs and ch != ']':
-                pat += ch
-                ch = chs.pop(0)
-            pat += ']'
-        else:
-            pat += re.escape(ch)
-
-    return pat
-
 # Searching! ------------------------------------------------------------------
 def get_type(path):
     is_link = os.path.islink(path)
@@ -109,18 +66,6 @@ def get_type(path):
         return TYPE_DIR_REAL
     elif not is_link and not is_dir:
         return TYPE_FILE_REAL
-
-
-# noinspection PyUnusedLocal
-def should_ignore(basename, path, ignorers):
-    if ignorers is None:
-        return False
-
-    for i in ignorers:
-        if i(path):
-            return True
-
-    return False
 
 
 def match(query, path, basename):
@@ -153,7 +98,7 @@ def match(query, path, basename):
     return not result if options.invert else result
 
 
-def _search(query, root, depth, ignorers):
+def _search(query, root, depth):
     try:
         contents = os.listdir(root)
     except OSError:
@@ -169,21 +114,20 @@ def _search(query, root, depth, ignorers):
 
         is_dir = os.path.isdir(path)
 
-        if not should_ignore(item, path, ignorers):
-            if is_dir:
-                if options.follow or not os.path.islink(path):
-                    dirs.append(path)
-            if match(query, path, item):
-                if depth >= options.mindepth:
-                    out(path, '\0' if options.zero else '\n')
+        if is_dir:
+            if options.follow or not os.path.islink(path):
+                dirs.append(path)
+        if match(query, path, item):
+            if depth >= options.mindepth:
+                out(path, '\0' if options.zero else '\n')
 
     if depth < options.maxdepth:
         for d in dirs:
-            _search(query, d, depth + 1, ignorers)
+            _search(query, d, depth + 1)
 
 
-def search(query, directory='.', depth=1, ignorers=None):
-    _search(query, directory, depth, ignorers)
+def search(query, directory='.', depth=1):
+    _search(query, directory, depth)
 
 
 # Option Parsing and Main -----------------------------------------------------
@@ -191,9 +135,6 @@ def build_option_parser():
     p = OptionParser("usage: %prog [options] PATTERN")
 
     # Main options
-    p.add_option('--version',
-                 action='store_true', default=False,
-                 help='print the version and exit')
     p.add_option('-r', '--root-dir', default='.',
                  dest='dir', action='store',
                  help='root the search in DIR (default .)',
@@ -258,10 +199,6 @@ def build_option_parser():
                  dest='binary', action='store_false',
                  help='ignore binary files')
 
-    g.add_option('-I', '--ignore', metavar='PATTERN',
-                 action='append', default=[],
-                 help="add a pattern to be ignored (can be given multiple times)")
-
     p.add_option_group(g)
 
     # Type filtering
@@ -287,7 +224,7 @@ def build_option_parser():
 
 
 def build_type_set(types):
-    if not types:
+    if types is None:
         return TYPES_ALL
 
     result = set()
@@ -318,7 +255,7 @@ def build_type_set(types):
 
             'r': TYPES_REAL,
             's': TYPES_SYMLINK,
-        }[c.lower()]
+        }[c]
 
     return result
 
@@ -337,10 +274,6 @@ def main():
 
     (options, args) = build_option_parser().parse_args()
 
-    if options.version:
-        print('friendly-find version %s' % '.'.join(VERSION))
-        sys.exit(0)
-
     # PATTERN
     if len(args) > 1:
         die("only one search pattern can be given")
@@ -351,18 +284,24 @@ def main():
     # --root-dir
     if options.dir is not None:
         if not (os.path.exists(options.dir) and os.path.isdir(options.dir)):
-            die('could not change to directory "%s"' % options.dir)
+            die('root-dir "%s" not exists' % options.dir)
 
-    # --depth
+    # --mindepth
     try:
         options.mindepth = int(options.mindepth)
+    except ValueError:
+        die('mindepth must be a non-negative integer')
+
+    # --maxdepth
+    try:
         options.maxdepth = int(options.maxdepth)
     except ValueError:
-        die('depth must be a non-negative integer')
+        die('maxdepth must be a non-negative integer')
 
     # --case-*
     if options.case == CASE_SMART:
-        if any(c in string.uppercase for c in query):
+        # in case_smart mode, if there is any one uppercase char in query, we assumes it's case-sensitive
+        if any(c.isupper() for c in query):
             options.case = CASE_SENSITIVE
         else:
             options.case = CASE_INSENSITIVE
@@ -385,15 +324,14 @@ def main():
             r = re.compile(query, re.IGNORECASE)
         query = lambda s: r.search(s)
 
-    # Go!
     search(query, options.dir)
 
 
 if __name__ == '__main__':
     import signal
 
-
-    def sigint_handler(signalnum, frame):
+    # noinspection PyUnusedLocal
+    def sigint_handler(signum, frame):
         sys.stdout.write('\n')
         sys.exit(130)
 
