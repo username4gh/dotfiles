@@ -108,7 +108,7 @@ _load_sh_files() {
                 _cache_gen "$file"
 
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
-            done < <(find "$fullPath" -maxdepth 1 -mindepth 1 -type f -name '*.bash' -print0 | sort -du)
+            done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$' | sort -du)
         fi
         unset -v file
     fi
@@ -150,7 +150,7 @@ if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
             while IFS= read -r item;
             do
                 echo '_load_sh_files $MY_SH_MODULE '${item##*/} >> "$MY_SH_MODULE/init.bash";
-            done < <(find "$MY_SH_MODULE" -maxdepth 1 -mindepth 1 -type d)
+            done < <(pythonfind --root-dir "$MY_SH_MODULE" --maxdepth 1 --mindepth 1 --type d)
         fi
     }
 

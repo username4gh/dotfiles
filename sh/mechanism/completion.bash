@@ -58,7 +58,7 @@ _completion_generate() {
         while IFS= read -r item
         do
             _completion_write $1 $(basename $item | cut -d '.' -f1)
-        done < <(find "$2" -maxdepth 1 -type f | pythongrep "$3")
+        done < <(pythonfind --root-dir "$2" --maxdepth 1 --type f | pythongrep "$3")
     fi
 }
 
@@ -141,7 +141,7 @@ completion_generate() {
         #do
         #    _completion_process "$file"
         #    # filtered out some irrelevant files to boost performance
-        #done < <(find "$MY_SH_MODULE" -type f -iname "*.bash" | pythongrep 'src')
+        #done < <(pythonfind --root-dir "$MY_SH_MODULE" --type f -i "^.*\\.bash$" | pythongrep 'src')
     else
         _completion_process "$MY_SH/cache.bash"
     fi

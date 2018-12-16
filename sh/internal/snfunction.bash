@@ -23,7 +23,7 @@ _snfunction_on_modules_level() {
         else
             _snfunction_on_module_level $1 "$(_dir_basename $item)"
         fi
-    done < <(find "$MY_SH/module" -mindepth 1 -maxdepth 1 -type d)
+    done < <(pythonfind --root-dir "$MY_SH/module" --mindepth 1 --maxdepth 1 --type d)
 }
 
 _snfunction_complete () {
