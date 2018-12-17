@@ -216,7 +216,7 @@ def build_option_parser():
                     "If multiple types are given they will be unioned together:  "
                     "--type 'es' would match real files and all symlinks.")
     g.add_option('-t', '--type',
-                 action='store', default=False, metavar='TYPE(S)',
+                 action='store', default='a', metavar='TYPE(S)',
                  help='match only specific types of things (files, dirs, non-symlinks, symlinks)')
     p.add_option_group(g)
 
