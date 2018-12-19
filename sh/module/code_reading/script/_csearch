@@ -9,7 +9,7 @@ if [[ -f "$CSEARCHINDEX" ]];then
     pattern='('
     pattern+='no such file or directory'
     pattern+=')'
-    csearch -n "$@" |& s -i -v "$pattern"
+    csearch -n "$@" |& pythongrep -i -v "$pattern"
 else
     echo "plz do _cindex first"
 fi

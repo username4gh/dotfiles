@@ -6,7 +6,7 @@ _backup_chrome_browsing_history() {
         if _is_darwin;then
             local GOOGLE_CHROME_DIR="/Users/$USER/Library/Application Support/Google/Chrome/"
             # here i assume that i only use the default profile
-            (cd "$GOOGLE_CHROME_DIR"; rsync --recursive --progress --verbose "$(pythonfind --root-dir ./Default -i History)" "$1")
+            (rsync --recursive --progress --verbose "$GOOGLE_CHROME_DIR/Default/History" "$1")
         fi
     fi
 }

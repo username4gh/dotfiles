@@ -78,17 +78,17 @@ if [[ $(whoami) != root ]];then
             local status
             status="$(git status -b --porcelain ${git_status_flags} 2> /dev/null || git status --porcelain ${git_status_flags} 2> /dev/null)"
 
-            if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(s -v '^#' <<< "${status}")" ]]; then
+            if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(pythongrep -v '^#' <<< "${status}")" ]]; then
                 SCM_DIRTY=1
                 if [[ "${SCM_GIT_SHOW_DETAILS}" = "true" ]]; then
                     local untracked_count
-                    untracked_count="$(s -c '^\?\? .+' <<< "${status}")"
+                    untracked_count="$(pythongrep -c '^\?\? .+' <<< "${status}")"
 
                     local unstaged_count
-                    unstaged_count="$(s -c '^.[^ ?#] .+' <<< "${status}")"
+                    unstaged_count="$(pythongrep -c '^.[^ ?#] .+' <<< "${status}")"
 
                     local staged_count
-                    staged_count="$(s -c '^[^ ?#]. .+' <<< "${status}")"
+                    staged_count="$(pythongrep -c '^[^ ?#]. .+' <<< "${status}")"
 
                     [[ "${staged_count}" -gt 0 ]] && details+=" ${SCM_GIT_STAGED_CHAR}${staged_count}" && SCM_DIRTY=3
                     [[ "${unstaged_count}" -gt 0 ]] && details+=" ${SCM_GIT_UNSTAGED_CHAR}${unstaged_count}" && SCM_DIRTY=2
@@ -105,7 +105,7 @@ if [[ $(whoami) != root ]];then
             if [[ -n "$ref" ]]; then
                 SCM_BRANCH=${SCM_BRANCH_PREFIX}${ref#refs/heads/}
                 local tracking_info
-                tracking_info="$(s "${SCM_BRANCH}\.\.\." <<< "${status}")"
+                tracking_info="$(pythongrep "${SCM_BRANCH}\.\.\." <<< "${status}")"
 
                 if [[ -n "${tracking_info}" ]]; then
                     local branch_gone
