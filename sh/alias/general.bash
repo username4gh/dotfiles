@@ -22,3 +22,6 @@ alias busy="cat /dev/urandom | hexdump -C | grep \"ca fe\""
 alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'"
 
 alias sift='sift --git --binary-skip'
+
+alias pg='pythongrep'
+alias pf='pythonfind'
