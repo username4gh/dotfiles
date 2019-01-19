@@ -102,7 +102,7 @@ def main(argv):
     result = ''
 
     for p in OrderedSet(path_list):
-        if os.path.isdir(p):
+        if os.path.isdir(os.path.expanduser(p)):
             result = result + ':' + p
 
     print(result.lstrip(':'))

@@ -176,4 +176,7 @@ fi
 source "$MY_DOTFILES/.profile"
 
 # deduplicate to avoid issue caused by sourcing repeatly
-export PATH="$(clean_path_variable)" # hold the path for later use
+ORIGINAL_PATH="$PATH"
+PROCESSED_PATH="$(clean_path_variable)"
+
+export PATH="$PROCESSED_PATH"
