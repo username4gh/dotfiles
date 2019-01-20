@@ -1,0 +1,69 @@
+#! /usr/bin/env python
+# coding=UTF-8
+
+from __future__ import print_function
+import sys
+import json
+import re
+import time
+
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    import urllib.request as ul
+    from urllib.error import HTTPError
+else:
+    import urllib2 as ul
+    from urllib2 import HTTPError
+
+
+def initial_url(x):
+    return 'https://api.github.com/orgs/' + x + '/repos'
+
+
+URL_EXTRACT = re.compile('(?<=<).*?(?=>)')
+
+
+def get_next_url(link):
+    """
+    here we assumes that link only contains one rel=\"next\"
+    :param link:
+    :return:
+    """
+    for l in link.split(','):
+        if 'rel=\"next\"' in l:
+            return URL_EXTRACT.findall(l.split(";")[0])[0]
+    return None
+
+
+def acquire(argv):
+    """
+    generate mrconfig from repos under certain organization
+    """
+    if len(argv) > 2:
+        print('Too many command-line arguments.')
+        return
+
+    try:
+        next_url = initial_url(argv[1])
+
+        i = 0
+        while next_url is not None:
+            time.sleep(1)  # sleep for 1 second to avoid get banned
+            r = ul.urlopen(next_url)
+            for o in json.load(r):
+                print('[./' + o['name'] + ']')
+                print('checkout = git clone \'' + o['clone_url'] + '\' \'./' + o['name'] + '\'')
+
+            i = i + 1
+
+            if r.info().has_key('Link'):
+                next_url = get_next_url(r.info()['Link'])
+            else:
+                return
+    except HTTPError as error:
+        print(error.reason)
+
+
+if __name__ == '__main__':
+    acquire(sys.argv)
