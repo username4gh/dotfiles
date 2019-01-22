@@ -272,9 +272,14 @@ def is_re(s):
 def main():
     global options
 
-    (options, args) = build_option_parser().parse_args()
+    parser = build_option_parser()
 
-    # PATTERN
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
+    (options, args) = parser.parse_args()
+
     if len(args) > 1:
         die("only one search pattern can be given")
         sys.exit(1)
