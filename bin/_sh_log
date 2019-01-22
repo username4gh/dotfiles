@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+# for internal function, no `Usage`, only print log
+# $1 -- TAG
+# $2 -- content
+# $3 -- log file
+if [[ -d "$MY_LOG_DIR" ]]; then
+    if [[ "$#" == 3 ]];then
+        echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> "$MY_LOG_DIR/$3.log"
+    fi
+fi

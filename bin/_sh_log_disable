@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+if [[ -d "$MY_LOG_DIR" ]];then
+    rm -rf "$MY_LOG_DIR"
+fi

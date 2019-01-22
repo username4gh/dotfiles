@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+
+if [[ ! -d "$MY_LOG_DIR" ]];then
+    mkdir -p "$MY_LOG_DIR"
+fi

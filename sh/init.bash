@@ -2,10 +2,13 @@
 export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 
 export MY_DOTFILES="$HOME/.dotfiles"
-export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in of this whole setup
+export MY_LOG_DIR="$MY_DOTFILES/log"
+
+export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in for this setup
+
 export MY_SH="$MY_DOTFILES/sh"
 export MY_SH_MODULE="$MY_SH/module"
-export MY_LOG_DIR="$MY_DOTFILES/log"
+
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
 export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
@@ -28,30 +31,6 @@ unset PROMPT_COMMAND
 #export PATH="$PATH_HOLDER"
 export PATH="$MY_BUNDLED_BIN:$PATH"
 export PATH="$MY_PRIVATE_BIN:$PATH"
-
-# for internal function, no `Usage`, only print log
-_sh_log() {
-    # $1 -- TAG
-    # $2 -- content
-    # $3 -- log file
-    if [[ -d "$MY_LOG_DIR" ]]; then
-        if [[ "$#" == 3 ]];then
-            echo "$(date +%Y-%m-%d-%H-%M-%S) [$1] : $2" >> "$MY_LOG_DIR/$3.log"
-        fi
-    fi
-}
-
-_sh_log_enable() {
-    if [[ ! -d "$MY_LOG_DIR" ]];then
-        mkdir -p "$MY_LOG_DIR"
-    fi
-}
-
-_sh_log_disable() {
-    if [[ -d "$MY_LOG_DIR" ]];then
-        rm -rf "$MY_LOG_DIR"
-    fi
-}
 
 _cache_gen() {
     local OUTPUT_FILE="$MY_SH/cache.bash"
