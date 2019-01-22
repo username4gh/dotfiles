@@ -8,6 +8,161 @@ import string
 import sys
 from optparse import OptionParser, OptionGroup
 
+# https://stackoverflow.com/questions/284115/cross-platform-hidden-file-detection
+if 'darwin' in sys.platform:
+
+    import contextlib
+    import ctypes
+
+    cf = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation')
+
+    cf.CFShow.argtypes = [ctypes.c_void_p]
+    cf.CFShow.restype = None
+
+    cf.CFRelease.argtypes = [ctypes.c_void_p]
+    cf.CFRelease.restype = None
+
+    cf.CFStringCreateWithBytes.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_long, ctypes.c_int, ctypes.c_int]
+    cf.CFStringCreateWithBytes.restype = ctypes.c_void_p
+
+    cf.CFStringGetMaximumSizeOfFileSystemRepresentation.argtypes = [ctypes.c_void_p]
+    cf.CFStringGetMaximumSizeOfFileSystemRepresentation.restype = ctypes.c_int
+
+    cf.CFStringGetFileSystemRepresentation.argtypes = [ctypes.c_void_p,
+                                                       ctypes.c_char_p,
+                                                       ctypes.c_long]
+    cf.CFStringGetFileSystemRepresentation.restype = ctypes.c_int
+
+    cf.CFURLCreateFromFileSystemRepresentation.argtypes = [ctypes.c_void_p,
+                                                           ctypes.c_char_p,
+                                                           ctypes.c_long,
+                                                           ctypes.c_int]
+    cf.CFURLCreateFromFileSystemRepresentation.restype = ctypes.c_void_p
+
+    cf.CFURLCopyResourcePropertyForKey.argtypes = [ctypes.c_void_p,
+                                                   ctypes.c_void_p,
+                                                   ctypes.c_void_p,
+                                                   ctypes.c_void_p]
+    cf.CFURLCopyResourcePropertyForKey.restype = ctypes.c_int
+
+    cf.CFBooleanGetValue.argtypes = [ctypes.c_void_p]
+    cf.CFBooleanGetValue.restype = ctypes.c_int
+
+    cf.CFURLEnumeratorCreateForDirectoryURL.argtypes = [ctypes.c_void_p,
+                                                        ctypes.c_void_p,
+                                                        ctypes.c_int,
+                                                        ctypes.c_void_p]
+    cf.CFURLEnumeratorCreateForDirectoryURL.restype = ctypes.c_void_p
+
+    cf.CFURLEnumeratorGetNextURL.argtypes = [ctypes.c_void_p,
+                                             ctypes.c_void_p,
+                                             ctypes.c_void_p]
+    cf.CFURLEnumeratorGetNextURL.restype = ctypes.c_int
+
+    cf.CFURLCopyFileSystemPath.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    cf.CFURLCopyFileSystemPath.restype = ctypes.c_void_p
+
+    # From CFString.h
+    # http://www.opensource.apple.com/source/CF/CF-744/CFString.h
+    # The value has been the same from at least 10.2-10.8.
+    kCFStringEncodingUTF8 = 0x08000100
+
+    # Documented here:
+    # https://developer.apple.com/library/mac/#documentation/CoreFoundation/Reference/CFURLEnumeratorRef/Reference/reference.html
+    kCFURLEnumeratorSkipInvisibles = 1 << 1
+
+    kCFURLEnumeratorSuccess = 1
+    kCFURLEnumeratorEnd = 2
+    kCFURLEnumeratorError = 3
+    kCFURLEnumeratorDirectoryPostOrderSuccess = 4
+
+    # Documented here:
+    # http://developer.apple.com/library/ios/#documentation/CoreFoundation/Reference/CFURLRef/Reference/reference.html
+    kCFURLPOSIXPathStyle = 0
+
+    # This one is a static CFStringRef.
+    kCFURLIsHiddenKey = ctypes.c_void_p.in_dll(cf, 'kCFURLIsHiddenKey')
+
+
+    @contextlib.contextmanager
+    def cfreleasing(stuff):
+        try:
+            yield
+        finally:
+            for thing in stuff:
+                cf.CFRelease(thing)
+
+
+    def cfstr_to_unicode(cfstr):
+        count = cf.CFStringGetMaximumSizeOfFileSystemRepresentation(cfstr)
+        buf = (ctypes.c_char * count)()
+        if cf.CFStringGetFileSystemRepresentation(cfstr, buf, count):
+            return buf.value.decode('UTF-8')
+        raise OSError('CFStringGetFileSystemRepresentation failed')
+
+
+    def is_hidden(path):
+        if not isinstance(path, bytes):
+            path = path.encode('UTF-8')
+        stuff = []
+        with cfreleasing(stuff):
+            url = cf.CFURLCreateFromFileSystemRepresentation(None, path, len(path), False)
+            stuff.append(url)
+            val = ctypes.c_void_p(0)
+            ret = cf.CFURLCopyResourcePropertyForKey(url, kCFURLIsHiddenKey, ctypes.addressof(val), None)
+            if ret:
+                result = cf.CFBooleanGetValue(val)
+                stuff.append(val)
+                return True if result else False
+            # TODO: You could pass a CFErrorRef instead of None, and do all the
+            # work to wrap that in a Python exception, etc.
+            raise OSError('CFURLCopyResourcePropertyForKey failed')
+
+
+    def listdir_skipping_hidden(path):
+        if not isinstance(path, bytes):
+            path = path.encode('UTF-8')
+        stuff = []
+        with cfreleasing(stuff):
+            url = cf.CFURLCreateFromFileSystemRepresentation(None, path, len(path), True)
+            stuff.append(url)
+            enum = cf.CFURLEnumeratorCreateForDirectoryURL(None, url, kCFURLEnumeratorSkipInvisibles, None)
+            stuff.append(enum)
+            paths = []
+            while True:
+                url = ctypes.c_void_p(0)
+                ret = cf.CFURLEnumeratorGetNextURL(enum, ctypes.addressof(url), None)
+                if ret != kCFURLEnumeratorSuccess:
+                    break
+                path = cf.CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle)
+                stuff.append(path)
+                paths.append(cfstr_to_unicode(path))
+            return paths
+else:
+    PY35 = sys.version_info[0] == 3 and sys.version_info[1] >= 5
+
+    import ctypes
+    import os
+
+    def is_hidden(filepath):
+        name = os.path.basename(os.path.abspath(filepath))
+        return name.startswith('.') or has_hidden_attribute(filepath)
+
+
+    def has_hidden_attribute(filepath):
+        if PY35:
+            import stat
+            return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+        else:
+            try:
+                attrs = ctypes.windll.kernel64.GetFileAttributesW(unicode(filepath))
+                assert attrs != -1
+                result = bool(attrs & 2)
+            except (AttributeError, AssertionError):
+                result = False
+            return result
+
+
 # Constants -------------------------------------------------------------------
 CASE_SENSITIVE = 1
 CASE_INSENSITIVE = 2
@@ -113,6 +268,9 @@ def _search(query, root, depth):
             path = os.path.abspath(path)
 
         is_dir = os.path.isdir(path)
+        
+        if not options.hidden and is_hidden(path):
+            continue
 
         if is_dir:
             if options.follow or not os.path.islink(path):
@@ -151,6 +309,9 @@ def build_option_parser():
     p.add_option('-F', '--no-follow',
                  dest='follow', action='store_false',
                  help="don't follow symlinked directories (default)")
+    p.add_option('-H', '--hidden',
+                 action='store_true', default=False, 
+                 help='include the hidden file into the result')
     p.add_option('-l', '--literal',
                  action='store_true', default=False,
                  help='force literal search, even if it looks like a regex')
