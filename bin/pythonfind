@@ -8,8 +8,23 @@ import string
 import sys
 from optparse import OptionParser, OptionGroup
 
+def is_macos():
+    if 'darwin' in sys.platform:
+        return True
+    return False
+
+def is_windows():
+    if 'window' in sys.platform:
+        return True
+    return False
+
+def is_linux():
+    if 'linux' in sys.platform:
+        return True
+    return False
+
 # https://stackoverflow.com/questions/284115/cross-platform-hidden-file-detection
-if 'darwin' in sys.platform:
+if is_macos():
 
     import contextlib
     import ctypes
@@ -138,7 +153,9 @@ if 'darwin' in sys.platform:
                 stuff.append(path)
                 paths.append(cfstr_to_unicode(path))
             return paths
-else:
+
+
+if is_windows():
     PY35 = sys.version_info[0] == 3 and sys.version_info[1] >= 5
 
     import ctypes
@@ -146,21 +163,32 @@ else:
 
     def is_hidden(filepath):
         name = os.path.basename(os.path.abspath(filepath))
-        return name.startswith('.') or has_hidden_attribute(filepath)
+        return has_hidden_attribute(filepath)
 
 
     def has_hidden_attribute(filepath):
-        if PY35:
-            import stat
-            return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+        if is_windows():
+            if PY35:
+                import stat
+                return bool(os.stat(filepath).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+            else:
+                try:
+                    attrs = ctypes.windll.kernel64.GetFileAttributesW(unicode(filepath))
+                    assert attrs != -1
+                    result = bool(attrs & 2)
+                except (AttributeError, AssertionError):
+                    result = False
+                return result
         else:
-            try:
-                attrs = ctypes.windll.kernel64.GetFileAttributesW(unicode(filepath))
-                assert attrs != -1
-                result = bool(attrs & 2)
-            except (AttributeError, AssertionError):
-                result = False
-            return result
+            return False
+
+
+if is_linux():
+    import os
+
+    def is_hidden(filepath):
+        name = os.path.basename(os.path.abspath(filepath))
+        return name.startswith('.')
 
 
 # Constants -------------------------------------------------------------------
