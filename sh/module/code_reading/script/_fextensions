@@ -1,0 +1,18 @@
+#! /usr/bin/env bash
+
+(
+SEARCH_WORKSPACE="$MY_DOTFILES_RESOURCES/code_reading_utils/file";
+
+if [[ ! -d "$SEARCH_WORKSPACE" ]];then
+    mkdir -p "$SEARCH_WORKSPACE"
+fi
+
+CURRENT_DIR="${PWD//\//_}";
+export SEARCHINDEX="$SEARCH_WORKSPACE/$CURRENT_DIR.file.index";
+
+if [[ ! -f "$SEARCHINDEX" ]];then
+    echo "plz do _findex first"
+else
+    cat "$SEARCHINDEX" | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u
+fi
+)
