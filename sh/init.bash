@@ -87,7 +87,9 @@ _load_sh_files() {
                 _cache_gen "$file"
 
                 [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
-            done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$' | sort -du)
+            done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$')
+            # done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$' | sort -du) 
+            # because the 'sort -du' does not work well on termux mainly because it do not separate matches with a null byte in output, for now we just avoid using it
         fi
         unset -v file
     fi
