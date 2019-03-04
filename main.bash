@@ -45,7 +45,11 @@ _is_command_exist() {
 }
 
 _is_root() {
-    [[ "$#" -eq 0 ]] && [[ "$(i -iu)" -ne 0 ]]
+    [[ "$#" -eq 0 ]] && [[ "$(id -u)" -ne 0 ]]
+}
+
+_is_not_root() {
+    [[ "$#" -eq 0 ]] && [[ "$(whoami)" != root ]]
 }
 
 _is_termux() {

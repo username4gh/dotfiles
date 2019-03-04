@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
-if [[ $(whoami) != root ]];then
+if _is_not_root;then
     export PATH="$PATH:$MY_SH_MODULE/cleanup/script"
 fi

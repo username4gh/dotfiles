@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [[ $(whoami) != root ]];then
+if _is_not_root;then
     if _is_bash;then
 
         SCM_PROMPT_DIRTY=' ✗'
