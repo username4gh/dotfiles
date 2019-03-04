@@ -15,20 +15,27 @@ _overrideFunction() {
     eval "$newDefinition"
 }
 
-export MY_CURRENT_SHELL='bash'
+_is_command_exist() {
+    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+}
 
-if [[ "$(uname -s)" == "Darwin" ]];then
-    if [[ -f '/opt/local/bin/port' ]];then
-        export MY_CURRENT_PACKAGE_MANAGER='macports'
-    elif [[ -f '/usr/local/bin/brew' ]];then
-        export MY_CURRENT_PACKAGE_MANAGER='homebrew'
+if _is_command_exist 'python';then
+
+    export MY_CURRENT_SHELL='bash'
+
+    if [[ "$(uname -s)" == "Darwin" ]];then
+        if [[ -f '/opt/local/bin/port' ]];then
+            export MY_CURRENT_PACKAGE_MANAGER='macports'
+        elif [[ -f '/usr/local/bin/brew' ]];then
+            export MY_CURRENT_PACKAGE_MANAGER='homebrew'
+        else
+            unset MY_CURRENT_PACKAGE_MANAGER
+        fi
     else
         unset MY_CURRENT_PACKAGE_MANAGER
     fi
-else
-    unset MY_CURRENT_PACKAGE_MANAGER
-fi
 
-if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
-    source "$HOME/.dotfiles/sh/init.bash"
+    if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
+        source "$HOME/.dotfiles/sh/init.bash"
+    fi
 fi
