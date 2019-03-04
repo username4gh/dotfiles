@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 if [[ $(whoami) != root ]];then
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
 
         SCM_PROMPT_DIRTY=' ✗'
         SCM_PROMPT_CLEAN=' ✓'

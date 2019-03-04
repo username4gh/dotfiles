@@ -12,7 +12,7 @@ v_pyenv() {
         git clone 'https://github.com/pyenv/pyenv' "$MY_DOTFILES_RESOURCES/pyenv"
     fi
 
-    if [[ "$MY_CURRENT_SHELL" == 'zsh' ]];then
+    if _is_zsh;then
         (
         export PYENV_ROOT="$MY_DOTFILES_RESOURCES/pyenv";
         export PATH="$PYENV_ROOT/bin:$PATH";

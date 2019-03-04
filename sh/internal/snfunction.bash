@@ -27,7 +27,7 @@ _snfunction_on_modules_level() {
 }
 
 _snfunction_complete () {
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         local cur="${COMP_WORDS[COMP_CWORD]}"
         local completion_args="init list"
         COMPREPLY=( $(compgen -W "${completion_args}" -- ${cur}) )

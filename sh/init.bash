@@ -107,7 +107,7 @@ else
     source "$MY_SH/cache.bash"
 fi
 
-if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+if _is_bash;then
 
     # check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
     shopt -s checkwinsize

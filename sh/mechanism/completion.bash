@@ -3,7 +3,7 @@
 export MY_SH_COMPLETIONS="$MY_DOTFILES/completions"
 
 _completion_read() {
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         # $1 --> variant name
         if [[ "$#" -eq 1 ]];then
             if [[ -f "$MY_SH_COMPLETIONS/$1.completion" ]];then
@@ -16,7 +16,7 @@ _completion_read() {
 }
 
 _completion_write() {
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         # $1 --> variant name
         # $2 --> variant value
         if [[ ! -d "$MY_SH_COMPLETIONS" ]];then
@@ -51,7 +51,7 @@ _completion_write() {
 }
 
 _completion_generate() {
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         # $1 target command
         # $2 directory
         # $3 pattern to match certain file
@@ -79,7 +79,7 @@ _annotation_completion_generate() {
 }
 
 _completion_complete() {
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         local cur="${COMP_WORDS[COMP_CWORD]}"
 
         local size=$COMP_CWORD
@@ -109,7 +109,7 @@ _completion_complete() {
 
 _completion_setup() {
     # $1 target command
-    if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+    if _is_bash;then
         complete -F _completion_complete $1
     fi
 }

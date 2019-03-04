@@ -56,6 +56,14 @@ if _is_command_exist 'python';then
 
     export MY_CURRENT_SHELL='bash'
 
+    _is_bash() {
+        [[ "$MY_CURRENT_SHELL" == 'bash' ]]
+    }
+
+    _is_zsh() {
+        [[ "$MY_CURRENT_SHELL" == 'zsh' ]]
+    }
+
     if [[ "$(uname -s)" == "Darwin" ]];then
         if [[ -f '/opt/local/bin/port' ]];then
             export MY_CURRENT_PACKAGE_MANAGER='macports'

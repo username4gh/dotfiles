@@ -44,7 +44,7 @@ _cleanup() {
     fi
 }
 
-if [[ "$MY_CURRENT_SHELL" == 'bash' ]];then
+if _is_bash;then
     complete -F _snfunction_complete _init
     complete -F _snfunction_complete _backup
     complete -F _snfunction_complete _cleanup
