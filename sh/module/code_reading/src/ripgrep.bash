@@ -5,7 +5,6 @@ if [[ "${#RIPGREP_PATH}" -eq 0 ]];then
     _sh_log "${BASH_SOURCE[0]}" "ripgrep has not been installed yet"
 else
     export PATH="$RIPGREP_PATH:$PATH"
-    alias _rg="rg --ignore-file $MY_SH_MODULE/code_reading/resource/ripgrep.ignore"
 fi
 unset RIPGREP_PATH
 
