@@ -1,14 +1,3 @@
-" Use Vim settings, rather than Vi settings
-set nocompatible
-
-" Attempt to determine the type of a file based on its name and possibly its
-" contents. Use this to allow intelligent auto-indenting for each filetype,
-" and for plugins that are filetype specific.
-filetype indent plugin on
-
-" Enable syntax highlighting
-syntax on
-
 " Vim with default settings does not allow easy switching between multiple files
 " in the same editor window. Users can use multiple split windows or multiple
 " tab pages to edit multiple files, but it is still best to enable an option to
@@ -175,3 +164,5 @@ nnoremap <F7> :%!jq '.'<CR>
 "nnoremap <F7> :w !sudo tee % > /dev/null
 "nnoremap <F8> 20j<CR>
 "nnoremap <F9> 20k<CR>
+
+:tnoremap <Esc> <C-\><C-n>
