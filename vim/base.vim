@@ -165,4 +165,5 @@ nnoremap <F7> :%!jq '.'<CR>
 "nnoremap <F8> 20j<CR>
 "nnoremap <F9> 20k<CR>
 
-:tnoremap <Esc> <C-\><C-n>
+" Vi do not support tnoremap, also terminal-mode is kind of useless
+":tnoremap <Esc> <C-\><C-n>
