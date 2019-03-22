@@ -34,8 +34,6 @@ if _is_on_heavy_mode()
     Plug 'majutsushi/tagbar'
     Plug 'ozelentok/denite-gtags'
     Plug 'Shougo/denite.nvim'
-    Plug 'Valloric/YouCompleteMe'
-    Plug 'vim-scripts/YankRing.vim'
     Plug g:vim_denite_codesearch
 endif
 
