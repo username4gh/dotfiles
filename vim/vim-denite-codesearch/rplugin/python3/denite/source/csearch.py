@@ -6,14 +6,15 @@ from os.path import relpath
 from .base import Base
 
 
-def _candidate(result, path):
+def _candidate(result, line):
     return {
-        'word': result[1],
+        'word': line,
         'abbr': '{0}:{1}:{2}'.format(
             result[0],
             result[1],
             result[2]),
         'action__path': result[0],
+        'action__line': result[1],
     }
 
 
@@ -71,12 +72,7 @@ class Source(Base):
 
         args = [util.expand(self.vars['command'][0])]
         args += self.vars['command'][1:]
-        #args += context['__arguments']
         args += context['__patterns']
-        #if context['__paths']:
-        #    args += context['__paths']
-
-        self.print_message(context, args)
 
         context['__proc'] = process.Process(args, context, context['path'])
         return self._async_gather_candidates(context, 0.5)
@@ -92,20 +88,23 @@ class Source(Base):
         candidates = []
 
         for line in outs:
-            result = self._parse_jump_line(context['path'], line)
+            result = self._parse_jump_line(context, line)
             if not result:
                 continue
-            path = line
-            candidates.append(_candidate(result, path))
+            candidates.append(_candidate(result, line))
         return candidates
 
-    def _parse_jump_line(self, path, line):
+    def _parse_jump_line(self, context, line):
         """
         produce result according to _candidate()
         """
-        splits = line.split(':')
-        splits += path
-        return splits
+        result = []
+        first = line.index(':')
+        second = first + line[first+1:].index(':')
+        result.append(line[:first])
+        result.append(line[first+1:second+1])
+        result.append(line[second+2:])
+        return result
 
     def _init_paths(self, context, args):
         paths = []
