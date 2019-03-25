@@ -32,7 +32,10 @@ Plug 'vim-ruby/vim-ruby'
 " here i use the file existence to switch on-and-off some plugins
 if _is_on_heavy_mode()
     Plug 'majutsushi/tagbar'
-    Plug 'ozelentok/denite-gtags'
+    if !has('nvim')
+        Plug 'roxma/nvim-yarp'
+        Plug 'roxma/vim-hug-neovim-rpc'
+    endif
     Plug 'Shougo/denite.nvim'
     Plug g:vim_denite_codesearch
 endif
@@ -112,21 +115,15 @@ if _is_on_heavy_mode()
 
     " Change default prompt
     call denite#custom#option('default', 'prompt', '>')
-
-    " Change ignore_globs
-    call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
-                \ [ '.git/', '.hg/', '.ropeproject/', '__pycache__/',
-                \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/', '*.pyc'])
+    call denite#custom#option('_', 'highlight_matched_char', 'None')
 
     " denite key mapping
-    map <Leader>B :Denite buffer -highlight-mode-insert=Search<CR>
-    map <Leader>D :DeniteCursorWord -buffer-name=gtags_def gtags_def -highlight-mode-insert=Search<CR>
-    map <Leader>R :DeniteCursorWord -buffer-name=gtags_ref gtags_ref -highlight-mode-insert=Search<CR>
-    map <Leader>fs :Denite fsearch -highlight-mode-insert=Search<CR>
-    map <Leader>cs :Denite csearch -highlight-mode-insert=Search<CR>
-    map <Leader>fg :Denite file/rec/git<CR>
-    map <Leader>fp :Denite file/rec/py<CR>
-    map <Leader>gp :Denite grep -highlight-mode-insert=Search<CR>
+    map <Leader>B :Denite buffer -no-empty<CR>
+    map <Leader>fs :Denite fsearch -no-empty<CR>
+    map <Leader>cs :Denite csearch -no-empty<CR>
+    map <Leader>fg :Denite file/rec/git -no-empty<CR>
+    map <Leader>fp :Denite file/rec/py -no-empty<CR>
+    map <Leader>gp :Denite grep  -no-empty<CR>
 endif
 
 

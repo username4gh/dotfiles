@@ -9,10 +9,6 @@ from .base import Base
 def _candidate(result, line):
     return {
         'word': line,
-        'abbr': '{0}:{1}:{2}'.format(
-            result[0],
-            result[1],
-            result[2]),
         'action__path': result[0],
         'action__line': result[1],
     }
@@ -29,7 +25,7 @@ class Source(Base):
             'command': ['_csearch'],
             'min_interactive_pattern': 3,
         }
-        self.matchers = ['matcher/ignore_globs', 'matcher/regexp']
+        self.matchers = ['matcher/regexp']
 
     def on_init(self, context):
         context['__proc'] = None
@@ -88,23 +84,11 @@ class Source(Base):
         candidates = []
 
         for line in outs:
-            result = self._parse_jump_line(context, line)
+            result = util.parse_jump_line(context, line)
             if not result:
                 continue
             candidates.append(_candidate(result, line))
         return candidates
-
-    def _parse_jump_line(self, context, line):
-        """
-        produce result according to _candidate()
-        """
-        result = []
-        first = line.index(':')
-        second = first + line[first+1:].index(':')
-        result.append(line[:first])
-        result.append(line[first+1:second+1])
-        result.append(line[second+2:])
-        return result
 
     def _init_paths(self, context, args):
         paths = []
