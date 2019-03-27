@@ -115,6 +115,10 @@ if _is_on_heavy_mode()
 
     " Change default prompt
     call denite#custom#option('default', 'prompt', '>')
+
+    " highlight
+    call denite#custom#option('_', 'highlight_mode_insert', 'CursorLine')
+    call denite#custom#option('_', 'highlight_matched_range', 'None')
     call denite#custom#option('_', 'highlight_matched_char', 'None')
 
     " denite key mapping
