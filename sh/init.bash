@@ -149,7 +149,10 @@ fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
 if _is_darwin;then
-    export LESSOPEN='| /opt/local/bin/lesspipe.sh %s'
+    LESSPIPE_SH="$(which lesspipe.sh)"
+    if _is_file_exist "$LESSPIPE_SH";then
+        export LESSOPEN='| '"$LESSPIPE_SH"' %s'
+    fi
 else
     [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 fi
