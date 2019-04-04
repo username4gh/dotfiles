@@ -8,8 +8,6 @@ endif
 
 let g:plug_dir='~/.vim/plugged'
 
-exe 'source' "$MY_DOTFILES/plugin.vim"
-
 filetype plugin indent on
 syntax on
 
