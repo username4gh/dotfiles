@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # coding=UTF-8
 
+from __future__ import print_function
 import os
 import sys
 
@@ -14,9 +15,9 @@ SORTED_DIRS = sorted(DIRS)
 
 if len(sys.argv) > 1:
     try:
-        print SORTED_DIRS[int(sys.argv[1])]
+        print(SORTED_DIRS[int(sys.argv[1])])
     except ValueError:
         sys.exit(0)
 else:
     for i in range(len(SORTED_DIRS)):
-        print '[' + str(i) + ']' + SORTED_DIRS[i]
+        print('[' + str(i) + ']' + SORTED_DIRS[i])
