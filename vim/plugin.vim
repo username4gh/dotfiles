@@ -9,9 +9,6 @@ call plug#begin(g:plug_dir)
 Plug 'bling/vim-bufferline'
 Plug 'derekwyatt/vim-scala'
 Plug 'easymotion/vim-easymotion'
-Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-fuzzy.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
 Plug 'henrik/vim-indexed-search'
 Plug 'jeetsukumaran/vim-buffersaurus'
 Plug 'kelwin/vim-smali'
@@ -47,34 +44,6 @@ call plug#end()
 
 " easymotion
 map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
-" Bonus fuzzy-search with EasyMotion
-function! s:config_easyfuzzymotion(...) abort
-    return extend(copy({
-                \   'converters': [incsearch#config#fuzzyword#converter()],
-                \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-                \   'keymap': {"\<CR>": '<Over>(easymotion)'},
-                \   'is_expr': 0,
-                \   'is_stay': 1
-                \ }), get(a:, 1, {}))
-endfunction
-
-noremap <silent><expr> <Space>/ incsearch#go(<SID>config_easyfuzzymotion())
-
-" incsearch
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-let g:incsearch#auto_nohlsearch = 1
-map n  <Plug>(incsearch-nohl-n)
-map N  <Plug>(incsearch-nohl-N)
-map *  <Plug>(incsearch-nohl-*)
-map #  <Plug>(incsearch-nohl-#)
-map g* <Plug>(incsearch-nohl-g*)
-map g# <Plug>(incsearch-nohl-g#)
-" incsearch-fuzzy
-map f/ <Plug>(incsearch-fuzzy-/)
-map f? <Plug>(incsearch-fuzzy-?)
-map fg/ <Plug>(incsearch-fuzzy-stay)
 
 " terryma/vim-multiple-cursors
 let g:multi_cursor_use_default_mapping=0

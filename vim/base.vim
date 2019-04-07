@@ -63,7 +63,8 @@ set hlsearch
 set ignorecase
 
 " Highlight dynamically as pattern is typed
-set incsearch
+" disabled because it may cause poor performance
+" set incsearch
 
 " Show current mode
 set showmode
