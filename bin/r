@@ -9,28 +9,37 @@ PY3 = sys.version_info[0] == 3
 
 
 def _process_line(input_file, output_file, lambda_string):
-    if input_file is None:
-        lines = sys.stdin.readlines()
-    else:
-        lines = open(input_file, 'r').readlines()
+    try:
+        if input_file is None:
+            f sys.stdin
+        else:
+            f= open(input_file, 'r')
+        lines = f.readlines()
+    except IOError as err:
+        f.close()
+        print(err)
+        return 1
 
     func = eval(lambda_string)
 
     for i in range(0, len(lines)):
         lines[i] = func(lines[i])
 
-    if output_file is None:
-        out = sys.stdout
-    else:
-        out = open(output_file, 'w')
-    for line in lines:
+    try:
+        if output_file is None:
+            out = sys.stdout
+        else:
+            out = open(output_file, 'w')
         # here we use the completely-override-write to make it's easy to implement in-place edit
-        out.write(line)
+        out.writelines(lines)
+    except IOError as err:
+        out.close()
+        print(err)
 
 
 def main():
-    parser = optparse.OptionParser('usage %prog -l <Python Lambda Expression> [Input File] [Output File] ')
-    parser.add_option('-l', dest='lambda_string', type='string', help='lambda x:x.something(), here we assume x is str')
+    parser = optparse.OptionParser('%prog -l <Python Lambda Expression> <Input File> [Output File]')
+    parser.add_option('-l', dest='lambda_string', type='string', help='\"lambda x:x.something()\", here we assume x is str, also the double quote is necessary')
     options, args = parser.parse_args()
     if options.lambda_string is None:
         print (parser.usage)
