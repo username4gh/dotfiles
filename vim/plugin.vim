@@ -4,8 +4,25 @@ endfunction
 
 let g:vim_denite_codesearch=expand("$MY_DOTFILES").'/vim/vim-denite-codesearch'
 
+function! _is_installed(s)
+    if has_key(g:plugs, a:s)
+        return isdirectory(g:plugs[a:s].dir)
+    else
+        return v:false
+    endif
+endfunction
+
+function! _is_loaded(s)
+    if _is_installed(a:s)
+        return stridx(&rtp, g:plugs[a:s].dir) >= 0
+    else
+        return v:false
+    endif
+endfunction
+
 call plug#begin(g:plug_dir)
 
+Plug 'altercation/vim-colors-solarized'
 Plug 'bling/vim-bufferline'
 Plug 'derekwyatt/vim-scala'
 Plug 'easymotion/vim-easymotion'
@@ -19,7 +36,6 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'Raimondi/delimitMate'
 Plug 'terryma/vim-expand-region'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'tomasr/molokai', {'do': ':color molokai'}
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-scripts/JSON.vim'
@@ -39,8 +55,15 @@ endif
 
 call plug#end()
 
+" save my eyes
+if _is_loaded('vim-colors-solarized')
+    set background=dark
+    let g:solarized_termcolors=256
+    colorscheme solarized
+endif
+
 " bling/vim-airline
-" let g:airline_theme = 'badwolf'
+let g:airline_theme = 'badwolf'
 
 " easymotion
 map <Leader><Leader>c <Plug>(easymotion-lineanywhere)
