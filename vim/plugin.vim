@@ -86,40 +86,42 @@ if _is_on_heavy_mode()
     let g:tagbar_compact = 1
     nnoremap <F10> :TagbarToggle<CR>
 
-    " denite
-    if executable('rg')
-        " Ripgrep command on grep source
-        call denite#custom#var('grep', 'command', ['rg'])
-        call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
-        call denite#custom#var('grep', 'recursive_opts', [])
-        call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-        call denite#custom#var('grep', 'separator', ['--'])
-        call denite#custom#var('grep', 'final_opts', [])
+    if _is_loaded('denite.nvim')
+        " denite
+        if executable('rg')
+            " Ripgrep command on grep source
+            call denite#custom#var('grep', 'command', ['rg'])
+            call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+            call denite#custom#var('grep', 'recursive_opts', [])
+            call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+            call denite#custom#var('grep', 'separator', ['--'])
+            call denite#custom#var('grep', 'final_opts', [])
+        endif
+
+        " Define alias
+        call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+        call denite#custom#var('file/rec/git', 'command',
+                    \ ['git', 'ls-files', '-co', '--exclude-standard'])
+
+        call denite#custom#alias('source', 'file/rec/py', 'file/rec')
+        call denite#custom#var('file/rec/py', 'command',['scantree.py'])
+
+        " Change default prompt
+        call denite#custom#option('default', 'prompt', '>')
+
+        " highlight
+        call denite#custom#option('_', 'highlight_mode_insert', 'CursorLine')
+        call denite#custom#option('_', 'highlight_matched_range', 'None')
+        call denite#custom#option('_', 'highlight_matched_char', 'None')
+
+        " denite key mapping
+        map <Leader>B :Denite buffer -no-empty<CR>
+        map <Leader>fs :Denite fsearch -no-empty<CR>
+        map <Leader>cs :Denite csearch -no-empty<CR>
+        map <Leader>fg :Denite file/rec/git -no-empty<CR>
+        map <Leader>fp :Denite file/rec/py -no-empty<CR>
+        map <Leader>gp :Denite grep  -no-empty<CR>
     endif
-
-    " Define alias
-    call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-    call denite#custom#var('file/rec/git', 'command',
-                \ ['git', 'ls-files', '-co', '--exclude-standard'])
-
-    call denite#custom#alias('source', 'file/rec/py', 'file/rec')
-    call denite#custom#var('file/rec/py', 'command',['scantree.py'])
-
-    " Change default prompt
-    call denite#custom#option('default', 'prompt', '>')
-
-    " highlight
-    call denite#custom#option('_', 'highlight_mode_insert', 'CursorLine')
-    call denite#custom#option('_', 'highlight_matched_range', 'None')
-    call denite#custom#option('_', 'highlight_matched_char', 'None')
-
-    " denite key mapping
-    map <Leader>B :Denite buffer -no-empty<CR>
-    map <Leader>fs :Denite fsearch -no-empty<CR>
-    map <Leader>cs :Denite csearch -no-empty<CR>
-    map <Leader>fg :Denite file/rec/git -no-empty<CR>
-    map <Leader>fp :Denite file/rec/py -no-empty<CR>
-    map <Leader>gp :Denite grep  -no-empty<CR>
 endif
 
 

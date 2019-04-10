@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+unset PATH;
+export PATH="/bin"
+export PATH="/usr/bin:$PATH";
+export PATH="/opt/local/bin:$PATH";
+export PATH="/opt/local/sbin:$PATH";
+export PATH="/opt/local/libexec/gnubin:$PATH";
+export PATH="$MY_DOTFILES_RESOURCES/ctags:$PATH"
+export NVM_DIR="$HOME/.nvm";
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm, some vim-plugin need it.
+vim "$@"
+
