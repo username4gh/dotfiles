@@ -28,9 +28,7 @@ fi
 # unset to avoid issue caused by repeatly sourcing .bashrc
 unset PROMPT_COMMAND
 
-#export PATH="$PATH_HOLDER"
 export PATH="$MY_BUNDLED_BIN:$PATH"
-export PATH="$MY_PRIVATE_BIN:$PATH"
 
 _cache_gen() {
     local OUTPUT_FILE="$MY_SH/cache.bash"
@@ -159,8 +157,8 @@ fi
 
 source "$MY_DOTFILES/.profile"
 
-# deduplicate to avoid issue caused by sourcing repeatly
-ORIGINAL_PATH="$PATH"
-PROCESSED_PATH="$(clean_path_variable)"
+# here we make sure the MY_PRIVATE_BIN stays at the beginning of 'PATH' str
+export PATH="$MY_PRIVATE_BIN:$PATH"
 
-export PATH="$PROCESSED_PATH"
+# deduplicate to avoid issue caused by sourcing repeatly
+export PATH="$(clean_path_variable)"

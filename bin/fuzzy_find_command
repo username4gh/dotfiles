@@ -7,19 +7,21 @@ import os
 import sys
 
 
-def _search_command(path, name):
+def _search_command(output, path, name):
     if os.path.exists(path):
         for f in os.listdir(path):
             if not os.path.isdir(f):
                 lf = f.lower()
                 if name in lf:
-                    print('%s:%s' %(lf, path))
+                    output(lf, path)
+                    return True
+    return False
 
 
 def main(argv):
-    if len(argv) != 2:
+    if len(argv) > 3:
         print("""
-        usage: fuzzy_find_command <pattern>
+        usage: fuzzy_find_command <pattern> <"lambda lf, path: doSomething()">
         
         find command from PATH that match pattern, no regex support yet
         """)
@@ -28,9 +30,17 @@ def main(argv):
     path_list = os.getenv("PATH").split(":")
 
     command = argv[1].lower()
+    
+    if len(argv) > 2:
+        output = eval(argv[2].lower())
+    else:
+        output = eval("lambda lf, path: print('%s:%s' %(lf, path))")
 
     for p in set(path_list):
-        _search_command(p, command)
+        p = os.path.expanduser(p)
+        p = os.path.expandvars(p)
+        if _search_command(output, p, command):
+            break
 
 
 if __name__ == "__main__":

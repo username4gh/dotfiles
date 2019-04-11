@@ -98,11 +98,19 @@ def main(argv):
     path_original = os.getenv("PATH")
 
     path_list = path_original.split(":")
+    expanded_path_list = []
+
+    for p in path_list:
+        p = os.path.expanduser(p)
+        p = os.path.expandvars(p)
+        expanded_path_list.append(p)
 
     result = ''
 
-    for p in OrderedSet(path_list):
-        if os.path.isdir(os.path.expanduser(p)):
+    for p in OrderedSet(expanded_path_list):
+        if not os.path.exists(p):
+            continue
+        if os.path.isdir(p):
             result = result + ':' + p
 
     print(result.lstrip(':'))
