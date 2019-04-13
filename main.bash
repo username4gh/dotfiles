@@ -56,10 +56,12 @@ _is_termux() {
     _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
 }
 
+if ! _is_env_exist 'MY_CURRENT_SHELL';then
+    echo "missing bash variable: MY_CURRENT_SHELL, valid value are bash or zsh"
+    return 1
+fi
+
 if _is_command_exist 'python';then
-
-    export MY_CURRENT_SHELL='bash'
-
     _is_bash() {
         [[ "$MY_CURRENT_SHELL" == 'bash' ]]
     }
@@ -83,4 +85,6 @@ if _is_command_exist 'python';then
     if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
         source "$HOME/.dotfiles/sh/init.bash"
     fi
+else
+    echo "need python runtime installed"
 fi
