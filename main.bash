@@ -16,8 +16,8 @@ _overrideFunction() {
 }
 
 # https://stackoverflow.com/questions/5431909/bash-functions-return-boolean-to-be-used-in-if
-_is_env_exist() {
-    [[ "$#" -eq 1 ]] && [[ ! -z "$1" ]]
+_is_shell_variable_setted() {
+    [[ "$#" -eq 1 ]] && [[ -v "$1" ]]
 }
 
 _is_dir_exist() {
@@ -56,7 +56,7 @@ _is_termux() {
     _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
 }
 
-if ! _is_env_exist 'MY_CURRENT_SHELL';then
+if ! _is_shell_variable_setted 'MY_CURRENT_SHELL';then
     echo "missing bash variable: MY_CURRENT_SHELL, valid value are bash or zsh"
     return 1
 fi
@@ -70,7 +70,7 @@ if _is_command_exist 'python';then
         [[ "$MY_CURRENT_SHELL" == 'zsh' ]]
     }
 
-    if [[ "$(uname -s)" == "Darwin" ]];then
+    if _is_darwin;then
         if [[ -f '/opt/local/bin/port' ]];then
             export MY_CURRENT_PACKAGE_MANAGER='macports'
         elif [[ -f '/usr/local/bin/brew' ]];then
