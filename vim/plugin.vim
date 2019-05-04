@@ -46,6 +46,7 @@ Plug 'vim-ruby/vim-ruby'
 " here i use the file existence to switch on-and-off some plugins
 if _is_on_heavy_mode()
     Plug 'majutsushi/tagbar'
+    Plug 'natebosch/vim-lsc'
     if !has('nvim')
         Plug 'roxma/nvim-yarp'
         Plug 'roxma/vim-hug-neovim-rpc'
@@ -122,6 +123,19 @@ if _is_on_heavy_mode()
         map <Leader>fg :Denite file/rec/git -no-empty<CR>
         map <Leader>fp :Denite file/rec/py -no-empty<CR>
         map <Leader>gp :Denite grep  -no-empty<CR>
+    endif
+
+    if _is_loaded('vim-lsc')
+        if executable('dart_language_server')
+            let g:lsc_server_commands = {'dart': 'dart_language_server'}
+        endif
+        let g:lsc_enable_autocomplete = v:false
+        let g:lsc_auto_map = {
+                    \ 'defaults': v:false, 
+                    \ 'GoToDefinition': '<C-\>',
+                    \ 'NextReference': '<C-]>',
+                    \ 'PreviousReference': '<C-[>'
+                    \}
     endif
 endif
 
