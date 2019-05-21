@@ -20,6 +20,26 @@ _is_shell_variable_setted() {
     [[ "$#" -eq 1 ]] && [[ -v "$1" ]]
 }
 
+_is_darwin() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
+}
+
+_is_linux() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]]
+}
+
+_is_mingw32_nt() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "MINGW32_NT" ]]
+}
+
+_getent_wrapper() {
+    if _is_darwin;then
+        _getent "$@"
+    else
+        getent "$@"
+    fi
+}
+
 _expand_path() {
     # https://stackoverflow.com/questions/3963716/how-to-manually-expand-a-special-variable-ex-tilde-in-bash
     local path
@@ -41,7 +61,7 @@ _expand_path() {
             "~"*)
                 username=${path%%/*}
                 username=${username#"~"}
-                IFS=: read _ _ _ _ _ homedir _ < <(getent passwd "$username")
+                homedir=$(_getent_wrapper passwd "${username}" | cut -d : -f6)
                 if [[ $path = */* ]]; then
                     path=${homedir}/${path#*/}
                 else
@@ -55,6 +75,7 @@ _expand_path() {
     printf -v result '%s:' "${resultPathElements[@]}"
     printf '%s\n' "${result%:}"
 }
+
 # https://docstore.mik.ua/orelly/unix3/upt/ch29_13.htm
 # export function to subshell
 typeset -fx _expand_path
@@ -72,17 +93,7 @@ _is_file_exist() {
 
 typeset -fx _is_file_exist
 
-_is_darwin() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
-}
 
-_is_linux() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]]
-}
-
-_is_mingw32_nt() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "MINGW32_NT" ]]
-}
 
 _is_command_exist() {
     [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
@@ -115,9 +126,9 @@ if _is_command_exist 'python';then
     }
 
     if _is_darwin;then
-        if [[ -f '/opt/local/bin/port' ]];then
+        if _is_file_exist '/opt/local/bin/port';then
             export MY_CURRENT_PACKAGE_MANAGER='macports'
-        elif [[ -f '/usr/local/bin/brew' ]];then
+        elif _is_file_exist '/usr/local/bin/brew';then
             export MY_CURRENT_PACKAGE_MANAGER='homebrew'
         else
             unset MY_CURRENT_PACKAGE_MANAGER
@@ -126,7 +137,7 @@ if _is_command_exist 'python';then
         unset MY_CURRENT_PACKAGE_MANAGER
     fi
 
-    if [[ -f "$HOME/.dotfiles/sh/init.bash" ]];then
+    if _is_file_exist "$HOME/.dotfiles/sh/init.bash";then
         source "$HOME/.dotfiles/sh/init.bash"
     fi
 else
