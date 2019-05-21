@@ -20,13 +20,57 @@ _is_shell_variable_setted() {
     [[ "$#" -eq 1 ]] && [[ -v "$1" ]]
 }
 
+_expand_path() {
+    # https://stackoverflow.com/questions/3963716/how-to-manually-expand-a-special-variable-ex-tilde-in-bash
+    local path
+    local -a pathElements resultPathElements
+    IFS=':' read -r -a pathElements <<<"$1"
+    : "${pathElements[@]}"
+    for path in "${pathElements[@]}"; do
+        : "$path"
+        case $path in
+            "~+"/*)
+                path=$PWD/${path#"~+/"}
+                ;;
+            "~-"/*)
+                path=$OLDPWD/${path#"~-/"}
+                ;;
+            "~"/*)
+                path=$HOME/${path#"~/"}
+                ;;
+            "~"*)
+                username=${path%%/*}
+                username=${username#"~"}
+                IFS=: read _ _ _ _ _ homedir _ < <(getent passwd "$username")
+                if [[ $path = */* ]]; then
+                    path=${homedir}/${path#*/}
+                else
+                    path=$homedir
+                fi
+                ;;
+        esac
+        resultPathElements+=( "$path" )
+    done
+    local result
+    printf -v result '%s:' "${resultPathElements[@]}"
+    printf '%s\n' "${result%:}"
+}
+# https://docstore.mik.ua/orelly/unix3/upt/ch29_13.htm
+# export function to subshell
+typeset -fx _expand_path
+
 _is_dir_exist() {
-    [[ "$#" -eq 1 ]] && [[ -d "$1" ]]
+    # here we use _expand_path to avoid the case: "$1" contains '~' and cannot do tilde-expansion correctly because of the use of single-quote or double-quote
+    [[ "$#" -eq 1 ]] && [[ -d "$(_expand_path ${1})" ]]
 }
 
+typeset -fx _is_dir_exist
+
 _is_file_exist() {
-    [[ "$#" -eq 1 ]] && [[ -f "$1" ]]
+    [[ "$#" -eq 1 ]] && [[ -e "$(_expand_path ${1})" ]]
 }
+
+typeset -fx _is_file_exist
 
 _is_darwin() {
     [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
