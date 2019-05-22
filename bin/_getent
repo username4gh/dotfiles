@@ -1,9 +1,4 @@
-#!/usr/bin/perl
-
-use strict;
-use warnings;
-
-use Socket qw(inet_ntop);
+#! /usr/bin/env perl
 
 my $database = shift @ARGV;
 
@@ -22,6 +17,7 @@ sub getent_passwd {
     my $key = shift;
     my $path = "/Users/$key";
 
+    # here we print out the result in the format according to 'linux version getent'
     print join(':', ($key,
 		     'x',
 		     dscl_read($path, 'UniqueID'),
@@ -34,35 +30,6 @@ sub getent_passwd {
     return;
 }
 
-# name:password:gid:members
-sub getent_group {
-    my $key = shift;
-    my $path = "/Groups/$key";
-
-    print join(':', ($key,
-		     'x',
-		     dscl_read($path, 'PrimaryGroupID'),
-		     '')),
-    "\n";
-
-    return;
-}
-
-sub getent_hosts {
-    my $key = shift;
-
-    my ($name, $aliases, $addrtype, $length, @addrs) = gethostbyname($key);
-    if (!$name) {
-	exit 2;
-    }
-    foreach my $addr (@addrs) {
-	my $a = inet_ntop($addrtype, $addr);
-	printf "%-15s %s", $a, $name;
-	print " $aliases" if $aliases;
-	print "\n";
-    }
-}
-
 if (scalar(@ARGV) == 0) {
     exit 3;
 }
@@ -70,10 +37,6 @@ if (scalar(@ARGV) == 0) {
 foreach my $key (@ARGV) {
     if ($database eq 'passwd') {
 	getent_passwd $key;
-    } elsif ($database eq 'group') {
-	getent_group $key;
-    } elsif ($database eq 'hosts') {
-	getent_hosts $key;
     } else {
 	print STDERR "Unknown database: $database\n";
 	exit 1;
