@@ -21,15 +21,15 @@ _is_shell_variable_setted() {
 }
 
 _is_darwin() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Darwin" ]]
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" =~ "Darwin" ]]
 }
 
 _is_linux() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "Linux" ]]
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" =~ "Linux" ]]
 }
 
 _is_mingw32_nt() {
-    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" == "MINGW32_NT" ]]
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" =~ "MINGW32_NT" ]]
 }
 
 _getent_wrapper() {
@@ -111,35 +111,75 @@ _is_termux() {
     _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
 }
 
+# bash boolean support
+_true() {
+    [[ "true" =~ "true" ]]
+}
+
+_false() {
+    ! _true
+}
+
+_set_true() {
+    declare -g -n ref="${1}"
+
+    local -r hook="_true"
+    local -r function_body="$(declare -f $hook)"
+    local -r definition="${!ref} ${function_body#$hook}"
+    eval "$definition"
+}
+
+_set_false() {
+    declare -g -n ref="${1}"
+
+    local -r hook="_false"
+    local -r function_body="$(declare -f $hook)"
+    local -r definition="${!ref} ${function_body#$hook}"
+    eval "$definition"
+}
+
 if ! _is_shell_variable_setted 'MY_CURRENT_SHELL';then
-    echo "missing bash variable: MY_CURRENT_SHELL, valid value are bash or zsh"
+    echo "missing bash variable: MY_CURRENT_SHELL, valid value are \'bash\' or \'zsh\'"
     return 1
 fi
 
-if _is_command_exist 'python';then
-    _is_bash() {
-        [[ "$MY_CURRENT_SHELL" == 'bash' ]]
-    }
+# format is : command1|command1_alternative1|command1_alternative2|...;command2
+prerequisite_commands='cut|gcut;python'
 
-    _is_zsh() {
-        [[ "$MY_CURRENT_SHELL" == 'zsh' ]]
-    }
-
-    if _is_darwin;then
-        if _is_file_exist '/opt/local/bin/port';then
-            export MY_CURRENT_PACKAGE_MANAGER='macports'
-        elif _is_file_exist '/usr/local/bin/brew';then
-            export MY_CURRENT_PACKAGE_MANAGER='homebrew'
-        else
-            unset MY_CURRENT_PACKAGE_MANAGER
+while read -d ';' item;do
+    _set_false 'command_exist'
+    while read -d '|' cmd; do
+        if _is_command_exist "$cmd";then
+            _set_true 'command_exist'
+            break
         fi
+    done< <(echo ${item})
+    if ! command_exist;then
+        echo "$item: command not exist"
+        return 1
+    fi
+done< <(echo ${prerequisite_commands})
+
+_is_bash() {
+    [[ "$MY_CURRENT_SHELL" =~ 'bash' ]]
+}
+
+_is_zsh() {
+    [[ "$MY_CURRENT_SHELL" =~ 'zsh' ]]
+}
+
+if _is_darwin;then
+    if _is_file_exist '/opt/local/bin/port';then
+        export MY_CURRENT_PACKAGE_MANAGER='macports'
+    elif _is_file_exist '/usr/local/bin/brew';then
+        export MY_CURRENT_PACKAGE_MANAGER='homebrew'
     else
         unset MY_CURRENT_PACKAGE_MANAGER
     fi
-
-    if _is_file_exist "$HOME/.dotfiles/sh/init.bash";then
-        source "$HOME/.dotfiles/sh/init.bash"
-    fi
 else
-    echo "need python runtime installed"
+    unset MY_CURRENT_PACKAGE_MANAGER
+fi
+
+if _is_file_exist "$HOME/.dotfiles/sh/init.bash";then
+    source "$HOME/.dotfiles/sh/init.bash"
 fi
