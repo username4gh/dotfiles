@@ -3,7 +3,7 @@
 # If not running interactively, don't do anything
 # this line has to be placed at this front-pos,
 # otherwise the rsync will not work
-case $- in
+case "$-" in
     *i*) ;;
     *) return;; # exit also causing the scp command malfunction
 esac
@@ -85,15 +85,9 @@ _is_dir_exist() {
     [[ "$#" -eq 1 ]] && [[ -d "$(_expand_path ${1})" ]]
 }
 
-typeset -fx _is_dir_exist
-
 _is_file_exist() {
     [[ "$#" -eq 1 ]] && [[ -e "$(_expand_path ${1})" ]]
 }
-
-typeset -fx _is_file_exist
-
-
 
 _is_command_exist() {
     [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
@@ -169,6 +163,7 @@ _is_zsh() {
 }
 
 if _is_darwin;then
+    ulimit -S -n 1024
     if _is_file_exist '/opt/local/bin/port';then
         export MY_CURRENT_PACKAGE_MANAGER='macports'
     elif _is_file_exist '/usr/local/bin/brew';then

@@ -6,9 +6,12 @@ export MY_LOG_DIR="$MY_DOTFILES/log"
 
 export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in for this setup
 
+_pythonfind() {
+    "$MY_BUNDLED_BIN/pythonfind" "$@"
+}
+
 export MY_SH="$MY_DOTFILES/sh"
 export MY_SH_MODULE="$MY_SH/module"
-
 
 export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
 export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
@@ -30,71 +33,40 @@ unset PROMPT_COMMAND
 
 export PATH="$MY_BUNDLED_BIN:$PATH"
 
-_cache_gen() {
-    local OUTPUT_FILE="$MY_SH/cache.bash"
-
-    echo "# $1" >> "$OUTPUT_FILE"
-
-    if [[ "$1" =~ 'init.bash' ]];then
-        # <MODULE>/init.bash
-        while IFS= read -r line
-        do
-            [[ "$line" =~ 'export PATH' ]] && echo "$line" >> "$OUTPUT_FILE"
-        done < <(cat "$1")
-    else
-
-        # echo '[[ -r '"$file"' ]] && [[ -f '"$file"' ]] && source '"$1" >> "$MY_SH/cache.bash"
-        # cut overhead as much as possible, so no checking for existence of each file, if anything goes wrong, just `_rfc` and then `_rlc`
-
-        #while IFS= read -r line
-        #do
-        #    if [[ "$line" =~ '#! /usr/bin/env bash' ]];then
-        #        # ignore the shebang line
-        #        continue
-        #    fi
-
-        #    if [[ "$line" =~ '_annotation_completion_write[:space:]' ]];then
-        #        # ignore the completion annotation line
-        #        continue
-        #    fi
-
-        #    if [[ "$line" =~ '_completion_setup[:space:]' ]];then
-        #        continue
-        #    fi
-
-        #    echo "$line" >> "$OUTPUT_FILE"
-        #done < <(cat "$1")
-        cat "$1" >> "$OUTPUT_FILE"
-    fi
-
-    # append a new line to prevent issue
-    echo -e "\n" >> "$OUTPUT_FILE"
-}
-
-_load_sh_files() {
-    if [[ "$#" == 2 ]];then
-        local directory="$1"
-
-        local subdirectory="$2"
-
-        local fullPath="${directory}/${subdirectory}"
-
-        if [[ -d "$fullPath" ]];then
-            while IFS= read -r -d '' file
-            do
-                _cache_gen "$file"
-
-                [[ -r "$file" ]] && [[ -f "$file" ]] && source "$file"
-            done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$')
-            # done < <(pythonfind --root-dir "$fullPath" --maxdepth 1 --mindepth 1 --type f --case-insensitive --print0 '^.*\.bash$' | sort -du) 
-            # because the 'sort -du' does not work well on termux mainly because it do not separate matches with a null byte in output, for now we just avoid using it
-        fi
-        unset -v file
-    fi
-}
-
 # using cache as much as possible
-if [[ ! -f "$MY_SH/cache.bash" ]];then
+if _is_file_exist "$MY_SH/cache.bash";then
+    _load_sh_files() {
+        return
+    }
+else 
+    _cache_gen() {
+        local OUTPUT_FILE="$MY_SH/cache.bash"
+
+        cat "$1" >> "$OUTPUT_FILE"
+        
+        # append a new line to prevent issue
+        echo -e "\n" >> "$OUTPUT_FILE"
+    }
+
+    _load_sh_files() {
+        if [[ "$#" == 2 ]];then
+            local directory="$1"
+            local subdirectory="$2"
+            local fullPath="${directory}/${subdirectory}"
+
+            if [[ -d "$fullPath" ]];then
+                while IFS= read -r -d '' file
+                do
+                    _cache_gen "$file"
+                done < <(_pythonfind --root-dir "$fullPath" --type f --case-insensitive --print0 '^.*\.bash$')
+                # done < <(pythonfind --root-dir "$fullPath" --type f --case-insensitive --print0 '^.*\.bash$' | sort -du) 
+                # because the 'sort -du' does not work well on termux 
+                # it do not separate matches with a null byte in output, for now we just avoid using it
+            fi
+            unset -v file
+        fi
+    }
+
     _load_sh_files $MY_SH 'internal'
     _load_sh_files $MY_SH 'mechanism'
     _load_sh_files $MY_SH 'path'
@@ -103,9 +75,17 @@ if [[ ! -f "$MY_SH/cache.bash" ]];then
     _load_sh_files $MY_SH 'alias'
     _load_sh_files $MY_SH 'module'
     _load_sh_files $MY_SH 'custom'
-else
-    source "$MY_SH/cache.bash"
+    
+    unset -f _load_sh_files
+
+    _load_sh_files() {
+        # to fix #66 completely, we might need re-work the module design
+        # for a quick fix, we just make this _load_sh_files a empty function
+        return
+    }
 fi
+
+source "$MY_SH/cache.bash"
 
 if _is_bash;then
 
@@ -116,20 +96,9 @@ if _is_bash;then
     _rfc() {
         if [[ "$#" == 0 ]];then
             # delete old cache.bash, otherwise any change happens to modules likely won't make any difference
-            if [[ -f "$MY_SH/cache.bash" ]];then
+            if _is_file_exist "$MY_SH/cache.bash";then
                 rm "$MY_SH/cache.bash"
             fi
-
-            if [[ -f "$MY_SH_MODULE/init.bash" ]];then
-                rm "$MY_SH_MODULE/init.bash"
-            fi
-
-            echo '#! /usr/bin/env bash' > "$MY_SH_MODULE/init.bash"
-
-            while IFS= read -r item;
-            do
-                echo '_load_sh_files $MY_SH_MODULE '${item##*/} >> "$MY_SH_MODULE/init.bash";
-            done < <(pythonfind --root-dir "$MY_SH_MODULE" --maxdepth 1 --mindepth 1 --type d)
         fi
     }
 

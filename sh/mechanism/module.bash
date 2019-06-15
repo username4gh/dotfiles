@@ -3,7 +3,7 @@
 _module_generate_init_bash() {
     if [[ ! -f "$MY_SH_MODULE/$1/init.bash" ]];then
         cp "$MY_SH/mechanism/module.snippet" "$MY_SH_MODULE/$1/init.bash"
-        r -l "lambda x: x.replace('module_name', '"$1"')" "$MY_SH_MODULE/$1/init.bash" "$MY_SH_MODULE/$1/init.bash"
+        pythonsed --lambda-string "lambda x: x.replace('module_name', '"$1"')" --input "$MY_SH_MODULE/$1/init.bash" --in-place
     fi
 }
 
