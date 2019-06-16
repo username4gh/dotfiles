@@ -8,7 +8,7 @@ if [[ "$MY_CURRENT_SHELL" = 'bash' ]];then
         exit_status=$?
         # If the exit status was 127, the command was not found. Let's remove it from history
 
-        number=$(history 1 | awk '{print $1}')
+        number=$(history 1 | _awk '{print $1}')
         number=${number%% *}
         if [ -n "$number" ]; then
             if [ $exit_status -eq 127 ] && ([ -z $HISTLASTENTRY ] || [ $HISTLASTENTRY -lt $number ]) ; then

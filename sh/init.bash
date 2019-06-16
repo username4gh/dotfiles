@@ -1,37 +1,9 @@
 #! /usr/bin/env bash
-export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
 
-export MY_DOTFILES="$HOME/.dotfiles"
-export MY_LOG_DIR="$MY_DOTFILES/log"
-
-export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in for this setup
-
+# hardcode to avoid 
 _pythonfind() {
     "$MY_BUNDLED_BIN/pythonfind" "$@"
 }
-
-export MY_SH="$MY_DOTFILES/sh"
-export MY_SH_MODULE="$MY_SH/module"
-
-export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
-export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
-
-if [[ ! -d "$MY_BIN" ]];then
-    mkdir -p "$MY_BIN"
-fi
-
-if [[ ! -d "$MY_DOTFILES_RESOURCES" ]];then
-    mkdir -p "$MY_DOTFILES_RESOURCES"
-fi
-
-if [[ ! -d "$MY_PRIVATE_BIN" ]];then
-    mkdir -p "$MY_PRIVATE_BIN"
-fi
-
-# unset to avoid issue caused by repeatly sourcing .bashrc
-unset PROMPT_COMMAND
-
-export PATH="$MY_BUNDLED_BIN:$PATH"
 
 # using cache as much as possible
 if _is_file_exist "$MY_SH/cache.bash";then

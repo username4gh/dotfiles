@@ -186,8 +186,8 @@ if _is_not_root;then
             fi
             SCM_PREFIX=${SVN_PROMPT_PREFIX:-$SCM_PROMPT_PREFIX}
             SCM_SUFFIX=${SVN_PROMPT_SUFFIX:-$SCM_PROMPT_SUFFIX}
-            SCM_BRANCH=$(svn info 2> /dev/null | awk -F/ '/^URL:/ { for (i=0; i<=NF; i++) { if ($i == "branches" || $i == "tags" ) { print $(i+1); break }; if ($i == "trunk") { print $i; break } } }') || return
-            SCM_CHANGE=$(svn info 2> /dev/null | sed -ne 's#^Revision: ##p' )
+            SCM_BRANCH=$(svn info 2> /dev/null | _awk -F/ '/^URL:/ { for (i=0; i<=NF; i++) { if ($i == "branches" || $i == "tags" ) { print $(i+1); break }; if ($i == "trunk") { print $i; break } } }') || return
+            SCM_CHANGE=$(svn info 2> /dev/null | _sed -ne 's#^Revision: ##p' )
         }
 
         # this functions returns absolute location of .hg directory if one exists
@@ -228,14 +228,14 @@ if _is_not_root;then
                 # Mercurial holds it's current branch in .hg/branch file
                 SCM_BRANCH=$(cat "$HG_ROOT/branch")
             else
-                SCM_BRANCH=$(hg summary 2> /dev/null | pythongrep branch: | awk '{print $2}')
+                SCM_BRANCH=$(hg summary 2> /dev/null | pythongrep branch: | _awk '{print $2}')
             fi
 
             if [ -f "$HG_ROOT/dirstate" ]; then
                 # Mercurial holds various information about the working directory in .hg/dirstate file. More on http://mercurial.selenic.com/wiki/DirState
                 SCM_CHANGE=$(hexdump -n 10 -e '1/1 "%02x"' "$HG_ROOT/dirstate" | cut -c-12)
             else
-                SCM_CHANGE=$(hg summary 2> /dev/null | pythongrep parent: | awk '{print $2}')
+                SCM_CHANGE=$(hg summary 2> /dev/null | pythongrep parent: | _awk '{print $2}')
             fi
         }
 

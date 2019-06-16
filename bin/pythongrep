@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env _python
 # coding=UTF-8
 
 from collections import namedtuple

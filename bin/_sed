@@ -1,0 +1,12 @@
+_is_command_exist() {
+    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+}
+
+if _is_command_exist 'sed';then
+sed "$@"
+elif _is_command_exist 'gsed';then
+gsed "$@"
+else
+echo "cannot find awk or gawk"
+exit
+fi

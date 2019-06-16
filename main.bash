@@ -8,6 +8,82 @@ case "$-" in
     *) return;; # exit also causing the scp command malfunction
 esac
 
+#
+export MY_BIN="$HOME/bin" # 1. executable 2. does not concerns privacy
+export MY_DOTFILES="$HOME/.dotfiles"
+export MY_LOG_DIR="$MY_DOTFILES/log"
+export MY_BUNDLED_BIN="$MY_DOTFILES/bin" # 1. executable/does not concerns privacy 2. built-in for this setup
+export MY_SH="$MY_DOTFILES/sh"
+export MY_SH_MODULE="$MY_SH/module"
+export MY_DOTFILES_RESOURCES="$HOME/.dotfiles_resources"
+export MY_PRIVATE_BIN="$MY_DOTFILES_RESOURCES/bin" # 1. executable 2. concerns privacy 3. will be deleted in cleanup-process.
+
+if [[ ! -d "$MY_BIN" ]];then
+    mkdir -p "$MY_BIN"
+fi
+
+if [[ ! -d "$MY_DOTFILES_RESOURCES" ]];then
+    mkdir -p "$MY_DOTFILES_RESOURCES"
+fi
+
+if [[ ! -d "$MY_PRIVATE_BIN" ]];then
+    mkdir -p "$MY_PRIVATE_BIN"
+fi
+
+# unset to avoid issue caused by repeatly sourcing .bashrc
+unset PROMPT_COMMAND
+
+export PATH="$MY_BUNDLED_BIN:$PATH"
+
+# bash boolean support
+_true() {
+    [[ "true" =~ "true" ]]
+}
+
+_false() {
+    ! _true
+}
+
+_set_true() {
+    declare -g -n ref="${1}"
+
+    local -r hook="_true"
+    local -r function_body="$(declare -f $hook)"
+    local -r definition="${!ref} ${function_body#$hook}"
+    eval "$definition"
+}
+
+_set_false() {
+    declare -g -n ref="${1}"
+
+    local -r hook="_false"
+    local -r function_body="$(declare -f $hook)"
+    local -r definition="${!ref} ${function_body#$hook}"
+    eval "$definition"
+}
+
+_is_command_exist() {
+    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+}
+
+# format is : command1|command1_alternative1|command1_alternative2|...;command2;...;commandX
+# must end with ';'
+prerequisite_commands='awk|gawk|;cut|gcut|;python|python2|python3|;sed|gsed|;'
+
+while read -d ';' item;do
+    _set_false 'command_exist'
+    while read -d '|' cmd; do
+        if _is_command_exist "$cmd";then
+            _set_true 'command_exist'
+            break
+        fi
+    done< <(echo ${item})
+    if ! command_exist;then
+        echo "$item: command not exist"
+        return 1
+    fi
+done< <(echo ${prerequisite_commands})
+
 # http://mivok.net/2009/09/20/bashfunctionoverrist.html
 _overrideFunction() {
     local -r functionBody=$(declare -f $1)
@@ -89,10 +165,6 @@ _is_file_exist() {
     [[ "$#" -eq 1 ]] && [[ -e "$(_expand_path ${1})" ]]
 }
 
-_is_command_exist() {
-    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
-}
-
 _is_root() {
     [[ "$#" -eq 0 ]] && [[ "$(id -u)" -ne 0 ]]
 }
@@ -105,54 +177,10 @@ _is_termux() {
     _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
 }
 
-# bash boolean support
-_true() {
-    [[ "true" =~ "true" ]]
-}
-
-_false() {
-    ! _true
-}
-
-_set_true() {
-    declare -g -n ref="${1}"
-
-    local -r hook="_true"
-    local -r function_body="$(declare -f $hook)"
-    local -r definition="${!ref} ${function_body#$hook}"
-    eval "$definition"
-}
-
-_set_false() {
-    declare -g -n ref="${1}"
-
-    local -r hook="_false"
-    local -r function_body="$(declare -f $hook)"
-    local -r definition="${!ref} ${function_body#$hook}"
-    eval "$definition"
-}
-
 if ! _is_shell_variable_setted 'MY_CURRENT_SHELL';then
     echo "missing bash variable: MY_CURRENT_SHELL, valid value are \'bash\' or \'zsh\'"
     return 1
 fi
-
-# format is : command1|command1_alternative1|command1_alternative2|...;command2
-prerequisite_commands='cut|gcut;python'
-
-while read -d ';' item;do
-    _set_false 'command_exist'
-    while read -d '|' cmd; do
-        if _is_command_exist "$cmd";then
-            _set_true 'command_exist'
-            break
-        fi
-    done< <(echo ${item})
-    if ! command_exist;then
-        echo "$item: command not exist"
-        return 1
-    fi
-done< <(echo ${prerequisite_commands})
 
 _is_bash() {
     [[ "$MY_CURRENT_SHELL" =~ 'bash' ]]
