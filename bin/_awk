@@ -1,12 +1,14 @@
+#! /usr/bin/env bash
+
 _is_command_exist() {
-    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+    command -v "$1" > /dev/null
 }
 
 if _is_command_exist 'awk';then
-awk "$@"
+    awk "$@"
 elif _is_command_exist 'gawk';then
-gawk "$@"
+    gawk "$@"
 else
-echo "cannot find awk or gawk"
-exit
+    echo "cannot find awk or gawk"
+    exit
 fi

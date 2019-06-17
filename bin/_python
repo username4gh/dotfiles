@@ -1,14 +1,16 @@
+#! /usr/bin/env bash
+
 _is_command_exist() {
-    [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
+    command -v "$1" > /dev/null
 }
 
 if _is_command_exist 'python';then
-python "$@"
+    python "$@"
 elif _is_command_exist 'python2';then
-python2 "$@"
+    python2 "$@"
 elif _is_command_exist 'python3';then
-python3 "$@"
+    python3 "$@"
 else
-echo "cannot find python or python2 or python3"
-exit
+    echo "cannot find python or python2 or python3"
+    exit
 fi
