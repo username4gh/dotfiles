@@ -1,22 +1,30 @@
 import shlex
-
-from denite import util, process
+import typing
 from os.path import relpath
 
-from .base import Base
+from denite import util, process
+from denite.base.source import Base
+from denite.util import Nvim, UserContext, Candidates, Candidate
 
 
-def _candidate(result, line):
+def _candidate(result: typing.List[typing.Any], path: str) -> Candidate:
     return {
-        'word': line,
+        'word': result[3],
+        'abbr': '{}:{}{} {}'.format(
+            path,
+            result[1],
+            (':' + result[2] if result[2] != '0' else ''),
+            result[3]),
         'action__path': result[0],
         'action__line': result[1],
+        'action__col': result[2],
+        'action__text': result[3],
     }
 
 
 class Source(Base):
 
-    def __init__(self, vim):
+    def __init__(self, vim: Nvim) -> None:
         super().__init__(vim)
 
         self.name = 'csearch'# this has to be same with file name
@@ -26,8 +34,9 @@ class Source(Base):
             'min_interactive_pattern': 3,
         }
         self.matchers = ['matcher/regexp']
+        self.is_volatile = True
 
-    def on_init(self, context):
+    def on_init(self, context: UserContext) -> None:
         context['__proc'] = None
 
         args = dict(enumerate(context['args']))
@@ -41,12 +50,12 @@ class Source(Base):
         # patterns
         context['__patterns'] = self._init_patterns(context, args)
 
-    def on_close(self, context):
+    def on_close(self, context: UserContext) -> None:
         if context['__proc']:
             context['__proc'].kill()
             context['__proc'] = None
 
-    def gather_candidates(self, context):
+    def gather_candidates(self, context: UserContext) -> Candidates:
         if context['event'] == 'interactive':
             # Update input
             self.on_close(context)
@@ -70,10 +79,12 @@ class Source(Base):
         args += self.vars['command'][1:]
         args += context['__patterns']
 
+        self.print_message(context, args)
+
         context['__proc'] = process.Process(args, context, context['path'])
         return self._async_gather_candidates(context, 0.5)
 
-    def _async_gather_candidates(self, context, timeout):
+    def _async_gather_candidates(self, context: UserContext, timeout: float) -> Candidates:
         outs, errs = context['__proc'].communicate(timeout=timeout)
         if errs:
             self.error_message(context, errs)
@@ -84,13 +95,14 @@ class Source(Base):
         candidates = []
 
         for line in outs:
-            result = util.parse_jump_line(context, line)
+            result = util.parse_jump_line(context['path'], line)
             if not result:
                 continue
-            candidates.append(_candidate(result, line))
+            path = relpath(result[0], start=context['path'])
+            candidates.append(_candidate(result, path))
         return candidates
 
-    def _init_paths(self, context, args):
+    def _init_paths(self, context: UserContext, args: typing.Dict[str, typing.Any]) -> typing.List[str]:
         paths = []
         arg = args.get(0, [])
         if arg:
@@ -103,7 +115,7 @@ class Source(Base):
             paths = [context['path']]
         return [util.abspath(self.vim, x) for x in paths]
 
-    def _init_arguments(self, context, args):
+    def _init_arguments(self, context: UserContext, args: typing.Dict[str, typing.Any]) -> typing.List[str]:
         arguments = []
         arg = args.get(1, [])
         if arg:
@@ -116,7 +128,7 @@ class Source(Base):
                     '`args[1]` needs to be a `str` or `list`')
         return arguments
 
-    def _init_patterns(self, context, args):
+    def _init_patterns(self, context: UserContext, args: typing.Dict[str, typing.Any]) -> typing.List[str]:
         patterns = []
         arg = args.get(2, [])
         if arg:
