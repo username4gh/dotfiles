@@ -2,10 +2,10 @@
 
 alias makescript="fc -rnl | head -1 >"
 
-alias la='ls -a'
-alias lf='ls -F'
-alias lh='ls -alh'
-alias ll='ls -al'
+alias la='ls -a --color=never'
+alias lf='ls -F --color=never'
+alias lh='ls -alh --color=never'
+alias ll='ls -al --color=never'
 
 # System info
 alias cmount="mount | column -t"
