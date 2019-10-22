@@ -2,7 +2,7 @@
 
 _nvm_init(){
     if [[ ! -d  "$HOME/.nvm" ]];then
-        git clone https://github.com/creationix/nvm.git ~/.nvm && git -C ~/.nvm checkout `git describe --abbrev=0 --tags`
+        git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm && git -C ~/.nvm checkout `git describe --abbrev=0 --tags`
     fi
 }
 

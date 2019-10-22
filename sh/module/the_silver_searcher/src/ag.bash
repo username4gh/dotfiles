@@ -2,7 +2,7 @@
 
 _ag_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/the_silver_searcher" ]];then
-        git clone https://github.com/ggreer/the_silver_searcher "$MY_DOTFILES_RESOURCES/the_silver_searcher"
+        git clone --depth 1 https://github.com/ggreer/the_silver_searcher "$MY_DOTFILES_RESOURCES/the_silver_searcher"
     fi
 } 
 

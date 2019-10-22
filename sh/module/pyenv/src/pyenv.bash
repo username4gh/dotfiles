@@ -9,7 +9,7 @@ v_pyenv() {
 
     if [[ ! -d "$MY_DOTFILES_RESOURCES/pyenv" ]]; then
         echo "first time of installing pyenv? check out 'https://github.com/pyenv/pyenv/wiki'"
-        git clone 'https://github.com/pyenv/pyenv' "$MY_DOTFILES_RESOURCES/pyenv"
+        git clone --depth 1 'https://github.com/pyenv/pyenv' "$MY_DOTFILES_RESOURCES/pyenv"
     fi
 
     if _is_zsh;then

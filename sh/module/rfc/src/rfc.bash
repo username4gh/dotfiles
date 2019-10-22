@@ -2,7 +2,7 @@
 
 _rfc_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/rfc" ]];then
-        git clone https://github.com/bfontaine/rfc "$MY_DOTFILES_RESOURCES/rfc"
+        git clone --depth 1 https://github.com/bfontaine/rfc "$MY_DOTFILES_RESOURCES/rfc"
     fi
 }
 

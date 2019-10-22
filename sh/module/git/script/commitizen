@@ -4,7 +4,7 @@ _commitizen_fix_package_json() {
     if [[ ! -f "./package.json" ]];then
         if [[ "$#" == 0 ]];then
             if [[ ! -d "$MY_DOTFILES_RESOURCES/cz-cli" ]];then
-                git clone https://github.com/commitizen/cz-cli "$MY_DOTFILES_RESOURCES/cz-cli"
+                git clone --depth 1 https://github.com/commitizen/cz-cli "$MY_DOTFILES_RESOURCES/cz-cli"
             fi
             cp "$MY_DOTFILES_RESOURCES/cz-cli/package.json" ./
         fi

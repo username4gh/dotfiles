@@ -2,7 +2,7 @@
 
 _gitignore_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/gitignore" ]];then
-        git clone https://github.com/github/gitignore "$MY_DOTFILES_RESOURCES/gitignore"
+        git clone --depth 1 https://github.com/github/gitignore "$MY_DOTFILES_RESOURCES/gitignore"
     fi
 }
 

@@ -2,7 +2,7 @@
 
 _translate_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/translate-shell" ]];then
-        git clone https://github.com/soimort/translate-shell "$MY_DOTFILES_RESOURCES/translate-shell"
+        git clone --depth 1 https://github.com/soimort/translate-shell "$MY_DOTFILES_RESOURCES/translate-shell"
     fi
 }
 

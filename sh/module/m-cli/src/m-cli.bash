@@ -3,7 +3,7 @@
 if _is_darwin;then
     _mcli_init() {
         if [[ ! -d "$MY_DOTFILES_RESOURCES/m-cli" ]];then
-            git clone https://github.com/rgcr/m-cli "$MY_DOTFILES_RESOURCES/m-cli"
+            git clone --depth 1 https://github.com/rgcr/m-cli "$MY_DOTFILES_RESOURCES/m-cli"
         fi
     }
 
