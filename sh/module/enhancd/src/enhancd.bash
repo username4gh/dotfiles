@@ -2,7 +2,7 @@
 
 _enhancd_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/enhancd" ]];then
-        git clone https://github.com/b4b4r07/enhancd "$MY_DOTFILES_RESOURCES/enhancd"
+        git clone --depth 1 https://github.com/b4b4r07/enhancd "$MY_DOTFILES_RESOURCES/enhancd"
     fi
 }
 

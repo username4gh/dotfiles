@@ -3,7 +3,7 @@
 if _is_darwin;then
     _zap_init() {
         if [[ ! -d "$MY_DOTFILES_RESOURCES/zap" ]];then
-            git clone https://github.com/keith/zap "$MY_DOTFILES_RESOURCES/zap"
+            git clone --depth 1 https://github.com/keith/zap "$MY_DOTFILES_RESOURCES/zap"
         fi
     }
 

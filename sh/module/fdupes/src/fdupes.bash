@@ -2,7 +2,7 @@
 
 _fdupes_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/fdupes" ]];then
-        git clone https://github.com/adrianlopezroche/fdupes "$MY_DOTFILES_RESOURCES/fdupes"
+        git clone --depth 1 https://github.com/adrianlopezroche/fdupes "$MY_DOTFILES_RESOURCES/fdupes"
     fi
 }
 

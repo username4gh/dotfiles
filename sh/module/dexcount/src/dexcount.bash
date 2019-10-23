@@ -2,7 +2,7 @@
 
 _dexcount_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/dex-method-counts" ]];then
-        git clone https://github.com/mihaip/dex-method-counts "$MY_DOTFILES_RESOURCES/dex-method-counts"
+        git clone --depth 1 https://github.com/mihaip/dex-method-counts "$MY_DOTFILES_RESOURCES/dex-method-counts"
     fi
 }
 

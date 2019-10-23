@@ -1,7 +1,7 @@
 
 _ctags_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/ctags" ]];then
-        git clone https://github.com/universal-ctags/ctags "$MY_DOTFILES_RESOURCES/ctags"
+        git clone --depth 1 https://github.com/universal-ctags/ctags "$MY_DOTFILES_RESOURCES/ctags"
     fi
 }
 

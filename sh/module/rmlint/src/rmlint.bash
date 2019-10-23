@@ -2,7 +2,7 @@
 
 _rmlint_init() {
     if [[ ! -d "$MY_DOTFILES_RESOURCES/rmlint" ]];then
-        git clone https://github.com/sahib/rmlint "$MY_DOTFILES_RESOURCES/rmlint"
+        git clone --depth 1 https://github.com/sahib/rmlint "$MY_DOTFILES_RESOURCES/rmlint"
     fi
 }
 
