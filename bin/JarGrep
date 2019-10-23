@@ -1385,19 +1385,38 @@ class Processor:
                 callback()
 
     @staticmethod
-    def _process_zip_file(options, path, pattern):
-        """
-        when path is zip-file
-        :param path:
-        :param pattern:
-        :return:
-        """
+    def _process_zip_file_with_threading(options, path, pattern):
         f = zipfile.ZipFile(path)
-        for member in f.namelist():
-            if Processor._is_class_file(member):
+
+        import multiprocessing
+        import threading
+        import Queue
+
+        def do_work(in_queue, out_queue):
+            while True:
+                member = in_queue.get()
+                # process
                 member_file = f.open(member)
-                callback = lambda :print(member)
-                Processor._process(options, member_file, pattern, callback)
+                callback = lambda : print(member)
+                result = Processor._process(options, member_file, pattern, callback)
+                out_queue.put(result)
+                in_queue.task_done()
+
+        work = Queue.Queue()
+        results = Queue.Queue()
+
+        # start for workers
+        for i in xrange(multiprocessing.cpu_count()):
+            t = threading.Thread(target=do_work, args=(work, results))
+            t.daemon = True
+            t.start()
+
+        # produce data
+        for member in f.namelist():
+            if (Processor._is_class_file(member)):
+                work.put(member)
+
+        work.join()
 
     @staticmethod
     def process(options, path, pattern):
@@ -1408,7 +1427,7 @@ class Processor:
         :return:
         """
         if zipfile.is_zipfile(path):
-            Processor._process_zip_file(options, path, pattern)
+            Processor._process_zip_file_with_threading(options, path, pattern)
         else:
             if Processor._is_class_file(path):
                 Processor._process_class_file(options, path, pattern)
@@ -1542,6 +1561,44 @@ class Logger:
             print(content)
 
 
+def _parallel_process(options, pattern, directory):
+    from pathos import multiprocessing as mp
+    pool = mp.Pool(mp.cpu_count() / 2)
+    from scandir import scandir, walk
+
+    def processFilepath(root):
+        try:
+            for (dirpath, dirnames, filenames) in walk(root):
+                for filename in filenames:
+                    if 'jar' in filename:
+                        filepath = os.path.join(dirpath, filename)
+                        try:
+                            Processor.process(options, filepath, pattern)
+                        except zipfile.BadZipfile:
+                            continue
+                        except struct.error:
+                            continue
+            return root
+        except:
+            pass
+
+    def generateFilepaths():
+        for entry in scandir(directory):
+            if entry.is_dir():
+                yield entry.name
+
+    try:
+        for result in pool.imap(processFilepath, generateFilepaths()):
+            if result is not None:
+                pass
+        pool.close()
+    except KeyboardInterrupt:
+        pool.terminate()
+    except RuntimeError:
+        pool.terminate()
+
+
+
 # ------------------------------------------ main ------------------------------------------
 
 def main(argv):
@@ -1567,9 +1624,7 @@ def main(argv):
         Profiler.begin()
 
     if os.path.isdir(path):
-        file_list = [os.path.join(dp, f) for dp, dn, file_names in os.walk(path) for f in file_names]
-        for f in file_list:
-            Processor.process(options, f, pattern)
+        _parallel_process(options, pattern, path)
     else:
         Processor.process(options, path, pattern)
 
