@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # /path/to/openjdk/jdk/src/java.base/share/classes/java/io/DataInputStream.java
-
+from __future__ import print_function
 import cStringIO
 import inspect
 import argparse
@@ -1094,18 +1094,18 @@ class InfoHolder:
 
     def dump(self):
         for m in self.constant_pool.items():
-            print m[0], m[1].dump()
-        print self.access_flags
-        print self.this_class
-        print self.super_class
+            print(m[0], m[1].dump())
+        print(self.access_flags)
+        print(self.this_class)
+        print(self.super_class)
         for interface in self.interfaces:
-            print interface
+            print(interface)
         for field in self.fields:
-            print field
+            print(field)
         for method in self.methods:
-            print method
+            print(method)
         for attribute in self.attributes:
-            print attribute
+            print(attribute)
 
 
 # ------------------------------------------ JavaClass ------------------------------------------------
@@ -1303,54 +1303,54 @@ class JavaClassReader:
         :param f:
         :return:
         """
-        B.begin()
+        Profiler.begin()
         self.read_magic(f)
-        B.end('read_magic')
+        Profiler.end('read_magic')
 
-        B.begin()
+        Profiler.begin()
         self.read_minor_version(f)
-        B.end('read_minor_version')
+        Profiler.end('read_minor_version')
 
-        B.begin()
+        Profiler.begin()
         self.read_major_version(f)
-        B.end('read_major_version')
+        Profiler.end('read_major_version')
 
-        B.begin()
+        Profiler.begin()
         self.read_constant_pool(f)
-        B.end('read_constant_pool')
+        Profiler.end('read_constant_pool')
 
-        B.begin()
+        Profiler.begin()
         self.read_access_flags(f)
-        B.end('read_access_flags')
+        Profiler.end('read_access_flags')
 
-        B.begin()
+        Profiler.begin()
         self.read_this_class(f)
-        B.end('read_this_class')
+        Profiler.end('read_this_class')
 
-        B.begin()
+        Profiler.begin()
         self.read_super_class(f)
-        B.end('read_super_class')
+        Profiler.end('read_super_class')
 
-        B.begin()
+        Profiler.begin()
         self.read_interfaces(f)
-        B.end('read_interfaces')
+        Profiler.end('read_interfaces')
 
-        B.begin()
+        Profiler.begin()
         self.read_fields(f)
-        B.end('read_fields')
+        Profiler.end('read_fields')
 
-        B.begin()
+        Profiler.begin()
         self.read_methods(f)
-        B.end('read_methods')
+        Profiler.end('read_methods')
 
-        B.begin()
+        Profiler.begin()
         self.read_attributes(f)
-        B.end('read_attributes')
+        Profiler.end('read_attributes')
 
 
 # ------------------------------------------ Processor ------------------------------------------
 
-class P:
+class Processor:
     def __init__(self):
         pass
 
@@ -1358,11 +1358,12 @@ class P:
     def search_constant_pool(content, pattern):
         for info in content.values():
             if info.search(pattern):
-                print info.dump()
+                print(info.dump())
+                return True
         return False
 
     @staticmethod
-    def _deal_with_class_file(path, pattern):
+    def _process_class_file(options, path, pattern):
         """
         when path is normal class file
         :param path:
@@ -1370,13 +1371,21 @@ class P:
         :return:
         """
         f = open(path, 'r')
-        reader = JavaClassReader()
-        reader.read(f)
-        # Processor.search_constant_pool(reader.output.constant_pool, pattern)
-        reader.output.dump()
+        callback = lambda :print(path)
+        Processor._process(options, f, pattern, callback)
 
     @staticmethod
-    def _deal_with_zip_file(path, pattern):
+    def _process(options, f, pattern, callback):
+        reader = JavaClassReader()
+        reader.read(f)
+        if options.dump:
+            reader.output.dump()
+        else:
+            if Processor.search_constant_pool(reader.output.constant_pool, pattern):
+                callback()
+
+    @staticmethod
+    def _process_zip_file(options, path, pattern):
         """
         when path is zip-file
         :param path:
@@ -1385,15 +1394,13 @@ class P:
         """
         f = zipfile.ZipFile(path)
         for member in f.namelist():
-            if P._is_class_file(member):
+            if Processor._is_class_file(member):
                 member_file = f.open(member)
-                reader = JavaClassReader()
-                reader.read(member_file)
-                if P.search_constant_pool(reader.output.constant_pool, pattern):
-                    print member
+                callback = lambda :print(member)
+                Processor._process(options, member_file, pattern, callback)
 
     @staticmethod
-    def process_jar(path, pattern=None):
+    def process(options, path, pattern):
         """
         入口函数
         :param path:
@@ -1401,10 +1408,10 @@ class P:
         :return:
         """
         if zipfile.is_zipfile(path):
-            P._deal_with_zip_file(path, pattern)
+            Processor._process_zip_file(options, path, pattern)
         else:
-            if P._is_class_file(path):
-                P._deal_with_class_file(path, pattern)
+            if Processor._is_class_file(path):
+                Processor._process_class_file(options, path, pattern)
 
     @staticmethod
     def dump_by_file_pattern(path, file_pattern):
@@ -1418,7 +1425,7 @@ class P:
             with zipfile.ZipFile(path) as z:
                 for member in z.namelist():
                     if file_pattern in member:
-                        output_file = file('./' + P._generate_class_name(member), 'wr')
+                        output_file = file('./' + Processor._generate_class_name(member), 'wr')
                         output_file.write(z.open(member).read())
 
     @staticmethod
@@ -1464,7 +1471,7 @@ def _parse_cmdline(cmdline_args):
                         help='Turn on benchmarking mode')
 
     parser.add_argument('-v', '--verbose',
-                        action='store_true', dest='verbose', default=True,
+                        action='store_true', dest='verbose', default=False,
                         help='Turn on verbose mode')
 
     parser.add_argument('-d', '--dump',
@@ -1478,7 +1485,7 @@ def _parse_cmdline(cmdline_args):
 
 # ------------------------------------------ benchmark ------------------------------------------
 
-class B:
+class Profiler:
     is_on = False
 
     start_time = 0
@@ -1489,11 +1496,11 @@ class B:
 
     @staticmethod
     def on():
-        B.is_on = True
+        Profiler.is_on = True
 
     @staticmethod
     def off():
-        B.is_on = False
+        Profiler.is_on = False
 
     @staticmethod
     def _current_time_in_millisecond():
@@ -1503,19 +1510,19 @@ class B:
 
     @staticmethod
     def begin():
-        if B.is_on:
-            B.start_time = B._current_time_in_millisecond()
+        if Profiler.is_on:
+            Profiler.start_time = Profiler._current_time_in_millisecond()
 
     @staticmethod
     def end(tag=""):
-        if B.is_on:
-            B.end_time = B._current_time_in_millisecond()
-            print tag + "totally consumed " + str(B.end_time - B.start_time) + " milliseconds"
+        if Profiler.is_on:
+            Profiler.end_time = Profiler._current_time_in_millisecond()
+            print(tag + "totally consumed " + str(Profiler.end_time - Profiler.start_time) + " milliseconds")
 
 
 # ------------------------------------------ Log ------------------------------------------
 
-class L:
+class Logger:
     is_on = False
 
     def __init__(self):
@@ -1523,16 +1530,16 @@ class L:
 
     @staticmethod
     def on():
-        L.is_on = True
+        Logger.is_on = True
 
     @staticmethod
     def off():
-        L.is_on = False
+        Logger.is_on = False
 
     @staticmethod
     def log(content=''):
-        if L.is_on:
-            print content
+        if Logger.is_on:
+            print(content)
 
 
 # ------------------------------------------ main ------------------------------------------
@@ -1541,7 +1548,7 @@ def main(argv):
     options, args, parser = _parse_cmdline(argv)
 
     if options.verbose:
-        print args
+        print(args)
 
     # jar file to search
     path = args[1]
@@ -1552,26 +1559,22 @@ def main(argv):
         return
 
     if not os.path.exists(path):
-        print path + " not exist"
-        return
-
-    if options.dump:
-        P.dump_by_file_pattern(path, pattern);
+        print(path + " not exist")
         return
 
     if options.benchmark:
-        B.on()
-        B.begin()
+        Profiler.on()
+        Profiler.begin()
 
     if os.path.isdir(path):
         file_list = [os.path.join(dp, f) for dp, dn, file_names in os.walk(path) for f in file_names]
         for f in file_list:
-            P.process_jar(f, pattern)
+            Processor.process(options, f, pattern)
     else:
-        P.process_jar(path, pattern)
+        Processor.process(options, path, pattern)
 
     if options.benchmark:
-        B.end()
+        Profiler.end()
 
 
 sys.exit(main(sys.argv))
