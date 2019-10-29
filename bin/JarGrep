@@ -1,14 +1,24 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # coding=utf-8
 
 # /path/to/openjdk/jdk/src/java.base/share/classes/java/io/DataInputStream.java
 from __future__ import print_function
-import cStringIO
+
+import sys
+
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
+if PY2:
+    import cStringIO
+
+if PY3:
+    import io
+
 import inspect
 import argparse
 import os
 import struct
-import sys
 import zipfile
 
 
@@ -19,10 +29,6 @@ class u:
     def __init__(self):
         self.value = None
 
-    def u2str(self):
-        return self.value
-
-
 class u1(u):
     def __init__(self):
         u.__init__(self)
@@ -32,7 +38,7 @@ class u1(u):
         return struct.unpack(">B", self.value)[0]
 
     def u2char(self):
-        return struct.unpack(">c", self.value)
+        return struct.unpack(">c", self.value)[0]
 
     def read(self, f):
         self.value = f.read(1)
@@ -64,14 +70,24 @@ class u4(u):
 class un(u):
     def __init__(self):
         u.__init__(self)
+        self.value = []
 
     def read(self, f, n):
-        self.value = f.read(n)
+        for _ in range(n):
+            temp = u1()
+            temp.read(f)
+            self.value.append(temp)
+
+    def u2str(self):
+        result = ''
+        for u1 in self.value:
+            result = result + u1.u2char()
+        return result
 
 
 # ------------------------------------------ constant pool ------------------------------------------
 
-class cp_info:
+class constant_pool_info:
     def __init__(self):
         self.tag = u1()
 
@@ -174,9 +190,9 @@ class cp_info:
             return False
 
 
-class class_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class class_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.name_index = u2()
 
@@ -187,9 +203,9 @@ class class_info(cp_info):
         return '{\'type\':\'class_info\',\'name_index\':' + str(self.name_index.u2int()) + '}'
 
 
-class field_ref_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class field_ref_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
@@ -204,9 +220,9 @@ class field_ref_info(cp_info):
         return result
 
 
-class method_ref_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class method_ref_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
@@ -221,9 +237,9 @@ class method_ref_info(cp_info):
         return result
 
 
-class interface_method_ref_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class interface_method_ref_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.class_index = u2()
         self.name_and_type_index = u2()
@@ -238,9 +254,9 @@ class interface_method_ref_info(cp_info):
         return result
 
 
-class string_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class string_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.string_index = u2()
 
@@ -251,9 +267,9 @@ class string_info(cp_info):
         return '{\'type\':\'string_info\',\'string_index\':' + str(self.string_index.u2int()) + '}'
 
 
-class integer_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class integer_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.bytes = u4()
 
@@ -264,9 +280,9 @@ class integer_info(cp_info):
         return '{\'type\':\'integer_info\',\'bytes\':' + str(self.bytes.u2int()) + '}'
 
 
-class float_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class float_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.bytes = u4()
 
@@ -277,9 +293,9 @@ class float_info(cp_info):
         return '{\'type\':\'float_info\',\'bytes\':' + str(struct.unpack(">f", self.bytes.value)[0]) + '}'
 
 
-class long_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class long_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.high_bytes = u4()
         self.low_bytes = u4()
@@ -293,9 +309,9 @@ class long_info(cp_info):
         return '{\'type\':\'long_info\',\'bytes\':' + str(struct.unpack('>q', byte_s)[0]) + '}'
 
 
-class double_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class double_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.high_bytes = u4()
         self.low_bytes = u4()
@@ -310,9 +326,9 @@ class double_info(cp_info):
         return result
 
 
-class name_and_type_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class name_and_type_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.name_index = u2()
         self.descriptor_index = u2()
@@ -327,9 +343,9 @@ class name_and_type_info(cp_info):
         return result
 
 
-class utf8_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class utf8_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.length = u2()
         self.bytes = un()
@@ -344,9 +360,9 @@ class utf8_info(cp_info):
         return result
 
 
-class method_handle_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class method_handle_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.reference_kind = u1()
         self.reference_index = u2()
@@ -361,9 +377,9 @@ class method_handle_info(cp_info):
         return result
 
 
-class method_type_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class method_type_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.descriptor_index = u2()
 
@@ -374,9 +390,9 @@ class method_type_info(cp_info):
         return '{\'type\':\'method_type_info\',\'descriptor_index\':' + str(self.descriptor_index.u2int()) + '}'
 
 
-class invoke_dynamic_info(cp_info):
-    def __init__(self, ci=cp_info()):
-        cp_info.__init__(self)
+class invoke_dynamic_info(constant_pool_info):
+    def __init__(self, ci=constant_pool_info()):
+        constant_pool_info.__init__(self)
         self.tag = ci.tag
         self.bootstrap_method_attr_index = u2()
         self.name_and_type_index = u2()
@@ -1093,7 +1109,7 @@ class InfoHolder:
         pass
 
     def dump(self):
-        for m in self.constant_pool.items():
+        for m in list(self.constant_pool.items()):
             print(m[0], m[1].dump())
         print(self.access_flags)
         print(self.this_class)
@@ -1179,7 +1195,7 @@ class JavaClassReader:
             if need_to_skip:
                 need_to_skip = False
                 continue
-            ci = cp_info()
+            ci = constant_pool_info()
             ci.read(f)
             if ci.is_class():
                 ci_e = class_info(ci)
@@ -1243,9 +1259,12 @@ class JavaClassReader:
         :param f:
         :return:
         """
-        self.java_class.super_class.read(f)
-        self.output.super_class = "{\"super_class\": " + str(self.java_class.super_class.u2int()) + \
+        try:
+            self.java_class.super_class.read(f)
+            self.output.super_class = "{\"super_class\": " + str(self.java_class.super_class.u2int()) + \
                                   ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[self.java_class.super_class.u2int()].name_index.u2int()].bytes.u2str() + "\"}"
+        except KeyError:
+            pass
 
     def read_interfaces(self, f):
         """
@@ -1356,7 +1375,7 @@ class Processor:
 
     @staticmethod
     def search_constant_pool(content, pattern):
-        for info in content.values():
+        for info in list(content.values()):
             if info.search(pattern):
                 print(info.dump())
                 return True
@@ -1388,35 +1407,43 @@ class Processor:
     def _process_zip_file_with_threading(options, path, pattern):
         f = zipfile.ZipFile(path)
 
-        import multiprocessing
         import threading
-        import Queue
+
+        if PY2:
+            import Queue as q
+
+        if PY3:
+            import queue as q
 
         def do_work(in_queue, out_queue):
             while True:
-                member = in_queue.get()
-                # process
-                member_file = f.open(member)
-                callback = lambda : print(member)
-                result = Processor._process(options, member_file, pattern, callback)
-                out_queue.put(result)
-                in_queue.task_done()
+                try:
+                    member = in_queue.get()
+                    member_file = f.open(member)
+                    callback = lambda : print(member)
+                    result = Processor._process(options, member_file, pattern, callback)
+                    member_file.close()
+                    out_queue.put(result)
+                    in_queue.task_done()
+                except RuntimeError:
+                    continue
 
-        work = Queue.Queue()
-        results = Queue.Queue()
+        work_queue = q.Queue()
+        results = q.Queue()
 
         # start for workers
-        for i in xrange(multiprocessing.cpu_count()):
-            t = threading.Thread(target=do_work, args=(work, results))
+        for i in range(2):
+            t = threading.Thread(target=do_work, args=(work_queue, results))
             t.daemon = True
             t.start()
 
         # produce data
         for member in f.namelist():
             if (Processor._is_class_file(member)):
-                work.put(member)
+                work_queue.put(member)
 
-        work.join()
+        work_queue.join()
+        f.close()
 
     @staticmethod
     def process(options, path, pattern):
@@ -1463,7 +1490,7 @@ class Processor:
         :param name:
         :return:
         """
-        if '.class' in name:
+        if name.endswith('.class'):
             return True
         return False
 
@@ -1563,34 +1590,58 @@ class Logger:
 
 def _parallel_process(options, pattern, directory):
     from pathos import multiprocessing as mp
-    pool = mp.Pool(mp.cpu_count() / 2)
+    pool = mp.Pool(mp.cpu_count())
     from scandir import scandir, walk
+    import pickle
 
-    def processFilepath(root):
+    def processFilepath(dir_entry):
         try:
-            for (dirpath, dirnames, filenames) in walk(root):
-                for filename in filenames:
-                    if 'jar' in filename:
-                        filepath = os.path.join(dirpath, filename)
-                        try:
-                            Processor.process(options, filepath, pattern)
-                        except zipfile.BadZipfile:
-                            continue
-                        except struct.error:
-                            continue
-            return root
+            if dir_entry['is_dir']:
+                for (dirpath, dirnames, filenames) in walk(dir_entry['name']):
+                    for filename in filenames:
+                        if filename.endswith('.jar'):
+                            filepath = os.path.join(dirpath, filename)
+                            if os.stat(filepath).st_size == 0:
+                                continue
+                            try:
+                                Processor.process(options, filepath, pattern)
+                            except:
+                                return filepath
+            else:
+                try:
+                    Processor.process(options, dir_entry['path'], pattern)
+                except:
+                    return dir_entry['path']
         except:
             pass
-
+    
+    def _generateFilepaths(d):
+        for entry in scandir(d):
+            if entry.is_dir(follow_symlinks=False):
+                if PY2:
+                    for inner_entry in _generateFilepaths(entry.path):
+                        yield inner_entry
+                if PY3:
+                    yield from _generateFilepaths(entry.path)
+            else:
+                yield entry
+         
     def generateFilepaths():
-        for entry in scandir(directory):
-            if entry.is_dir():
-                yield entry.name
+        for entry in _generateFilepaths(directory):
+            st = entry.stat()
+            st_ = {'st_mode':st.st_mode, 'st_size':st.st_size,\
+                    'st_atime':st.st_atime, 'st_mtime':st.st_mtime,\
+                    'st_ctime':st.st_ctime}
+            # now convert the entry object to entry_
+            entry_ = {'name':entry.name, 'is_dir':entry.is_dir(), \
+                    'path':entry.path, 'stat':st_}
+            yield entry_
 
     try:
-        for result in pool.imap(processFilepath, generateFilepaths()):
+        chunk_size = 4 # For very long iterables using a large value for chunksize can make the job complete much faster than using the default value of 1.
+        for result in pool.imap(processFilepath, generateFilepaths(), chunk_size):
             if result is not None:
-                pass
+                print(result)
         pool.close()
     except KeyboardInterrupt:
         pool.terminate()
