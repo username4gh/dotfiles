@@ -33,12 +33,8 @@ class u1(u):
     def __init__(self):
         u.__init__(self)
 
-    def u2int(self):
-        # read() will set self.value to utf-8 code in string
+    def u1_2int(self):
         return struct.unpack(">B", self.value)[0]
-
-    def u2char(self):
-        return struct.unpack(">c", self.value)[0]
 
     def read(self, f):
         self.value = f.read(1)
@@ -48,8 +44,7 @@ class u2(u):
     def __init__(self):
         u.__init__(self)
 
-    def u2int(self):
-        # read() will set self.value to utf-8 code in string
+    def u2_2int(self):
         return struct.unpack(">H", self.value)[0]
 
     def read(self, f):
@@ -60,8 +55,11 @@ class u4(u):
     def __init__(self):
         u.__init__(self)
 
-    def u2int(self):
+    def u4_2int(self):
         return struct.unpack(">I", self.value)[0]
+
+    def u4_2float(self):
+        return struct.unpack(">f", self.value)[0]
 
     def read(self, f):
         self.value = f.read(4)
@@ -70,20 +68,77 @@ class u4(u):
 class un(u):
     def __init__(self):
         u.__init__(self)
-        self.value = []
+        #self.value = []
 
     def read(self, f, n):
-        for _ in range(n):
-            temp = u1()
-            temp.read(f)
-            self.value.append(temp)
+        #for _ in range(n):
+        #    temp = u1()
+        #    temp.read(f)
+        #    self.value.append(temp)
+        self.value = f.read(n)
 
-    def u2str(self):
-        result = ''
-        for u1 in self.value:
-            result = result + u1.u2char()
-        return result
+    def un_2str(self):
+        #result = ''
+        #for v in self.value:
+        #    result = result + v.value.decode()
+        #return result
+        return self.utf8m_to_utf8s(self.value)
 
+    def utf8m_to_utf8s(self, string):
+        """
+        :param string: modified utf8 encoded string 
+        :return: utf8 encoded string
+        """
+        new_string = []
+        length = len(string)
+        i = 0
+        while i < length:
+            byte1 = string[i]
+            if (byte1 & 0x80) == 0:  # 1byte encoding
+                new_string.append(byte1)
+            elif (byte1 & 0xE0) == 0xC0:  # 2byte encoding
+                i += 1
+                byte2 = string[i]
+                if byte1 != 0xC0 or byte2 != 0x80:
+                    new_string.append(byte1)
+                    new_string.append(byte2)
+                else:
+                    new_string.append(0)
+            elif (byte1 & 0xF0) == 0xE0:  # 3byte encoding
+                i += 1
+                byte2 = string[i]
+                i += 1
+                byte3 = string[i]
+                if i+3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
+                    # See if this is a pair of 3byte encodings
+                    byte4 = string[i+1]
+                    byte5 = string[i+2]
+                    byte6 = string[i+3]
+                    if byte4 == 0xED and (byte5 & 0xF0) == 0xB0:
+                        
+                        # Bits in: 11101101 1010xxxx 10xxxxxx
+                        # Bits in: 11101101 1011xxxx 10xxxxxx
+                        i += 3
+                        
+                        # Reconstruct 21 bit code
+                        u21 = ((byte2 & 0x0F) + 1) << 16
+                        u21 += (byte3 & 0x3F) << 10
+                        u21 += (byte5 & 0x0F) << 6
+                        u21 += (byte6 & 0x3F)
+                        
+                        # Bits out: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+                        
+                        # Convert to 4byte encoding
+                        new_string.append(0xF0 + ((u21 >> 18) & 0x07))
+                        new_string.append(0x80 + ((u21 >> 12) & 0x3F))
+                        new_string.append(0x80 + ((u21 >> 6) & 0x3F))
+                        new_string.append(0x80 + (u21 & 0x3F))
+                        continue 
+                new_string.append(byte1)
+                new_string.append(byte2)
+                new_string.append(byte3)
+            i += 1
+        return bytes(new_string).decode('utf-8')
 
 # ------------------------------------------ constant pool ------------------------------------------
 
@@ -106,85 +161,85 @@ class constant_pool_info:
         pass
 
     def is_class(self):
-        if self.tag.u2int() == 7:
+        if self.tag.u1_2int() == 7:
             return True
         else:
             return False
 
     def is_field_ref(self):
-        if self.tag.u2int() == 9:
+        if self.tag.u1_2int() == 9:
             return True
         else:
             return False
 
     def is_method_ref(self):
-        if self.tag.u2int() == 10:
+        if self.tag.u1_2int() == 10:
             return True
         else:
             return False
 
     def is_interface_method_ref(self):
-        if self.tag.u2int() == 11:
+        if self.tag.u1_2int() == 11:
             return True
         else:
             return False
 
     def is_string(self):
-        if self.tag.u2int() == 8:
+        if self.tag.u1_2int() == 8:
             return True
         else:
             return False
 
     def is_integer(self):
-        if self.tag.u2int() == 3:
+        if self.tag.u1_2int() == 3:
             return True
         else:
             return False
 
     def is_float(self):
-        if self.tag.u2int() == 4:
+        if self.tag.u1_2int() == 4:
             return True
         else:
             return False
 
     def is_long(self):
-        if self.tag.u2int() == 5:
+        if self.tag.u1_2int() == 5:
             return True
         else:
             return False
 
     def is_double(self):
-        if self.tag.u2int() == 6:
+        if self.tag.u1_2int() == 6:
             return True
         else:
             return False
 
     def is_name_and_type(self):
-        if self.tag.u2int() == 12:
+        if self.tag.u1_2int() == 12:
             return True
         else:
             return False
 
     def is_utf8(self):
-        if self.tag.u2int() == 1:
+        if self.tag.u1_2int() == 1:
             return True
         else:
             return False
 
     def is_method_handle(self):
-        if self.tag.u2int() == 15:
+        if self.tag.u1_2int() == 15:
             return True
         else:
             return False
 
     def is_method_type(self):
-        if self.tag.u2int() == 16:
+        if self.tag.u1_2int() == 16:
             return True
         else:
             return False
 
     def is_invoke_dynamic(self):
-        if self.tag.u2int() == 18:
+        if self.tag.u1_2int() == 18:
             return True
         else:
             return False
@@ -200,7 +255,7 @@ class class_info(constant_pool_info):
         self.name_index.read(f)
 
     def dump(self):
-        return '{\'type\':\'class_info\',\'name_index\':' + str(self.name_index.u2int()) + '}'
+        return '{\'type\':\'class_info\',\'name_index\':' + str(self.name_index.u2_2int()) + '}'
 
 
 class field_ref_info(constant_pool_info):
@@ -215,8 +270,8 @@ class field_ref_info(constant_pool_info):
         self.name_and_type_index.read(f)
 
     def dump(self):
-        result = '{\'type\':\'field_ref_info\',\'class_index\':' + str(self.class_index.u2int()) + \
-                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2int()) + '}'
+        result = '{\'type\':\'field_ref_info\',\'class_index\':' + str(self.class_index.u2_2int()) + \
+                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2_2int()) + '}'
         return result
 
 
@@ -232,8 +287,8 @@ class method_ref_info(constant_pool_info):
         self.name_and_type_index.read(f)
 
     def dump(self):
-        result = '{\'type\':\'method_ref_info\',\'class_index\':' + str(self.class_index.u2int()) + \
-                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2int()) + '}'
+        result = '{\'type\':\'method_ref_info\',\'class_index\':' + str(self.class_index.u2_2int()) + \
+                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2_2int()) + '}'
         return result
 
 
@@ -249,8 +304,8 @@ class interface_method_ref_info(constant_pool_info):
         self.name_and_type_index.read(f)
 
     def dump(self):
-        result = '{\'type\':\'interface_method_ref_inf\', \'class_index\':' + str(self.class_index.u2int()) + \
-                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2int()) + '}'
+        result = '{\'type\':\'interface_method_ref_inf\', \'class_index\':' + str(self.class_index.u2_2int()) + \
+                 ',\'name_and_type_index\':' + str(self.name_and_type_index.u2_2int()) + '}'
         return result
 
 
@@ -264,7 +319,7 @@ class string_info(constant_pool_info):
         self.string_index.read(f)
 
     def dump(self):
-        return '{\'type\':\'string_info\',\'string_index\':' + str(self.string_index.u2int()) + '}'
+        return '{\'type\':\'string_info\',\'string_index\':' + str(self.string_index.u2_2int()) + '}'
 
 
 class integer_info(constant_pool_info):
@@ -277,7 +332,7 @@ class integer_info(constant_pool_info):
         self.bytes.read(f)
 
     def dump(self):
-        return '{\'type\':\'integer_info\',\'bytes\':' + str(self.bytes.u2int()) + '}'
+        return '{\'type\':\'integer_info\',\'bytes\':' + str(self.bytes.u4_2int()) + '}'
 
 
 class float_info(constant_pool_info):
@@ -290,7 +345,7 @@ class float_info(constant_pool_info):
         self.bytes.read(f)
 
     def dump(self):
-        return '{\'type\':\'float_info\',\'bytes\':' + str(struct.unpack(">f", self.bytes.value)[0]) + '}'
+        return '{\'type\':\'float_info\',\'bytes\':' + str(self.bytes.u4_2float()) + '}'
 
 
 class long_info(constant_pool_info):
@@ -322,7 +377,7 @@ class double_info(constant_pool_info):
 
     def dump(self):
         byte_s = self.high_bytes.value + self.low_bytes.value
-        result = '{\'type\':\'double_info\',\'bytes\':' + str(struct.unpack('>q', byte_s)[0]) + '}'
+        result = '{\'type\':\'double_info\',\'bytes\':' + str(struct.unpack('>d', byte_s)[0]) + '}'
         return result
 
 
@@ -338,8 +393,8 @@ class name_and_type_info(constant_pool_info):
         self.descriptor_index.read(f)
 
     def dump(self):
-        result = '{\'type\':\'name_and_type_info\',\'name_index\':' + str(self.name_index.u2int()) + \
-                 ',\'descriptor_index\':' + str(self.descriptor_index.u2int()) + '}'
+        result = '{\'type\':\'name_and_type_info\',\'name_index\':' + str(self.name_index.u2_2int()) + \
+                 ',\'descriptor_index\':' + str(self.descriptor_index.u2_2int()) + '}'
         return result
 
 
@@ -352,11 +407,11 @@ class utf8_info(constant_pool_info):
 
     def read_info(self, f):
         self.length.read(f)
-        self.bytes.read(f, self.length.u2int())
+        self.bytes.read(f, self.length.u2_2int())
 
     def dump(self):
         result = '{\'type\':\'utf8_info\',\'length\':' + str(
-            self.length.u2int()) + ',\'bytes\':\'' + self.bytes.u2str() + '\'}'
+            self.length.u2_2int()) + ',\'bytes\':\'' + self.bytes.un_2str() + '\'}'
         return result
 
 
@@ -372,8 +427,8 @@ class method_handle_info(constant_pool_info):
         self.reference_index.read(f)
 
     def dump(self):
-        result = '{\'type\':\'method_handle_info\',\'reference_kind\':' + str(self.reference_kind.u2int())
-        result += ',\'reference_index\':' + str(self.reference_index.u2int()) + '}'
+        result = '{\'type\':\'method_handle_info\',\'reference_kind\':' + str(self.reference_kind.u1_2int())
+        result += ',\'reference_index\':' + str(self.reference_index.u2_2int()) + '}'
         return result
 
 
@@ -387,7 +442,7 @@ class method_type_info(constant_pool_info):
         self.descriptor_index.read(f)
 
     def dump(self):
-        return '{\'type\':\'method_type_info\',\'descriptor_index\':' + str(self.descriptor_index.u2int()) + '}'
+        return '{\'type\':\'method_type_info\',\'descriptor_index\':' + str(self.descriptor_index.u2_2int()) + '}'
 
 
 class invoke_dynamic_info(constant_pool_info):
@@ -403,8 +458,8 @@ class invoke_dynamic_info(constant_pool_info):
 
     def dump(self):
         result = '{\'type\':\'invoke_dynamic_info\',\'bootstrap_method_attr_index\':' + str(
-            self.bootstrap_method_attr_index.u2int())
-        result += ',\'name_and_type_index\':' + str(self.name_and_type_index.u2int()) + '}'
+            self.bootstrap_method_attr_index.u2_2int())
+        result += ',\'name_and_type_index\':' + str(self.name_and_type_index.u2_2int()) + '}'
         return result
 
 
@@ -422,7 +477,7 @@ class access_flags:
 
         for name, value in inspect.getmembers(self):
             if 'ACC' in name:  # filter out access_flags
-                if self.value.u2int() & value == value:
+                if self.value.u2_2int() & value == value:
                     result += name
                     result += '|'
 
@@ -482,7 +537,7 @@ class field_info:
         self.name_index.read(f)
         self.descriptor_index.read(f)
         self.attributes_count.read(f)
-        for i in range(0, self.attributes_count.u2int()):
+        for i in range(0, self.attributes_count.u2_2int()):
             ai = attribute_info()
             ai.read(f)
             self.attributes.append(ai)
@@ -490,9 +545,9 @@ class field_info:
     def dump(self):
         result = '{\'type\':\'field_info\''
         result += ',\'access_flags\':' + self.access_flags.dump()
-        result += ',\'name_index\':' + str(self.name_index.u2int())
-        result += ',\'descriptor_index\':' + str(self.descriptor_index.u2int())
-        result += ',\'attributes_count\':' + str(self.attributes_count.u2int())
+        result += ',\'name_index\':' + str(self.name_index.u2_2int())
+        result += ',\'descriptor_index\':' + str(self.descriptor_index.u2_2int())
+        result += ',\'attributes_count\':' + str(self.attributes_count.u2_2int())
         result += ',\'attributes\':'
         for attribute in self.attributes:
             result += attribute.dump()
@@ -515,7 +570,7 @@ class method_info:
         self.name_index.read(f)
         self.descriptor_index.read(f)
         self.attributes_count.read(f)
-        for i in range(0, self.attributes_count.u2int()):
+        for i in range(0, self.attributes_count.u2_2int()):
             ai = attribute_info()
             ai.read(f)
             self.attributes.append(ai)
@@ -523,9 +578,9 @@ class method_info:
     def dump(self):
         result = '{\'type\':\'method_info\''
         result += ',\'access_flags\':' + self.access_flags.dump()
-        result += ',\'name_index\':' + str(self.name_index.u2int())
-        result += ',\'descriptor_index\':' + str(self.descriptor_index.u2int())
-        result += ',\'attributes_count\':' + str(self.attributes_count.u2int())
+        result += ',\'name_index\':' + str(self.name_index.u2_2int())
+        result += ',\'descriptor_index\':' + str(self.descriptor_index.u2_2int())
+        result += ',\'attributes_count\':' + str(self.attributes_count.u2_2int())
         result += ',\'attributes\':'
         for attribute in self.attributes:
             result += attribute.dump()
@@ -544,11 +599,11 @@ class attribute_info:
     def read(self, f):
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
-        self.info.read(f, self.attribute_length.u2int())
+        self.info.read(f, self.attribute_length.u4_2int())
 
     def dump(self):
-        result = "{\'attribute_name_index\':" + str(self.attribute_name_index.u2int())
-        result += ",\'attribute_length\':" + str(self.attribute_length.u2int()) + '}'
+        result = "{\'attribute_name_index\':" + str(self.attribute_name_index.u2_2int())
+        result += ",\'attribute_length\':" + str(self.attribute_length.u4_2int()) + '}'
 
         return result
 
@@ -604,7 +659,7 @@ class StackMapTable(attribute_info):
 
     def read_info(self, f):
         self.number_of_entries.read(f)
-        for i in range(0, self.number_of_entries.u2int()):
+        for i in range(0, self.number_of_entries.u2_2int()):
             break
 
 
@@ -673,12 +728,12 @@ class full_frame(stack_map_frame):
     def read_info(self, f):
         self.offset_delta.read(f)
         self.number_of_locals.read(f)
-        for i in range(0, self.number_of_locals.u2int()):
+        for i in range(0, self.number_of_locals.u2_2int()):
             break
 
         self.number_of_stack_items.read(f)
 
-        for i in range(0, self.number_of_stack_items.u2int()):
+        for i in range(0, self.number_of_stack_items.u2_2int()):
             break
 
 
@@ -875,31 +930,31 @@ class element_value:
 
     def read(self, f):
         self.tag.read(f)
-        if self.tag.u2int() == 'B' \
-                or self.tag.u2char() == 'C' \
-                or self.tag.u2char() == 'D' \
-                or self.tag.u2char() == 'F' \
-                or self.tag.u2char() == 'I' \
-                or self.tag.u2char() == 'J' \
-                or self.tag.u2char() == 'S' \
-                or self.tag.u2char() == 'Z' \
-                or self.tag.u2char() == 's':
+        if self.tag.u1_2int() == 'B' \
+                or self.tag.u1_2char() == 'C' \
+                or self.tag.u1_2char() == 'D' \
+                or self.tag.u1_2char() == 'F' \
+                or self.tag.u1_2char() == 'I' \
+                or self.tag.u1_2char() == 'J' \
+                or self.tag.u1_2char() == 'S' \
+                or self.tag.u1_2char() == 'Z' \
+                or self.tag.u1_2char() == 's':
             self.value = constant_value_index()
             self.value.read(f)
 
-        if self.tag.u2int() == 'e':
+        if self.tag.u1_2int() == 'e':
             self.value = enum_const_value()
             self.value.read(f)
 
-        if self.tag.u2int() == 'c':
+        if self.tag.u1_2int() == 'c':
             self.value = class_info_index()
             self.value.read(f)
 
-        if self.tag.u2int() == '@':
+        if self.tag.u1_2int() == '@':
             self.value = annotation_value()
             self.value.read(f)
 
-        if self.tag.u2int() == '[':
+        if self.tag.u1_2int() == '[':
             self.value = array_value()
             self.value.read(f)
 
@@ -924,7 +979,7 @@ class annotation:
     def read(self, f):
         self.type_index.read(f)
         self.num_element_value_pairs.read(f)
-        for i in range(0, self.num_element_value_pairs.u2int()):
+        for i in range(0, self.num_element_value_pairs.u2_2int()):
             self.element_value_pairs.append('')
 
 
@@ -940,8 +995,8 @@ class runtime_visible_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2int())]
-        for i in range(self.num_annotations.u2int()):
+        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2_2int())]
+        for i in range(self.num_annotations.u2_2int()):
             self.annotations[i].read(f)
 
 
@@ -958,8 +1013,8 @@ class runtime_invisible_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2int())]
-        for i in range(self.num_annotations.u2int()):
+        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2_2int())]
+        for i in range(self.num_annotations.u2_2int()):
             self.annotations[i].read(f)
 
 
@@ -972,7 +1027,7 @@ class parameter_annotation:
 
     def read(self, f):
         self.num_annotations.read(f)
-        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2int())]
+        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2_2int())]
         for a in self.annotations:
             a.read(f)
 
@@ -988,7 +1043,7 @@ class runtime_visible_parameter_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_parameters.read(f)
-        self.parameter_annotations = [parameter_annotation() for _ in range(0, self.num_parameters.u2int())]
+        self.parameter_annotations = [parameter_annotation() for _ in range(0, self.num_parameters.u1_2int())]
         for pa in self.parameter_annotations:
             pa.read(f)
 
@@ -1006,7 +1061,7 @@ class runtime_invisible_parameter_annotation_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_parameters.read(f)
-        self.parameter_annotations = [parameter_annotation() for _ in range(self.num_parameters.u2int())]
+        self.parameter_annotations = [parameter_annotation() for _ in range(self.num_parameters.u1_2int())]
         for pa in self.parameter_annotations:
             pa.read(f)
 
@@ -1077,7 +1132,7 @@ class runtime_visible_type_annotations_attribute:
         self.attribute_name_index.read(f)
         self.attribute_length.read(f)
         self.num_annotations.read(f)
-        self.annotations = [annotation() for _ in range(0, self.num_annotations.u2int())]
+        self.annotations = [annotation() for _ in range(0, self.num_annotations.u1_2int())]
         for pa in self.annotations:
             pa.read(f)
 
@@ -1191,7 +1246,7 @@ class JavaClassReader:
         self.java_class.constant_pool = []
         # https://stackoverflow.com/questions/41176545/the-constant-pool-lost-3-in-class-file
         need_to_skip = False
-        for i in range(1, self.java_class.constant_pool_count.u2int()):
+        for i in range(1, self.java_class.constant_pool_count.u2_2int()):
             if need_to_skip:
                 need_to_skip = False
                 continue
@@ -1250,8 +1305,8 @@ class JavaClassReader:
         :return:
         """
         self.java_class.this_class.read(f)
-        self.output.this_class = "{\"this_class\": " + str(self.java_class.this_class.u2int()) + ", \"class_name\": \"" \
-                                 + self.output.constant_pool[self.output.constant_pool[self.java_class.this_class.u2int()].name_index.u2int()].bytes.u2str() + "\"}"
+        self.output.this_class = "{\"this_class\": " + str(self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
+                                 + self.output.constant_pool[self.output.constant_pool[self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
 
     def read_super_class(self, f):
         """
@@ -1261,8 +1316,8 @@ class JavaClassReader:
         """
         try:
             self.java_class.super_class.read(f)
-            self.output.super_class = "{\"super_class\": " + str(self.java_class.super_class.u2int()) + \
-                                  ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[self.java_class.super_class.u2int()].name_index.u2int()].bytes.u2str() + "\"}"
+            self.output.super_class = "{\"super_class\": " + str(self.java_class.super_class.u2_2int()) + \
+                                  ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[self.java_class.super_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
         except KeyError:
             pass
 
@@ -1273,11 +1328,11 @@ class JavaClassReader:
         :return:
         """
         self.java_class.interfaces_count.read(f)
-        for i in range(0, self.java_class.interfaces_count.u2int()):
+        for i in range(0, self.java_class.interfaces_count.u2_2int()):
             interface = u2()
             interface.read(f)
             self.java_class.interfaces.append(interface)
-            self.output.interfaces.append("{\"interface\": \"" + str(interface.u2int()) + ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[interface.u2int()].name_index.u2int()].bytes.u2str() + "\"}")
+            self.output.interfaces.append("{\"interface\": \"" + str(interface.u2_2int()) + ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[interface.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}")
 
     def read_fields(self, f):
         """
@@ -1286,7 +1341,7 @@ class JavaClassReader:
         :return:
         """
         self.java_class.fields_count.read(f)
-        for i in range(0, self.java_class.fields_count.u2int()):
+        for i in range(0, self.java_class.fields_count.u2_2int()):
             fi = field_info()
             fi.read(f)
             self.output.fields.append(fi.dump())
@@ -1298,7 +1353,7 @@ class JavaClassReader:
         :return:
         """
         self.java_class.methods_count.read(f)
-        for i in range(0, self.java_class.methods_count.u2int()):
+        for i in range(0, self.java_class.methods_count.u2_2int()):
             mi = method_info()
             mi.read(f)
             self.output.methods.append(mi.dump())
@@ -1310,7 +1365,7 @@ class JavaClassReader:
         :return:
         """
         self.java_class.attributes_count.read(f)
-        for i in range(0, self.java_class.attributes_count.u2int()):
+        for i in range(0, self.java_class.attributes_count.u2_2int()):
             ai = attribute_info()
             ai.read(f)
             self.java_class.attributes.append(ai)
@@ -1389,8 +1444,8 @@ class Processor:
         :param pattern:
         :return:
         """
-        f = open(path, 'r')
-        callback = lambda :print(path)
+        f = open(path, 'rb') # open as a binary file
+        callback = lambda:print(path)
         Processor._process(options, f, pattern, callback)
 
     @staticmethod
@@ -1417,16 +1472,13 @@ class Processor:
 
         def do_work(in_queue, out_queue):
             while True:
-                try:
-                    member = in_queue.get()
-                    member_file = f.open(member)
-                    callback = lambda : print(member)
-                    result = Processor._process(options, member_file, pattern, callback)
-                    member_file.close()
-                    out_queue.put(result)
-                    in_queue.task_done()
-                except RuntimeError:
-                    continue
+                member = in_queue.get()
+                member_file = f.open(member)
+                callback = lambda:print(member)
+                result = Processor._process(options, member_file, pattern, callback)
+                member_file.close()
+                out_queue.put(result)
+                in_queue.task_done()
 
         work_queue = q.Queue()
         results = q.Queue()
@@ -1446,7 +1498,7 @@ class Processor:
         f.close()
 
     @staticmethod
-    def process(options, path, pattern):
+    def process(options=None, path=None, pattern=None):
         """
         入口函数
         :param path:
@@ -1472,7 +1524,7 @@ class Processor:
                 for member in z.namelist():
                     if file_pattern in member:
                         output_file = file('./' + Processor._generate_class_name(member), 'wr')
-                        output_file.write(z.open(member).read())
+                        output_file.write(z.open(member, 'r').read())
 
     @staticmethod
     def _generate_class_name(member):
@@ -1618,22 +1670,19 @@ def _parallel_process(options, pattern, directory):
     def _generateFilepaths(d):
         for entry in scandir(d):
             if entry.is_dir(follow_symlinks=False):
-                if PY2:
-                    for inner_entry in _generateFilepaths(entry.path):
-                        yield inner_entry
-                if PY3:
-                    yield from _generateFilepaths(entry.path)
+                for inner_entry in _generateFilepaths(entry.path):
+                    yield inner_entry
             else:
                 yield entry
          
     def generateFilepaths():
         for entry in _generateFilepaths(directory):
-            st = entry.stat()
+            st = entry.stat(follow_symlinks=False)
             st_ = {'st_mode':st.st_mode, 'st_size':st.st_size,\
                     'st_atime':st.st_atime, 'st_mtime':st.st_mtime,\
                     'st_ctime':st.st_ctime}
             # now convert the entry object to entry_
-            entry_ = {'name':entry.name, 'is_dir':entry.is_dir(), \
+            entry_ = {'name':entry.name, 'is_dir':entry.is_dir(follow_symlinks=False), \
                     'path':entry.path, 'stat':st_}
             yield entry_
 
@@ -1651,16 +1700,13 @@ def _parallel_process(options, pattern, directory):
 
 
 # ------------------------------------------ main ------------------------------------------
-
 def main(argv):
     options, args, parser = _parse_cmdline(argv)
 
     if options.verbose:
         print(args)
 
-    # jar file to search
     path = args[1]
-    # string to search
     pattern = args[2]
 
     if path is None or pattern is None:
