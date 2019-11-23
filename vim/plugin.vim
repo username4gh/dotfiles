@@ -59,7 +59,7 @@ call plug#end()
 
 " save my eyes
 if _is_loaded('vim-colors-solarized')
-    set background=light
+    set background=dark
     let g:solarized_termcolors=256
     colorscheme solarized
 endif
