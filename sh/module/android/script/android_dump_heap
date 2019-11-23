@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+if [[ "$#" -eq 0 ]];then
+    echo "Usage: android_dump_heap <android_package_name>"
+    exit
+fi
+
+PACKAGE_NAME="$1"
+
+adb shell am dumpheap "$PACKAGE_NAME" /data/local/tmp/"$PACKAGE_NAME".hprof
+
+echo "$/data/local/tmp/$PACKAGE_NAME".hprof generated, now you can pull it with 'adb pull'"
