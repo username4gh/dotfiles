@@ -90,12 +90,12 @@ options = None
 
 
 # Output ----------------------------------------------------------------------
-def out(s, line_ending='\n'):
-    sys.stdout.write(s + line_ending)
+def out(s):
+    sys.stdout.write(s + ('\0' if options.zero else '\n'))
 
 
 def err(s):
-    sys.stderr.write(s + '\n')
+    sys.stderr.write(s + ('\0' if options.zero else '\n'))
 
 
 def die(s, exitcode=1):
@@ -277,6 +277,7 @@ if is_windows():
 
             if PY2:
                 try:
+                    # noinspection PyUnresolvedReferences
                     attrs = ctypes.windll.kernel64.GetFileAttributesW(unicode(file_path))
                     assert attrs != -1
                     result = bool(attrs & 2)
@@ -352,8 +353,6 @@ def _search(query, root, depth):
 
     for item in contents:
         path = os.path.join(root, item)
-        if options.full_path:
-            path = os.path.abspath(path)
 
         if options.ignore_hidden and is_hidden(path):
             continue
@@ -365,7 +364,7 @@ def _search(query, root, depth):
                 dirs.append(path)
         if match(query, path, item):
             if depth >= options.mindepth:
-                out(path, '\0' if options.zero else '\n')
+                out(path)
 
     if depth < options.maxdepth:
         for d in dirs:
@@ -383,18 +382,27 @@ def _parallel_search(query, directory):
     pool = mp.Pool(mp.cpu_count(), initializer=initializer)
     from scandir import scandir, walk
 
+    def walk_with_depth_limit(some_dir, maxdepth=1):
+        some_dir = some_dir.rstrip(os.path.sep)
+        assert os.path.isdir(some_dir)
+        num_sep = some_dir.count(os.path.sep)
+        for dir_path, dir_names, file_names in walk(some_dir, topdown=True):
+            yield dir_path, dir_names, file_names
+            num_sep_this = dir_path.count(os.path.sep)
+            if num_sep + maxdepth <= num_sep_this:
+                del dir_names[:]
+
     def process_file_path(root):
         try:
-            for (dir_path, dir_names, file_names) in walk(root):
+            for (dir_path, dir_names, file_names) in walk_with_depth_limit(root, options.maxdepth - 1):
                 for dir_name in dir_names:
                     if match(query, dir_path, dir_name):
                         dir_path = os.path.join(dir_path, dir_name)
-                        out(dir_path, '\0' if options.zero else '\n')
+                        out(dir_path)
                 for filename in file_names:
                     if match(query, dir_path, filename):
                         file_path = os.path.join(dir_path, filename)
-                        out(file_path, '\0' if options.zero else '\n')
-            return root
+                        out(file_path)
         except KeyboardInterrupt:
             pass
 
@@ -402,7 +410,10 @@ def _parallel_search(query, directory):
         try:
             for entry in scandir(directory):
                 if entry.is_dir():
-                    yield entry.name
+                    yield entry.path
+                else:
+                    if match(query, directory, entry.name):
+                        out(entry.name)
         except KeyboardInterrupt:
             pass
 
@@ -415,7 +426,7 @@ def _parallel_search(query, directory):
         pool.join()
 
 
-def search(query, directory='.', depth=0):
+def search(query, directory='.', depth=1):
     if options.parallel and find_module('pathos.multiprocessing') and find_module("scandir"):
         _parallel_search(query, directory)
     else:
@@ -433,8 +444,8 @@ def build_option_parser():
                        dest='dir', action='store',
                        help='root the search in DIR (default .)',
                        metavar='DIR')
-    group.add_argument('--mindepth', default='0',
-                       help='search at minimum N directories deep (default 0)',
+    group.add_argument('--mindepth', default='1',
+                       help='search at minimum N directories deep (default 1)',
                        metavar='N')
     group.add_argument('--maxdepth', default='25',
                        help='search at most N directories deep (default 25)',
@@ -466,12 +477,6 @@ def build_option_parser():
     parser.add_argument_group(group)
 
     group = parser.add_argument_group("Output Configuration")
-    group.add_argument('--full-path', dest='full_path',
-                       action='store_true', default=False,
-                       help="print the file's full path")
-    group.add_argument('--relative-path', dest='full_path',
-                       action='store_false',
-                       help="print the file's relative path (default)")
     group.add_argument('--print0', dest='zero',
                        action='store_true', default=False,
                        help='separate matches with a null byte in output')
