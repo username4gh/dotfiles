@@ -9,16 +9,19 @@ PY3 = sys.version_info[0] == 3
 
 
 def _process_line(options):
+    f = None
     try:
         if options.input is None:
             f = sys.stdin
         else:
             f = open(options.input, 'r')
         lines = f.readlines()
-        f.close()
     except IOError as err:
         print(err)
         return 1
+    finally:
+        if f:
+            f.close()
 
     func = eval(options.lambda_string)
 
@@ -34,9 +37,11 @@ def _process_line(options):
             f = open(options.output, 'w')
         # here we use the completely-override-write to make it's easy to implement in-place edit
         f.writelines(lines)
-        f.close()
     except IOError as err:
         print(err)
+    finally:
+        if f:
+            f.close()
 
 
 def main():
