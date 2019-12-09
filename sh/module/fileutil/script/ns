@@ -1,0 +1,27 @@
+#! /usr/bin/env _python
+# coding=UTF-8
+
+from __future__ import print_function
+import sys
+
+ITEMS = None
+try:
+    ITEMS = sys.stdin.readlines()
+finally:
+    sys.stdin.close()
+
+SORTED_ITEMS = sorted(ITEMS)
+
+if len(sys.argv) > 1:
+    try:
+        sys.stdout.write(SORTED_ITEMS[int(sys.argv[1])])
+    except ValueError:
+        sys.exit(0)
+    finally:
+        sys.stdout.close()
+else:
+    try:
+        for i in range(len(SORTED_ITEMS)):
+            sys.stdout.write('[' + str(i) + ']' + SORTED_ITEMS[i])
+    finally:
+        sys.stdout.close()
