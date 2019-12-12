@@ -1,0 +1,21 @@
+_annotation_completion_write svn add
+_annotation_completion_write svn cat
+_annotation_completion_write svn changelist
+_annotation_completion_write svn checkout
+_annotation_completion_write svn cleanup
+_annotation_completion_write svn commit
+_annotation_completion_write svn copy
+_annotation_completion_write svn delete
+_annotation_completion_write svn diff
+_annotation_completion_write svn log
+_annotation_completion_write svn mkdir
+_annotation_completion_write svn move
+_annotation_completion_write svn patch
+_annotation_completion_write svn revert
+_annotation_completion_write svn status
+_annotation_completion_write svn update
+
+_annotation_completion_write svn commit --changelist
+_annotation_completion_write svn changelist --remove
+
+_completion_setup svn
