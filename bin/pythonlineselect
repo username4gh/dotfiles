@@ -1,0 +1,385 @@
+#! /usr/bin/env python3
+# coding=utf-8
+
+from __future__ import print_function
+import fcntl
+import io
+import optparse
+import os
+import sys
+
+PY3 = sys.version_info[0] == 3
+
+new_lines = ["\r\n", "\n", "\r"]
+new_lines_bytes = [n.encode("ascii") for n in new_lines]  # we only support encodings that's backward compat with ascii
+
+
+class BufferWorkSpace:
+    """It is a helper module for FileReadBackwards."""
+
+    def __init__(self, fp, chunk_size):
+        """Convention for the data.
+        When read_buffer is not None, it represents contents of the file from `read_position` onwards
+            that has not been processed/returned.
+        read_position represents the file pointer position that has been read into read_buffer
+            initialized to be just past the end of file.
+        """
+        self.fp = fp
+        self.read_position = _get_file_size(self.fp)  # set the previously read position to the
+        self.read_buffer = None
+        self.chunk_size = chunk_size
+
+    def add_to_buffer(self, content, read_position):
+        """Add additional bytes content as read from the read_position.
+        Args:
+            content (bytes): data to be added to buffer working BufferWorkSpac.
+            read_position (int): where in the file pointer the data was read from.
+        """
+        self.read_position = read_position
+        if self.read_buffer is None:
+            self.read_buffer = content
+        else:
+            self.read_buffer = content + self.read_buffer
+
+    def yieldable(self):
+        """Return True if there is a line that the buffer can return, False otherwise."""
+        if self.read_buffer is None:
+            return False
+
+        t = _remove_trailing_new_line(self.read_buffer)
+        n = _find_furthest_new_line(t)
+        if n >= 0:
+            return True
+
+        # we have read in entire file and have some unprocessed lines
+        if self.read_position == 0 and self.read_buffer is not None:
+            return True
+        return False
+
+    def return_line(self):
+        """Return a new line if it is available.
+        Precondition: self.yieldable() must be True
+        """
+        assert (self.yieldable())
+
+        t = _remove_trailing_new_line(self.read_buffer)
+        i = _find_furthest_new_line(t)
+
+        if i >= 0:
+            line_no = i + 1
+            after_new_line = slice(line_no, None)
+            up_to_include_new_line = slice(0, line_no)
+            r = t[after_new_line]
+            self.read_buffer = t[up_to_include_new_line]
+        else:  # the case where we have read in entire file and at the "last" line
+            r = t
+            self.read_buffer = None
+        return r
+
+    def read_until_yieldable(self):
+        """Read in additional chunks until it is yieldable."""
+        while not self.yieldable():
+            read_content, read_position = _get_next_chunk(self.fp, self.read_position, self.chunk_size)
+            self.add_to_buffer(read_content, read_position)
+
+    def has_returned_every_line(self):
+        """Return True if every single line in the file has been returned, False otherwise."""
+        if self.read_position == 0 and self.read_buffer is None:
+            return True
+        return False
+
+
+def _get_file_size(fp):
+    return os.fstat(fp.fileno()).st_size
+
+
+def _get_next_chunk(fp, previously_read_position, chunk_size):
+    """Return next chunk of data that we would from the file pointer.
+    Args:
+        fp: file-like object
+        previously_read_position: file pointer position that we have read from
+        chunk_size: desired read chunk_size
+    Returns:
+        (bytestring, int): data that has been read in, the file pointer position where the data has been read from
+    """
+    seek_position, read_size = _get_what_to_read_next(fp, previously_read_position, chunk_size)
+    fp.seek(seek_position)
+    read_content = fp.read(read_size)
+    read_position = seek_position
+    return read_content, read_position
+
+
+def _get_what_to_read_next(fp, previously_read_position, chunk_size):
+    """Return information on which file pointer position to read from and how many bytes.
+    Args:
+        fp: file pointer
+        previously_read_position (int): The file pointer position that has been read previously
+        chunk_size(int): ideal io chunk_size
+    Returns:
+        (int, int): The next seek position, how many bytes to read next
+    """
+    seek_position = max(previously_read_position - chunk_size, 0)
+    read_size = chunk_size
+
+    # examples: say, our new_lines are potentially "\r\n", "\n", "\r"
+    # find a reading point where it is not "\n", rewind further if necessary
+    # if we have "\r\n" and we read in "\n",
+    # the next iteration would treat "\r" as a different new line.
+    # Q: why don't I just check if it is b"\n", but use a function ?
+    # A: so that we can potentially expand this into generic sets of separators, later on.
+    while seek_position > 0:
+        fp.seek(seek_position)
+        if _is_partially_read_new_line(fp.read(1)):
+            seek_position -= 1
+            read_size += 1  # as we rewind further, let's make sure we read more to compensate
+        else:
+            break
+
+    # take care of special case when we are back to the beginnin of the file
+    read_size = min(previously_read_position - seek_position, read_size)
+    return seek_position, read_size
+
+
+def _remove_trailing_new_line(line):
+    """Remove a single instance of new line at the end of l if it exists.
+    Returns:
+        bytestring
+    """
+    # replace only 1 instance of newline
+    # match longest line first (hence the reverse=True), we want to match "\r\n" rather than "\n" if we can
+    for n in sorted(new_lines_bytes, key=lambda x: len(x), reverse=True):
+        if line.endswith(n):
+            remove_new_line = slice(None, -len(n))
+            return line[remove_new_line]
+    return line
+
+
+def _find_furthest_new_line(read_buffer):
+    """Return -1 if read_buffer does not contain new line otherwise the position of the rightmost newline.
+    Args:
+        read_buffer (bytestring)
+    Returns:
+        int: The right most position of new line character in read_buffer if found, else -1
+    """
+    new_line_positions = [read_buffer.rfind(n) for n in new_lines_bytes]
+    return max(new_line_positions)
+
+
+def _is_partially_read_new_line(b):
+    """Return True when b is part of a new line separator found at index >= 1, False otherwise.
+    Args:
+        b (bytestring)
+    Returns:
+        bool
+    """
+    for n in new_lines_bytes:
+        if n.find(b) >= 1:
+            return True
+    return False
+
+
+supported_encodings = ["utf-8", "ascii", "latin-1"]  # any encodings that are backward compatible with ascii should work
+
+
+class FileReadBackwards:
+    """Class definition for `FileReadBackwards`.
+    A `FileReadBackwards` will spawn a `FileReadBackwardsIterator` and keep an opened file handler.
+    It can be used as a Context Manager. If done so, when exited, it will close its file handler.
+    In any mode, `close()` can be called to close the file handler..
+    """
+
+    def __init__(self, path=None, encoding="utf-8", chunk_size=io.DEFAULT_BUFFER_SIZE):
+        """Constructor for FileReadBackwards.
+        Args:
+            path: Path to the file to be read
+            encoding (str): Encoding
+            chunk_size (int): How many bytes to read at a time
+        """
+        if encoding.lower() not in supported_encodings:
+            error_message = "{0} encoding was not supported/tested.".format(encoding)
+            error_message += "Supported encodings are '{0}'".format(",".join(supported_encodings))
+            raise NotImplementedError(error_message)
+
+        self.path = path
+        self.encoding = encoding.lower()
+        self.chunk_size = chunk_size
+        if path is not None:
+            self.iterator = FileReadBackwardsIterator(io.open(self.path, mode="rb"), self.encoding, self.chunk_size)
+        else:
+            self.iterator = FileReadBackwardsIterator(sys.stdin, self.encoding, self.chunk_size)
+
+    def __iter__(self):
+        """Return its iterator."""
+        return self.iterator
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Closes all opened its file handler and propagates all exceptions on exit."""
+        self.close()
+        return False
+
+    def close(self):
+        """Closes all opened it s file handler."""
+        self.iterator.close()
+
+    def readline(self):
+        """Return a line content (with a trailing newline) if there are content. Return '' otherwise."""
+
+        try:
+            r = next(self.iterator) + os.linesep
+            return r
+        except StopIteration:
+            return ""
+
+
+class FileReadBackwardsIterator:
+    """Iterator for `FileReadBackwards`.
+    This will read backwards line by line a file. It holds an opened file handler.
+    """
+
+    def __init__(self, fp, encoding, chunk_size):
+        """Constructor for FileReadBackwardsIterator
+        Args:
+            fp (File): A file that we wish to start reading backwards from
+            encoding (str): Encoding of the file
+            chunk_size (int): How many bytes to read at a time
+        """
+        self.path = fp.name
+        self.encoding = encoding
+        self.chunk_size = chunk_size
+        self.__fp = fp
+        self.__buf = BufferWorkSpace(self.__fp, self.chunk_size)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        """Returns unicode string from the last line until the beginning of file.
+        Gets exhausted if::
+            * already reached the beginning of the file on previous iteration
+            * the file got closed
+        When it gets exhausted, it closes the file handler.
+        """
+        # Using binary mode, because some encodings such as "utf-8" use variable number of
+        # bytes to encode different Unicode points.
+        # Without using binary mode, we would probably need to understand each encoding more
+        # and do the seek operations to find the proper boundary before issuing read
+        if self.closed:
+            raise StopIteration
+        if self.__buf.has_returned_every_line():
+            self.close()
+            raise StopIteration
+        self.__buf.read_until_yieldable()
+        r = self.__buf.return_line()
+        return r.decode(self.encoding)
+
+    __next__ = next
+
+    @property
+    def closed(self):
+        """The status of the file handler.
+        :return: True if the file handler is still opened. False otherwise.
+        """
+        return self.__fp.closed
+
+    def close(self):
+        """Closes the file handler."""
+        self.__fp.close()
+
+
+def try_get_value(proper_slice, index):
+    try:
+        return int(proper_slice[index])
+    except IndexError:
+        return None
+    except ValueError:
+        return None
+
+
+def _process_line(options, args):
+    proper_slice = args.split(':')
+    lower_bound = try_get_value(proper_slice, 0)
+    upper_bound = try_get_value(proper_slice, 1)
+    count = try_get_value(proper_slice, 2)
+
+    if (lower_bound is not None) and (upper_bound is not None):
+        print("Usage: command [-i <input file path>] lower_bound:upper_bound:count"
+              "lower_bound and upper_bound cannot be provided at the same time")
+        return
+
+    current_line_no = 0
+    if lower_bound is not None:
+        f = None
+        try:
+            if options.input is None:
+                fd = sys.stdin.fileno()
+                fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+                fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+                f = sys.stdin
+            else:
+                f = open(options.input, 'r', os.O_NONBLOCK)
+            while True:
+                line = f.readline()
+                if len(line) == 0:
+                    break
+                if current_line_no >= lower_bound:
+                    if count is not None:
+                        if current_line_no - lower_bound < count:
+                            sys.stdout.write(line)
+                        else:
+                            break
+                    else:
+                        sys.stdout.write(line)
+                current_line_no = current_line_no + 1
+        except KeyboardInterrupt:
+            pass
+        finally:
+            f.close()
+    elif upper_bound is not None:
+        if options.input is not None:
+            with FileReadBackwards(options.input, encoding="utf-8") as frb:
+                # getting lines by lines starting from the last line up
+                for line in frb:
+                    if current_line_no >= upper_bound:
+                        if count:
+                            if current_line_no - upper_bound < count:
+                                sys.stdout.write(line)
+                            else:
+                                break
+                        else:
+                            sys.stdout.write(line)
+                    current_line_no = current_line_no + 1
+        else:
+            # stdin is not seekable, so fallback to old readlines()
+            fd = sys.stdin.fileno()
+            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            lines = sys.stdin.readlines()
+            for line in reversed(lines):
+                if current_line_no >= upper_bound:
+                    if count:
+                        if current_line_no - upper_bound < count:
+                            print(line)
+                        else:
+                            break
+                    else:
+                        print(line)
+                current_line_no = current_line_no + 1
+
+
+def main():
+    parser = optparse.OptionParser(optparse.SUPPRESS_USAGE)
+    parser.add_option('-i', dest='input', type='string', help='the absolute path of the input file')
+    options, args = parser.parse_args()
+
+    if args is None:
+        parser.print_help()
+        exit(1)
+    else:
+        _process_line(options, args[0])
+
+
+if __name__ == '__main__':
+    main()
