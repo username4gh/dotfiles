@@ -2,9 +2,9 @@
 # coding=utf-8
 
 from __future__ import print_function
+import argparse
 import fcntl
 import io
-import optparse
 import os
 import sys
 
@@ -298,8 +298,8 @@ def try_get_value(proper_slice, index):
         return None
 
 
-def _process_line(options, args):
-    proper_slice = args.split(':')
+def _process_line(args):
+    proper_slice = args.pattern.split(':')
     lower_bound = try_get_value(proper_slice, 0)
     upper_bound = try_get_value(proper_slice, 1)
     count = try_get_value(proper_slice, 2)
@@ -313,13 +313,13 @@ def _process_line(options, args):
     if lower_bound is not None:
         f = None
         try:
-            if options.input is None:
+            if args.input is None:
                 fd = sys.stdin.fileno()
                 fl = fcntl.fcntl(fd, fcntl.F_GETFL)
                 fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
                 f = sys.stdin
             else:
-                f = open(options.input, 'r', os.O_NONBLOCK)
+                f = open(args.input, 'r', os.O_NONBLOCK)
             while True:
                 line = f.readline()
                 if len(line) == 0:
@@ -338,8 +338,8 @@ def _process_line(options, args):
         finally:
             f.close()
     elif upper_bound is not None:
-        if options.input is not None:
-            with FileReadBackwards(options.input, encoding="utf-8") as frb:
+        if args.input is not None:
+            with FileReadBackwards(args.input, encoding="utf-8") as frb:
                 # getting lines by lines starting from the last line up
                 for line in frb:
                     if current_line_no >= upper_bound:
@@ -370,15 +370,16 @@ def _process_line(options, args):
 
 
 def main():
-    parser = optparse.OptionParser(optparse.SUPPRESS_USAGE)
-    parser.add_option('-i', dest='input', type='string', help='the absolute path of the input file')
-    options, args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', dest='input', help='the absolute path of the input file')
+    parser.add_argument('-p', dest='pattern', help='lower_bound:upper_bound:count', required=True)
+    args = parser.parse_args()
 
     if args is None:
         parser.print_help()
         exit(1)
     else:
-        _process_line(options, args[0])
+        _process_line(args)
 
 
 if __name__ == '__main__':
