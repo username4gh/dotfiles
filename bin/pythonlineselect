@@ -314,12 +314,13 @@ def _process_line(args):
         f = None
         try:
             if args.input is None:
-                fd = sys.stdin.fileno()
-                fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-                fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+                #fd = sys.stdin.fileno()
+                #fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+                #fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
                 f = sys.stdin
             else:
-                f = open(args.input, 'r', os.O_NONBLOCK)
+                #f = open(args.input, 'r', os.O_NONBLOCK)
+                f = open(args.input, 'r')
             while True:
                 line = f.readline()
                 if len(line) == 0:
@@ -353,9 +354,9 @@ def _process_line(args):
                     current_line_no = current_line_no + 1
         else:
             # stdin is not seekable, so fallback to old readlines()
-            fd = sys.stdin.fileno()
-            fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-            fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+            #fd = sys.stdin.fileno()
+            #fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+            #fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
             lines = sys.stdin.readlines()
             for line in reversed(lines):
                 if current_line_no >= upper_bound:
