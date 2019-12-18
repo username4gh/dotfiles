@@ -1,3 +1,7 @@
 #! /usr/bin/env bash
 
+_percol() {
+    percol --match-method regex "$@"
+}
+
 svn revert $(svn status | pythonlineselect -p 1:: | gawk '{print $2}' | _percol)
