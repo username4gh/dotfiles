@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+vi /tmp/_svn_changelist_stash

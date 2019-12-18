@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+_percol() {
+    percol --match-method regex "$@"
+}
+
+#svn changelist stash $(svn status | _percol | gawk '{print $2}')
+
+svn status | pythonlineselect -p 1:: | gawk '{print $2}' > /tmp/_svn_changelist_stash

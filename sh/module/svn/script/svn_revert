@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+svn revert $(svn status | pythonlineselect -p 1:: | gawk '{print $2}' | _percol)

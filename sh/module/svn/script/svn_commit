@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+if [[ "$#" -lt 1 ]];then
+    echo "Usage: svn_commit_changelist_stash <commit message>"
+else
+    # svn commit --changelist stash -m "$@"
+    result='';
+    while IFS= read -r line;
+    do
+        result+="$line ";
+    done < <(cat /tmp/_svn_changelist_stash)
+    #echo $result
+    svn commit $result -m "$@"
+fi
