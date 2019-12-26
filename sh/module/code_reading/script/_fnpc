@@ -1,3 +1,7 @@
 #! /usr/bin/env bash
 
-percol | cut -d : -f1 | tr -d '\n' | pbcopy
+SELECTION=$(percol)
+
+if [[ "${#SELECTION} -gt 0 "]];then
+    echo $SELECTION | cut -d : -f1 | tr -d '\n' | pbcopy
+fi

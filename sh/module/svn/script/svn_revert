@@ -4,4 +4,8 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-svn revert $(svn status | pythonlineselect -p 1:: | gawk '{print $2}' | _percol)
+FILE=$(svn status | gawk '{print $2}' | _percol)
+
+if [[ "${#FILE}" -gt 0 ]];then
+    svn revert $FILE
+fi

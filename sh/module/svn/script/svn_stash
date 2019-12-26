@@ -5,5 +5,5 @@ _percol() {
 }
 
 #svn changelist stash $(svn status | _percol | gawk '{print $2}')
-
-svn status | pythonlineselect -p 1:: | gawk '{print $2}' > /tmp/_svn_changelist_stash
+# svn changelist do not support directory
+svn status | gawk '{print $2}' > /tmp/_svn_changelist_stash
