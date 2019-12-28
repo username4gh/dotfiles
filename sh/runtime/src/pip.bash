@@ -1,16 +1,26 @@
 #! /usr/bin/env bash
 
 _python_pip_uninstall_all() {
+    if [[ "$#" -ne 1 ]];then
+        return
+    fi
 
     local item
 
     while IFS= read -r item
     do
-        pip uninstall -y "$item"
-    done < <(pip list --format freeze | pythongrep -o '(?<=^).*?(?==)' | pythongrep -v '(lxml|pip|setuptools)')
+        $@ uninstall -y "$item"
+    done < <($@ list --format freeze | cut -d '=' -f1 | pythongrep -v '(lxml|pip|setuptools)')
 }
 
+alias _python_pip2_uninstall_all='_python_pip_uninstall_all pip2'
+alias _python_pip3_uninstall_all='_python_pip_uninstall_all pip3'
+
 _python_pip_upgrade_all() {
+    if [[ "$#" -ne 1 ]];then
+        return
+    fi
+    
     echo "Searching for outdated packages ..."
 
     local item
@@ -18,25 +28,9 @@ _python_pip_upgrade_all() {
     while IFS= read -r item;
     do
         echo "Upgrading $item"
-        pip install --user --upgrade "$item"
-    done < <(pip list --outdated | pythongrep -o '(?<=^).*?(?=\ \()')
+        $@ install --user --upgrade "$item"
+    done < <($@ list -o --format freeze | cut -d '=' -f1)
 }
 
-_python_pip_check_package() {
-    if _is_command_exist pip;then
-        if ! _is_command_exist 'howdoi';then
-            echo "pip : howdoi is not installed!"
-            if [[ "$(_check_os)" == 'Linux' ]];then
-                echo "in ubuntu, in order to install howdoi we need 'apt-get install libxml2-dev libxslt-dev' first"
-            fi
-        fi
-
-        if ! _is_command_exist 'pypw';then
-            echo "pip : pypw is not installed!"
-        fi
-
-        if ! _is_command_exist 'repren';then
-            echo "pip: repren is not installed!"
-        fi
-    fi
-}
+alias _python_pip2_upgrade_all='_python_pip_upgrade_all pip2'
+alias _python_pip3_upgrade_all='_python_pip_upgrade_all pip3'
