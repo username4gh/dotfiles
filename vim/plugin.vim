@@ -47,11 +47,15 @@ Plug 'vim-ruby/vim-ruby'
 if _is_on_heavy_mode()
     Plug 'majutsushi/tagbar'
     Plug 'natebosch/vim-lsc'
-    if !has('nvim')
+    Plug 'natebosch/vim-lsc-dart'
+    Plug 'hrsh7th/deoplete-vim-lsc'
+    if has('nvim')
+        Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+    else
+        Plug 'Shougo/denite.nvim'
         Plug 'roxma/nvim-yarp'
         Plug 'roxma/vim-hug-neovim-rpc'
     endif
-    Plug 'Shougo/denite.nvim'
     Plug g:vim_denite_codesearch
 endif
 
@@ -115,11 +119,10 @@ if _is_on_heavy_mode()
         call denite#custom#option('_', 'highlight_mode_insert', 'CursorLine')
         call denite#custom#option('_', 'highlight_matched_range', 'None')
         call denite#custom#option('_', 'highlight_matched_char', 'None')
-
         " denite key mapping
         map <Leader>B :Denite buffer -no-empty<CR>
-        map <Leader>fs :Denite fsearch -no-empty<CR>
-        map <Leader>cs :Denite csearch -no-empty<CR>
+        map <Leader>fs :Denite cached_file_search -no-empty<CR>
+        map <Leader>cs :Denite cached_code_search -no-empty<CR>
         map <Leader>fg :Denite file/rec/git -no-empty<CR>
         map <Leader>fp :Denite file/rec/py -no-empty<CR>
         map <Leader>gp :Denite grep -no-empty<CR>
@@ -141,23 +144,11 @@ if _is_on_heavy_mode()
 	  \ denite#do_map('toggle_select').'j'
 	endfunction
 
-	autocmd FileType denite-filter call s:denite_filter_my_settings()
+        autocmd FileType denite-filter call s:denite_filter_my_settings()
 	function! s:denite_filter_my_settings() abort
 	  imap <silent><buffer> <C-o> <Plug>(denite_filter_quit)
 	endfunction
-    endif
-
-    if _is_loaded('vim-lsc')
-        if executable('dart_language_server')
-            let g:lsc_server_commands = {'dart': 'dart_language_server'}
-        endif
-        let g:lsc_enable_autocomplete = v:false
-        let g:lsc_auto_map = {
-                    \ 'defaults': v:false, 
-                    \ 'GoToDefinition': '<C-\>',
-                    \ 'NextReference': '<C-]>',
-                    \ 'PreviousReference': '<C-[>'
-                    \}
+        let g:lsc_auto_map = v:true
     endif
 endif
 
