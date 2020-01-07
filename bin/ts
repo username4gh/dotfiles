@@ -1,0 +1,397 @@
+#! /usr/bin/env python
+# coding=utf-8
+
+from __future__ import print_function
+
+import optparse
+import os
+import re
+import sys
+from collections import namedtuple
+
+PY2 = sys.version_info[0] == 2
+PY3 = sys.version_info[0] == 3
+
+
+def identity_function(x):
+    return x
+
+
+if PY3:
+    def str2bytes(s):
+        return s.encode('utf-8')
+
+
+    def int2byte(i):
+        return bytes((i,))
+
+
+    def bytes2str(b):
+        return b.decode('utf-8')
+else:
+    str2bytes = identity_function
+    int2byte = chr
+    bytes2str = identity_function
+
+
+def tostring(b):
+    """ Convert the given bytes or string object to string
+    """
+    if isinstance(b, bytes):
+        return bytes2str(b)
+    else:
+        return b
+
+
+MatchResult = namedtuple('MatchResult', ' '.join([
+    'matching_line',
+    'matching_line_number',
+    'matching_column_ranges']))
+
+
+class ContentMatcher(object):
+    def __init__(self,
+                 pattern,
+                 options=None):
+        self.regex = ContentMatcher._create_regex(pattern,
+                                                  ignore_case=options.ignore_case,
+                                                  whole_words=options.word_regexp,
+                                                  literal_pattern=options.literal)
+        if options.invert_match:
+            self.match_file = self.inverted_matcher
+        else:
+            self.match_file = self.matcher
+
+        # Cache frequently used attributes for faster access
+        self._finditer = self.regex.finditer
+        self._search = self.regex.search
+
+        # Optimize a common case: searching for a simple non-regex string.
+        # In this case, we don't need regex matching - using str.find is
+        # faster.
+        self._find_str = None
+        if not options.ignore_case and not options.word_regexp and ContentMatcher._pattern_is_simple(pattern):
+            self._find_str = pattern
+            self._find_str_len = len(self._find_str)
+
+    def matcher(self, file_obj):
+        try:
+            for line_number, line in enumerate(file_obj, 1):
+                # Iterate over all matches of the pattern in the line,
+                # noting each matching column range.
+                if self._find_str:
+                    # Make the common case faster: there's no match in this line, so
+                    # bail out ASAP.
+                    index = line.find(self._find_str, 0)
+                    if index == -1:
+                        continue
+                    col_ranges = []
+                    while index >= 0:
+                        next_start = index + self._find_str_len
+                        col_ranges.append((index, next_start))
+                        index = line.find(self._find_str, next_start)
+                else:
+                    col_ranges = [match.span() for match in self._finditer(line) if match]
+
+                if col_ranges:
+                    yield MatchResult(line, line_number, col_ranges)
+        except UnicodeDecodeError:
+            pass
+
+    def inverted_matcher(self, file_obj):
+        for line_number, line in enumerate(file_obj, 1):
+            # Invert match: only return lines that don't match the
+            # pattern anywhere
+            try:
+                search_result = self._search(line)
+
+                if search_result is None:
+                    yield MatchResult(line, line_number, [])
+            except Exception as err:
+                print(err)
+
+    @staticmethod
+    def _pattern_is_simple(pattern):
+        """ A "simple" pattern that can be matched with str.find and doesn't
+            require a regex engine.
+        """
+        return bool(re.match('[\\w_]+$', tostring(pattern)))
+
+    @staticmethod
+    def _create_regex(pattern,
+                      ignore_case=False,
+                      whole_words=False,
+                      literal_pattern=False):
+        """ Utility for creating the compiled regex from pattern and options.
+        """
+        if literal_pattern:
+            pattern = re.escape(pattern)
+        if whole_words:
+            b = r'\b' if isinstance(pattern, str) else br'\b'
+            pattern = b + pattern + b
+
+        regex = re.compile(pattern, re.I if ignore_case else 0)
+        return regex
+
+
+class OutputFormatter:
+    def __init__(self,
+                 only_matching=False):
+        self.only_matching = only_matching
+
+        self.output_stream = sys.stdout
+
+    def emit_matching_line(self, match_result):
+        line = match_result.matching_line
+
+        if not self.only_matching:
+            self.emit_line(line)
+        else:
+            # while only_matching we print out all matches line by line, even when multiple matches
+            # in the same line, we just split it with '\n'
+            for i, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
+                self.emit_line(line[match_start:match_end])
+
+    def emit(self, content):
+        """ Write the string to the stream.
+        """
+        self.output_stream.write(tostring(content).strip())
+
+    def emit_line(self, content=''):
+        self.output_stream.write(tostring(content).strip() + os.linesep)
+
+
+def parse_cmdline(cmdline_args):
+    """ Parse the list of command-line options and arguments and return a
+        triple: options, args, parser -- the first two being the result of
+        OptionParser.parse_args, and the third the parser object itself.`
+    """
+    option_parser = optparse.OptionParser(
+        usage='usage: %prog [options] <pattern>',
+        description='Grep like tool',
+        prog='npg',
+        add_help_option=False)  # -h is a real option
+
+    option_parser.add_option('-h', '--help',
+                             action='store_true', dest='help',
+                             help='Display this information')
+    option_parser.add_option('-e', '--extension',
+                             action='store', dest='extension', type='string', default=None,
+                             help='file extension')
+
+    group_searching = optparse.OptionGroup(option_parser, 'Regexp selection and interpretation')
+    group_searching.add_option('-i', '--ignore-case',
+                               action='store_true', dest='ignore_case', default=False,
+                               help='Ignore case distinctions in the pattern')
+    group_searching.add_option('-w', '--word-regexp',
+                               action='store_true', dest='word_regexp', default=False,
+                               help='Force the pattern to match only whole words')
+    group_searching.add_option('-l', '--literal',
+                               action='store_true', dest='literal', default=False,
+                               help='Quote all metacharacters; the pattern is literal')
+    option_parser.add_option_group(group_searching)
+
+    group_miscellaneous = optparse.OptionGroup(option_parser, 'Miscellaneous')
+    group_miscellaneous.add_option('-v', '--invert-match',
+                                   action='store_true', dest='invert_match', default=False,
+                                   help='Invert the sense of matching, to select non-matching lines.')
+    option_parser.add_option_group(group_miscellaneous)
+
+    group_output = optparse.OptionGroup(option_parser, 'Output control')
+    group_output.add_option('-c', '--count',
+                            action='store_true', dest='count', default=False,
+                            help='Suppress normal output; instead print a count of matching lines for each input file.')
+    group_output.add_option('-o', '--only-matching',
+                            action='store_true', dest='only_matching', default=False,
+                            help='Print only the matched (non-empty) parts of a matching line, with each such part on '
+                                 'a separate output line.')
+    option_parser.add_option_group(group_output)
+
+    options, args = option_parser.parse_args(cmdline_args)
+    return options, args, option_parser
+
+
+def _create_output_formatter(options):
+    return OutputFormatter(options.only_matching)
+
+
+def _create_matcher(pattern=None,
+                    options=None):
+    if pattern is None:
+        pattern = b''
+    else:
+        if isinstance(pattern, bytes):
+            pattern = tostring(pattern)
+
+    # Set up the content matcher
+    matcher = ContentMatcher(pattern=pattern,
+                             options=options)
+    return matcher
+
+
+def _search(matcher=None,
+            output_formatter=None,
+            input_file=None,
+            options=None):
+    """ Returns True if a match was found, False otherwise. """
+    match_found = False
+
+    file_obj = None
+
+    try:
+        file_obj = open(input_file)
+
+        matches = list(matcher.match_file(file_obj))
+
+        if matches:
+            match_found = True
+
+            if options.count:
+                output_formatter.emit_line('%s : %s' % (input_file, str(len(matches))))
+            else:
+                output_formatter.emit_line(input_file)
+                for match in matches:
+                    output_formatter.emit_matching_line(match)
+    except (OSError, IOError):
+        pass
+    finally:
+        if file_obj is not None:
+            file_obj.close()
+
+    return match_found
+
+
+def _is_binary(target):
+    if os.path.exists(target):
+        # We open in non-blocking mode so things like file-based sockets
+        # don't hang while waiting for reading th full kb.
+        fd = os.open(target, os.O_NONBLOCK)
+        with os.fdopen(fd) as f:
+            if '\0' in f.read(1024):
+                return True
+    return False
+
+
+def _is_file_wont_be_ignored(extension, target):
+    if extension:
+        if not target.endswith(".%s" % extension):
+            return False
+    if os.path.isdir(target):  # ignore any directory
+        return False
+    if os.stat(target).st_size == 0:
+        return False
+    if _is_binary(target):
+        return False
+    return True
+
+def _is_dir_wont_be_ignored(target):
+    black_list = ['.git']
+    for item in black_list:
+        if item in target:
+            return False
+    return True
+
+
+def _parallel_search(options, output_formatter, matcher, directory):
+    from pathos import multiprocessing as mp
+    # import multiprocessing as mp
+    pool = mp.Pool(mp.cpu_count())
+    try:
+        from scandir import scandir, walk
+    except:
+        from os import scandir, walk
+
+    def process_file_path(entry):
+        try:
+            if entry['is_dir']:
+                if not _is_dir_wont_be_ignored(entry['path']):
+                    return
+                _threading_search(options, output_formatter, matcher, entry['path'])
+            else:
+                if _is_file_wont_be_ignored(options.extension, entry['path']):
+                    _search(matcher=matcher,
+                            output_formatter=output_formatter,
+                            input_file=entry['path'],
+                            options=options)
+        except OSError:
+            pass
+
+    def generate_file_paths():
+        for entry in scandir(directory):
+            st = entry.stat(follow_symlinks=False)
+            entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
+                      'path': os.path.abspath(entry.path)}
+            yield entry_
+
+    try:
+        chunk_size = 4
+        for _ in pool.imap(process_file_path, generate_file_paths(), chunk_size):
+            pass
+        pool.close()
+    except KeyboardInterrupt:
+        pool.terminate()
+    except RuntimeError:
+        pool.terminate()
+
+
+def _threading_search(options, output_formatter, matcher, directory):
+    import threading
+    try:
+        from scandir import scandir, walk
+    except:
+        from os import scandir, walk
+
+    if PY2:
+        import Queue as q
+
+    if PY3:
+        import queue as q
+
+    def do_work(in_queue, out_queue):
+        while True:
+            member = in_queue.get()
+            result = _search(matcher, output_formatter, member, options)
+            out_queue.put(result)
+            in_queue.task_done()
+
+    work_queue = q.Queue()
+    results = q.Queue()
+
+    # start for workers
+    for i in range(4):
+        t = threading.Thread(target=do_work, args=(work_queue, results))
+        t.daemon = True
+        t.start()
+
+    # produce data
+    for (dir_path, dir_names, file_names) in walk(directory, followlinks=False):
+        for filename in file_names:
+            file_path = os.path.join(dir_path, filename)
+            if _is_file_wont_be_ignored(options.extension, file_path):
+                work_queue.put(os.path.abspath(file_path))
+
+    work_queue.join()
+
+
+def main(argv=None):
+    options, args, opt_parser = parse_cmdline(argv[1:])
+
+    if (len(args) == 0) or options.help:
+        opt_parser.print_help()
+        return None
+
+    pattern = args[0]
+
+    output_formatter = _create_output_formatter(options)
+    matcher = _create_matcher(pattern=pattern,
+                              options=options)
+    try:
+        _parallel_search(options, output_formatter, matcher, os.path.curdir)
+    except KeyboardInterrupt:
+        return 'interrupted - exiting'
+    except Exception as err:
+        return str('error: %s' % err)
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
