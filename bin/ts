@@ -12,6 +12,58 @@ from collections import namedtuple
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
+if PY2:
+    import importlib
+    import pkgutil
+    import sys
+
+
+    def find_module(full_module_name):
+        """
+        Returns module object if module `full_module_name` can be imported.
+
+        Returns None if module does not exist.
+
+        Exception is raised if (existing) module raises exception during its import.
+        """
+        module = sys.modules.get(full_module_name)
+        if module is None:
+            module_path_tail = full_module_name.split('.')
+            module_path_head = []
+            loader = True
+            while module_path_tail and loader:
+                module_path_head.append(module_path_tail.pop(0))
+                module_name = ".".join(module_path_head)
+                loader = bool(pkgutil.find_loader(module_name))
+                if not loader:
+                    # Double check if module realy does not exist
+                    # (case: full_module_name == 'paste.deploy')
+                    try:
+                        importlib.import_module(module_name)
+                    except ImportError:
+                        pass
+                    else:
+                        loader = True
+            if loader:
+                module = importlib.import_module(full_module_name)
+        return module
+
+if PY3:
+    import importlib
+
+
+    def find_module(full_module_name):
+        """
+        Returns module object if module `full_module_name` can be imported.
+        Returns None if module does not exist.
+        Exception is raised if (existing) module raises exception during its import.
+        """
+        try:
+            return importlib.import_module(full_module_name)
+        except ImportError as exc:
+            if not (full_module_name + '.').startswith(exc.name + '.'):
+                raise
+
 
 def identity_function(x):
     return x
@@ -293,6 +345,11 @@ def _is_dir_wont_be_ignored(target):
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
+    if not find_module('pathos'):
+        '''if not found pathos, fallback to pure _threading_search'''
+        _threading_search(options, output_formatter, matcher, directory)
+        return
+
     from pathos import multiprocessing as mp
     # import multiprocessing as mp
     pool = mp.Pool(mp.cpu_count())
