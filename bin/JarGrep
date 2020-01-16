@@ -1870,10 +1870,8 @@ def main(argv):
     if options.verbose:
         print(args)
 
-    # path = args[1]
-    # pattern = args[2]
-    path = "/Users/bowei/tmp/dji-sdk-provided-4.10.jar"
-    pattern = 'set.*Callback'
+    path = args[1]
+    pattern = args[2]
 
     if path is None or pattern is None:
         return
