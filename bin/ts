@@ -345,10 +345,9 @@ def _is_dir_wont_be_ignored(target):
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
-    if not find_module('pathos'):
-        '''if not found pathos, fallback to pure _threading_search'''
-        _threading_search(options, output_formatter, matcher, directory)
-        return
+    import signal
+    def init_worker():
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     from pathos import multiprocessing as mp
     # import multiprocessing as mp
@@ -374,20 +373,21 @@ def _parallel_search(options, output_formatter, matcher, directory):
             pass
 
     def generate_file_paths():
-        for entry in scandir(directory):
-            st = entry.stat(follow_symlinks=False)
-            entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
-                      'path': os.path.abspath(entry.path)}
-            yield entry_
+        try:
+            for entry in scandir(directory):
+                st = entry.stat(follow_symlinks=False)
+                entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
+                        'path': os.path.abspath(entry.path)}
+                yield entry_
+        except OSError:
+            pass
 
     try:
         chunk_size = 4
-        for _ in pool.imap(process_file_path, generate_file_paths(), chunk_size):
-            pass
+        pool.imap(process_file_path, generate_file_paths(), chunk_size)
         pool.close()
+        pool.join()
     except KeyboardInterrupt:
-        pool.terminate()
-    except RuntimeError:
         pool.terminate()
 
 
@@ -405,29 +405,35 @@ def _threading_search(options, output_formatter, matcher, directory):
         import queue as q
 
     def do_work(in_queue, out_queue):
-        while True:
-            member = in_queue.get()
-            result = _search(matcher, output_formatter, member, options)
-            out_queue.put(result)
-            in_queue.task_done()
+        try:
+            while True:
+                member = in_queue.get()
+                result = _search(matcher, output_formatter, member, options)
+                out_queue.put(result)
+                in_queue.task_done()
+        except KeyboardInterrupt:
+            pass
 
-    work_queue = q.Queue()
-    results = q.Queue()
+    try:
+        work_queue = q.Queue()
+        results = q.Queue()
 
-    # start for workers
-    for i in range(4):
-        t = threading.Thread(target=do_work, args=(work_queue, results))
-        t.daemon = True
-        t.start()
+        # start for workers
+        for i in range(4):
+            t = threading.Thread(target=do_work, args=(work_queue, results))
+            t.daemon = True
+            t.start()
 
-    # produce data
-    for (dir_path, dir_names, file_names) in walk(directory, followlinks=False):
-        for filename in file_names:
-            file_path = os.path.join(dir_path, filename)
-            if _is_file_wont_be_ignored(options.extension, file_path):
-                work_queue.put(os.path.abspath(file_path))
+        # produce data
+        for (dir_path, dir_names, file_names) in walk(directory, followlinks=False):
+            for filename in file_names:
+                file_path = os.path.join(dir_path, filename)
+                if _is_file_wont_be_ignored(options.extension, file_path):
+                    work_queue.put(os.path.abspath(file_path))
 
-    work_queue.join()
+        work_queue.join()
+    except KeyboardInterrupt:
+        pass
 
 
 def main(argv=None):
@@ -443,7 +449,10 @@ def main(argv=None):
     matcher = _create_matcher(pattern=pattern,
                               options=options)
     try:
-        _parallel_search(options, output_formatter, matcher, os.path.curdir)
+        if not find_module('pathos'):
+            _threading_search(options, output_formatter, matcher, directory)
+        else:
+            _parallel_search(options, output_formatter, matcher, os.path.curdir)
     except KeyboardInterrupt:
         return 'interrupted - exiting'
     except Exception as err:
