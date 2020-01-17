@@ -5,6 +5,13 @@
 from __future__ import print_function
 
 import sys
+import inspect
+import argparse
+import os
+import re
+import struct
+import zipfile
+from collections import namedtuple
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -15,11 +22,160 @@ if PY2:
 if PY3:
     import io
 
-import inspect
-import argparse
-import os
-import struct
-import zipfile
+
+def identity_function(x):
+    return x
+
+
+if PY3:
+    def str2bytes(s):
+        return s.encode('utf-8')
+
+
+    def int2byte(i):
+        return bytes((i,))
+
+
+    def bytes2str(b):
+        return b.decode('utf-8')
+else:
+    str2bytes = identity_function
+    int2byte = chr
+    bytes2str = identity_function
+
+
+def tostring(b):
+    """ Convert the given bytes or string object to string
+    """
+    if isinstance(b, bytes):
+        return bytes2str(b)
+    else:
+        return b
+
+
+MatchResult = namedtuple('MatchResult', ' '.join([
+    'matching_line',
+    'matching_line_number',
+    'matching_column_ranges']))
+
+
+# Matcher
+class ContentMatcher(object):
+    def __init__(self,
+                 pattern,
+                 ignore_case=False,
+                 whole_words=False,
+                 literal_pattern=False,
+                 invert_match=False):
+        self.regex = ContentMatcher._create_regex(pattern,
+                                                  ignore_case=ignore_case,
+                                                  whole_words=whole_words,
+                                                  literal_pattern=literal_pattern)
+        if invert_match:
+            self.match_line = self.inverted_matcher
+        else:
+            self.match_line = self.matcher
+
+        # Cache frequently used attributes for faster access
+        self._finditer = self.regex.finditer
+        self._search = self.regex.search
+
+        # Optimize a common case: searching for a simple non-regex string.
+        # In this case, we don't need regex matching - using str.find is
+        # faster.
+        self._find_str = None
+        if not ignore_case and not whole_words and ContentMatcher._pattern_is_simple(pattern):
+            self._find_str = pattern
+            self._find_str_len = len(self._find_str)
+
+    def matcher(self, line):
+        try:
+            if self._find_str:
+                # Make the common case faster: there's no match in this line, so
+                # bail out ASAP.
+                index = line.find(self._find_str, 0)
+                if index == -1:
+                    return
+                col_ranges = []
+                while index >= 0:
+                    next_start = index + self._find_str_len
+                    col_ranges.append((index, next_start))
+                    index = line.find(self._find_str, next_start)
+            else:
+                col_ranges = [match.span() for match in self._finditer(line) if match]
+
+            if col_ranges:
+                yield MatchResult(line, line_number, col_ranges)
+        except Exception as err:
+            print(err)
+
+    def inverted_matcher(self, line):
+        try:
+            search_result = self._search(line)
+
+            if search_result is None:
+                yield MatchResult(line, line_number, [])
+        except Exception as err:
+            print(err)
+
+    @staticmethod
+    def _pattern_is_simple(pattern):
+        """ A "simple" pattern that can be matched with str.find and doesn't
+            require a regex engine.
+        """
+        return bool(re.match('[\w_]+$', tostring(pattern)))
+
+    @staticmethod
+    def _create_regex(pattern,
+                      ignore_case=False,
+                      whole_words=False,
+                      literal_pattern=False):
+        """ Utility for creating the compiled regex from pattern and options.
+        """
+        if literal_pattern:
+            pattern = re.escape(pattern)
+        if whole_words:
+            b = r'\b' if isinstance(pattern, str) else br'\b'
+            pattern = b + pattern + b
+
+        regex = re.compile(pattern, re.I if ignore_case else 0)
+        return regex
+
+
+# Memoization
+class Memoize:
+    """Memoize(fn) - an instance which acts like fn but memoizes its arguments
+       Will only work on functions with non-mutable arguments
+    """
+
+    def __init__(self, fn):
+        self.fn = fn
+        self.memo = {}
+
+    def __call__(self, *args):
+        if not self.memo.has_key(args):
+            self.memo[args] = self.fn(*args)
+        return self.memo[args]
+
+
+class MemoizeMutable:
+    """Memoize(fn) - an instance which acts like fn but memoizes its arguments
+       Will work on functions with mutable arguments (slower than Memoize)
+    """
+
+    def __init__(self, fn):
+        self.fn = fn
+        self.memo = {}
+
+    def __call__(self, *args):
+        try:
+            import cPickle
+            args_str = cPickle.dumps(args)
+            if not self.memo.has_key(args_str):
+                self.memo[args_str] = self.fn(*args)
+            return self.memo[args_str]
+        except ModuleNotFoundError:
+            pass
 
 
 # --- basic type
@@ -28,6 +184,7 @@ import zipfile
 class u:
     def __init__(self):
         self.value = None
+
 
 class u1(u):
     def __init__(self):
@@ -68,25 +225,25 @@ class u4(u):
 class un(u):
     def __init__(self):
         u.__init__(self)
-        #self.value = []
+        # self.value = []
 
     def read(self, f, n):
-        #for _ in range(n):
+        # for _ in range(n):
         #    temp = u1()
         #    temp.read(f)
         #    self.value.append(temp)
         self.value = f.read(n)
 
     def un_2str(self):
-        #result = ''
-        #for v in self.value:
+        # result = ''
+        # for v in self.value:
         #    result = result + v.value.decode()
-        #return result
+        # return result
         return self.utf8m_to_utf8s(self.value)
 
     def utf8m_to_utf8s(self, string):
         """
-        :param string: modified utf8 encoded string 
+        :param string: modified utf8 encoded string
         :return: utf8 encoded string
         """
         new_string = []
@@ -109,36 +266,36 @@ class un(u):
                 byte2 = string[i]
                 i += 1
                 byte3 = string[i]
-                if i+3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
+                if i + 3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
                     # See if this is a pair of 3byte encodings
-                    byte4 = string[i+1]
-                    byte5 = string[i+2]
-                    byte6 = string[i+3]
+                    byte4 = string[i + 1]
+                    byte5 = string[i + 2]
+                    byte6 = string[i + 3]
                     if byte4 == 0xED and (byte5 & 0xF0) == 0xB0:
-                        
                         # Bits in: 11101101 1010xxxx 10xxxxxx
                         # Bits in: 11101101 1011xxxx 10xxxxxx
                         i += 3
-                        
+
                         # Reconstruct 21 bit code
                         u21 = ((byte2 & 0x0F) + 1) << 16
                         u21 += (byte3 & 0x3F) << 10
                         u21 += (byte5 & 0x0F) << 6
                         u21 += (byte6 & 0x3F)
-                        
+
                         # Bits out: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-                        
+
                         # Convert to 4byte encoding
                         new_string.append(0xF0 + ((u21 >> 18) & 0x07))
                         new_string.append(0x80 + ((u21 >> 12) & 0x3F))
                         new_string.append(0x80 + ((u21 >> 6) & 0x3F))
                         new_string.append(0x80 + (u21 & 0x3F))
-                        continue 
+                        continue
                 new_string.append(byte1)
                 new_string.append(byte2)
                 new_string.append(byte3)
             i += 1
         return bytes(new_string).decode('utf-8')
+
 
 # ------------------------------------------ constant pool ------------------------------------------
 
@@ -149,11 +306,12 @@ class constant_pool_info:
     def read(self, f):
         self.tag.read(f)
 
-    def search(self, pattern):
-        if pattern is None:
+    def search(self, matcher):
+        if matcher is None:
             # for pattern be empty, just return true
             return True
-        if pattern in self.dump():
+        matches = list(matcher.match_line(self.dump()))
+        if matches:
             return True
         return False
 
@@ -1143,6 +1301,7 @@ class InfoHolder:
     """
     hold info for later processing
     """
+
     def __init__(self):
         self.magic = None
         self.minor_version = None
@@ -1185,6 +1344,7 @@ class JavaClass:
     """
     Represent Java Class
     """
+
     def __init__(self):
         self.magic = u4()
         self.minor_version = u2()
@@ -1305,8 +1465,10 @@ class JavaClassReader:
         :return:
         """
         self.java_class.this_class.read(f)
-        self.output.this_class = "{\"this_class\": " + str(self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
-                                 + self.output.constant_pool[self.output.constant_pool[self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+        self.output.this_class = "{\"this_class\": " + str(
+            self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
+                                 + self.output.constant_pool[self.output.constant_pool[
+            self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
 
     def read_super_class(self, f):
         """
@@ -1317,7 +1479,8 @@ class JavaClassReader:
         try:
             self.java_class.super_class.read(f)
             self.output.super_class = "{\"super_class\": " + str(self.java_class.super_class.u2_2int()) + \
-                                  ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[self.java_class.super_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+                                      ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[
+                self.java_class.super_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
         except KeyError:
             pass
 
@@ -1332,7 +1495,9 @@ class JavaClassReader:
             interface = u2()
             interface.read(f)
             self.java_class.interfaces.append(interface)
-            self.output.interfaces.append("{\"interface\": \"" + str(interface.u2_2int()) + ", \"class_name\": \"" + self.output.constant_pool[self.output.constant_pool[interface.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}")
+            self.output.interfaces.append(
+                "{\"interface\": \"" + str(interface.u2_2int()) + ", \"class_name\": \"" + self.output.constant_pool[
+                    self.output.constant_pool[interface.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}")
 
     def read_fields(self, f):
         """
@@ -1429,37 +1594,37 @@ class Processor:
         pass
 
     @staticmethod
-    def search_constant_pool(content, pattern):
+    def search_constant_pool(content, matcher):
         for info in list(content.values()):
-            if info.search(pattern):
+            if info.search(matcher):
                 print(info.dump())
                 return True
         return False
 
     @staticmethod
-    def _process_class_file(options, path, pattern):
+    def _process_class_file(options, path, matcher):
         """
         when path is normal class file
         :param path:
-        :param pattern:
+        :param matcher:
         :return:
         """
-        f = open(path, 'rb') # open as a binary file
-        callback = lambda:print(path)
-        Processor._process(options, f, pattern, callback)
+        f = open(path, 'rb')  # open as a binary file
+        callback = lambda: print(path)
+        Processor._process(options, f, matcher, callback)
 
     @staticmethod
-    def _process(options, f, pattern, callback):
+    def _process(options, f, matcher, callback):
         reader = JavaClassReader()
         reader.read(f)
         if options.dump:
             reader.output.dump()
         else:
-            if Processor.search_constant_pool(reader.output.constant_pool, pattern):
+            if Processor.search_constant_pool(reader.output.constant_pool, matcher):
                 callback()
 
     @staticmethod
-    def _process_zip_file_with_threading(options, path, pattern):
+    def _process_zip_file_with_threading(options, path, matcher):
         f = zipfile.ZipFile(path)
 
         import threading
@@ -1474,8 +1639,8 @@ class Processor:
             while True:
                 member = in_queue.get()
                 member_file = f.open(member)
-                callback = lambda:print(member)
-                result = Processor._process(options, member_file, pattern, callback)
+                callback = lambda: print(member)
+                result = Processor._process(options, member_file, matcher, callback)
                 member_file.close()
                 out_queue.put(result)
                 in_queue.task_done()
@@ -1498,18 +1663,18 @@ class Processor:
         f.close()
 
     @staticmethod
-    def process(options=None, path=None, pattern=None):
+    def process(options=None, path=None, matcher=None):
         """
         入口函数
         :param path:
-        :param pattern:
+        :param matcher:
         :return:
         """
         if zipfile.is_zipfile(path):
-            Processor._process_zip_file_with_threading(options, path, pattern)
+            Processor._process_zip_file_with_threading(options, path, matcher)
         else:
             if Processor._is_class_file(path):
-                Processor._process_class_file(options, path, pattern)
+                Processor._process_class_file(options, path, matcher)
 
     @staticmethod
     def dump_by_file_pattern(path, file_pattern):
@@ -1523,7 +1688,7 @@ class Processor:
             with zipfile.ZipFile(path) as z:
                 for member in z.namelist():
                     if file_pattern in member:
-                        output_file = file('./' + Processor._generate_class_name(member), 'wr')
+                        output_file = open('./' + Processor._generate_class_name(member), 'wr')
                         output_file.write(z.open(member, 'r').read())
 
     @staticmethod
@@ -1640,7 +1805,7 @@ class Logger:
             print(content)
 
 
-def _parallel_process(options, pattern, directory):
+def _parallel_process(options, matcher, directory):
     from pathos import multiprocessing as mp
     pool = mp.Pool(mp.cpu_count())
     from scandir import scandir, walk
@@ -1656,17 +1821,17 @@ def _parallel_process(options, pattern, directory):
                             if os.stat(filepath).st_size == 0:
                                 continue
                             try:
-                                Processor.process(options, filepath, pattern)
+                                Processor.process(options, filepath, matcher)
                             except:
                                 return filepath
             else:
                 try:
-                    Processor.process(options, dir_entry['path'], pattern)
+                    Processor.process(options, dir_entry['path'], matcher)
                 except:
                     return dir_entry['path']
         except:
             pass
-    
+
     def _generateFilepaths(d):
         for entry in scandir(d):
             if entry.is_dir(follow_symlinks=False):
@@ -1674,20 +1839,20 @@ def _parallel_process(options, pattern, directory):
                     yield inner_entry
             else:
                 yield entry
-         
+
     def generateFilepaths():
         for entry in _generateFilepaths(directory):
             st = entry.stat(follow_symlinks=False)
-            st_ = {'st_mode':st.st_mode, 'st_size':st.st_size,\
-                    'st_atime':st.st_atime, 'st_mtime':st.st_mtime,\
-                    'st_ctime':st.st_ctime}
+            st_ = {'st_mode': st.st_mode, 'st_size': st.st_size, \
+                   'st_atime': st.st_atime, 'st_mtime': st.st_mtime, \
+                   'st_ctime': st.st_ctime}
             # now convert the entry object to entry_
-            entry_ = {'name':entry.name, 'is_dir':entry.is_dir(follow_symlinks=False), \
-                    'path':entry.path, 'stat':st_}
+            entry_ = {'name': entry.name, 'is_dir': entry.is_dir(follow_symlinks=False), \
+                      'path': entry.path, 'stat': st_}
             yield entry_
 
     try:
-        chunk_size = 4 # For very long iterables using a large value for chunksize can make the job complete much faster than using the default value of 1.
+        chunk_size = 4  # For very long iterables using a large value for chunksize can make the job complete much faster than using the default value of 1.
         for result in pool.imap(processFilepath, generateFilepaths(), chunk_size):
             if result is not None:
                 print(result)
@@ -1696,7 +1861,6 @@ def _parallel_process(options, pattern, directory):
         pool.terminate()
     except RuntimeError:
         pool.terminate()
-
 
 
 # ------------------------------------------ main ------------------------------------------
@@ -1711,6 +1875,7 @@ def main(argv):
 
     if path is None or pattern is None:
         return
+    matcher = ContentMatcher(pattern)
 
     if not os.path.exists(path):
         print(path + " not exist")
@@ -1721,12 +1886,13 @@ def main(argv):
         Profiler.begin()
 
     if os.path.isdir(path):
-        _parallel_process(options, pattern, path)
+        _parallel_process(options, matcher, path)
     else:
-        Processor.process(options, path, pattern)
+        Processor.process(options, path, matcher)
 
     if options.benchmark:
         Profiler.end()
 
 
 sys.exit(main(sys.argv))
+
