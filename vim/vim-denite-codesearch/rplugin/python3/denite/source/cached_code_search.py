@@ -6,6 +6,25 @@ from denite import util, process
 from denite.base.source import Base
 from denite.util import Nvim, UserContext, Candidates, Candidate
 
+
+HEADER_SYNTAX = (
+        'syntax match deniteSource_Header '
+        r'/\v[^:]*:\d+(:\d+)? / '
+        'contained keepend')
+FILE_SYNTAX = (
+        'syntax match deniteSource_File '
+        r'/[^:]*:/ '
+        'contained containedin=deniteSource_Header '
+        'nextgroup=deniteSource_LineNR')
+FILE_HIGHLIGHT = 'highlight default link deniteSource_File Comment'
+LINE_SYNTAX = (
+        'syntax match deniteSource_LineNR '
+        r'/\d\+\(:\d\+\)\?/ '
+        'contained containedin=deniteSource_Header')
+LINE_HIGHLIGHT = 'highlight default link deniteSource_LineNR LineNR'
+PATTERNS_HIGHLIGHT = 'highlight default link denitePatterns Function'
+
+
 class BaseSource(Base):
     def on_init(self, context: UserContext) -> None:
         context['__proc'] = None
@@ -76,6 +95,26 @@ class BaseSource(Base):
                 self.vim.call('denite#util#input', 'Pattern: ')
             ]
         return [x for x in patterns if x]
+
+    def highlight(self) -> None:
+        self.vim.command(HEADER_SYNTAX)
+        self.vim.command(FILE_SYNTAX)
+        self.vim.command(FILE_HIGHLIGHT)
+        self.vim.command(LINE_SYNTAX)
+        self.vim.command(LINE_HIGHLIGHT)
+        self.vim.command(PATTERNS_HIGHLIGHT)
+
+    def define_syntax(self) -> None:
+        self.vim.command(
+            'syntax region ' + self.syntax_name + ' start=// end=/$/ '
+            'contains=deniteSource_Header,deniteMatchedRange contained')
+        if self.context['__patterns']:
+            self.vim.command(
+                'syntax match denitePatterns ' +
+                r'/%s/ ' % r'\|'.join(
+                    util.regex_convert_str_vim(pattern)
+                    for pattern in self.context['__patterns']) +
+                'contained containedin=' + self.syntax_name)
 
 ########################################################################################################################
 
