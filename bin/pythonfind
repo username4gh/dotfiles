@@ -29,7 +29,7 @@ if PY2:
             module_path_tail = full_module_name.split('.')
             module_path_head = []
             loader = True
-            while module_path_tail and loader:
+            while module_path_tail and oader:
                 module_path_head.append(module_path_tail.pop(0))
                 module_name = ".".join(module_path_head)
                 loader = bool(pkgutil.find_loader(module_name))
@@ -342,35 +342,6 @@ def match(query, path, basename):
     return not result if options.invert else result
 
 
-def _search(query, root, depth):
-    try:
-        contents = os.listdir(root)
-    except OSError:
-        err('Error: `' + root + '`: Permission denied')
-        return
-
-    dirs = []
-
-    for item in contents:
-        path = os.path.join(root, item)
-
-        if options.ignore_hidden and is_hidden(path):
-            continue
-
-        is_dir = os.path.isdir(path)
-
-        if is_dir:
-            if options.follow or not os.path.islink(path):
-                dirs.append(path)
-        if match(query, path, item):
-            if depth >= options.mindepth:
-                out(path)
-
-    if depth < options.maxdepth:
-        for d in dirs:
-            _search(query, d, depth + 1)
-
-
 def _parallel_search(query, directory):
     import signal
 
@@ -426,11 +397,87 @@ def _parallel_search(query, directory):
         pool.join()
 
 
+def _threading_search(query, directory):
+    import threading
+    if PY2:
+        import Queue as q
+
+    if PY3:
+        import queue as q
+
+    class Drainer(object):
+        def __init__(self, queue):
+            self.queue = queue
+
+        def __iter__(self):
+            while True:
+                try:
+                    yield self.queue.get_nowait()
+                except q.Empty:
+                    break
+
+    def do_work(in_queue, out_queue):
+        try:
+            while True:
+                member = in_queue.get()
+                if match(query, member['dir_path'], member['filename']):
+                    out_queue.put(os.path.join(member['dir_path'], member['filename']))
+                in_queue.task_done()
+        except KeyboardInterrupt:
+            pass
+
+    def walk_recursively(root, depth):
+        try:
+            contents = os.listdir(root)
+        except OSError:
+            err('Error: `' + root + '`: Permission denied')
+            return
+
+        dirs = []
+
+        for item in contents:
+            path = os.path.join(root, item)
+
+            if options.ignore_hidden and is_hidden(path):
+                continue
+
+            is_dir = os.path.isdir(path)
+
+            if is_dir:
+                if options.follow or not os.path.islink(path):
+                    dirs.append(path)
+            if depth >= options.mindepth:
+                work_queue.put({'dir_path': root, 'filename': item})
+        if depth < options.maxdepth:
+            for d in dirs:
+                walk_recursively(d, depth + 1)
+
+    try:
+        work_queue = q.Queue()
+        results = q.Queue()
+
+        # start for workers
+        for i in range(4):
+            t = threading.Thread(target=do_work, args=(work_queue, results))
+            t.daemon = True
+            t.start()
+
+        # produce data
+        walk_recursively(directory, 1)
+
+        work_queue.join()
+
+        for result in Drainer(results):
+            print(result)
+    except KeyboardInterrupt:
+        pass
+
+
 def search(query, directory='.', depth=1):
     if options.parallel and find_module('pathos.multiprocessing') and find_module("scandir"):
         _parallel_search(query, directory)
     else:
-        _search(query, directory, depth)
+        _threading_search(query, directory)
 
 
 # Option Parsing and Main -----------------------------------------------------
@@ -604,12 +651,16 @@ def main(argv):
     # --mindepth
     try:
         options.mindepth = int(options.mindepth)
+        if options.mindepth < 1:
+            die('mindepth must be a non-negative integer, also depth starts from 1, eg. the depth of current dir is 1')
     except ValueError:
         die('mindepth must be a non-negative integer')
 
     # --maxdepth
     try:
         options.maxdepth = int(options.maxdepth)
+        if options.maxdepth < 1:
+            die('mindepth must be a non-negative integer, also depth starts from 1, eg. the depth of current dir is 1')
     except ValueError:
         die('maxdepth must be a non-negative integer')
 
