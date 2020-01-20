@@ -29,7 +29,7 @@ if PY2:
             module_path_tail = full_module_name.split('.')
             module_path_head = []
             loader = True
-            while module_path_tail and oader:
+            while module_path_tail and loader:
                 module_path_head.append(module_path_tail.pop(0))
                 module_name = ".".join(module_path_head)
                 loader = bool(pkgutil.find_loader(module_name))
