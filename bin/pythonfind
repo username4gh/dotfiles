@@ -421,7 +421,7 @@ def _threading_search(query, directory):
             while True:
                 member = in_queue.get()
                 if match(query, member['dir_path'], member['filename']):
-                    out_queue.put(os.path.join(member['dir_path'], member['filename']))
+                    out_queue.put(member['dir_path'])
                 in_queue.task_done()
         except KeyboardInterrupt:
             pass
@@ -447,7 +447,7 @@ def _threading_search(query, directory):
                 if options.follow or not os.path.islink(path):
                     dirs.append(path)
             if depth >= options.mindepth:
-                work_queue.put({'dir_path': root, 'filename': item})
+                work_queue.put({'dir_path': path, 'filename': item})
         if depth < options.maxdepth:
             for d in dirs:
                 walk_recursively(d, depth + 1)
