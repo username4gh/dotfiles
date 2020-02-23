@@ -47,12 +47,12 @@ def _process_line(options):
 def main():
     parser = optparse.OptionParser(optparse.SUPPRESS_USAGE)
     parser.add_option('--in-place', dest='in_place', action='store_true', help='edit the file in-place')
-    parser.add_option('--input', dest='input', type='string', help='the input file, in-omittable')
+    parser.add_option('--input', dest='input', type='string', help='the input file, omittable')
     parser.add_option('--output', dest='output', type='string', help='the output file, omittable')
     parser.add_option('--lambda-string', dest='lambda_string', type='string', help='\"lambda x:x.something()\", here we assume x is str, also the double quote is necessary')
     options, args = parser.parse_args()
 
-    if options.input is None or options.lambda_string is None:
+    if options.lambda_string is None:
         parser.print_help()
         exit(1)
     else:
