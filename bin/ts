@@ -193,16 +193,17 @@ class OutputFormatter:
 
         self.output_stream = sys.stdout
 
-    def emit_matching_line(self, match_result):
+    def emit_matching_line(self, matching_file, match_result):
         line = match_result.matching_line
 
-        if not self.only_matching:
+        if self.only_matching:
             self.emit_line(line)
         else:
             # while only_matching we print out all matches line by line, even when multiple matches
             # in the same line, we just split it with '\n'
-            for i, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
-                self.emit_line(line[match_start:match_end])
+            for _, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
+                self.emit_line(
+                    '%s:%s:%s' % (matching_file, match_result.matching_line_number, line[match_start:match_end]))
 
     def emit(self, content):
         """ Write the string to the stream.
@@ -301,9 +302,8 @@ def _search(matcher=None,
             if options.count:
                 output_formatter.emit_line('%s : %s' % (input_file, str(len(matches))))
             else:
-                output_formatter.emit_line(input_file)
                 for match in matches:
-                    output_formatter.emit_matching_line(match)
+                    output_formatter.emit_matching_line(input_file, match)
     except (OSError, IOError):
         pass
     finally:
@@ -335,6 +335,7 @@ def _is_file_wont_be_ignored(extension, target):
     if _is_binary(target):
         return False
     return True
+
 
 def _is_dir_wont_be_ignored(target):
     black_list = ['.git']
@@ -377,7 +378,7 @@ def _parallel_search(options, output_formatter, matcher, directory):
             for entry in scandir(directory):
                 st = entry.stat(follow_symlinks=False)
                 entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
-                        'path': os.path.abspath(entry.path)}
+                          'path': os.path.abspath(entry.path)}
                 yield entry_
         except OSError:
             pass
@@ -450,7 +451,7 @@ def main(argv=None):
                               options=options)
     try:
         if not find_module('pathos'):
-            _threading_search(options, output_formatter, matcher, directory)
+            _threading_search(options, output_formatter, matcher, os.path.curdir)
         else:
             _parallel_search(options, output_formatter, matcher, os.path.curdir)
     except KeyboardInterrupt:
@@ -461,3 +462,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
+
