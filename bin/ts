@@ -203,7 +203,7 @@ class OutputFormatter:
             # in the same line, we just split it with '\n'
             for _, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
                 self.emit_line(
-                    '%s:%s:%s' % (matching_file, match_result.matching_line_number, line[match_start:match_end]))
+                    '%s:%s:%s' % (matching_file, match_result.matching_line_number, line))
 
     def emit(self, content):
         """ Write the string to the stream.
