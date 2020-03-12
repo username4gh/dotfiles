@@ -1,4 +1,4 @@
 #! /usr/bin/env bash
 
-git config --global http.proxy 'socks5://127.0.0.1:1080'
-git config --global https.prxoy 'socks5://127.0.0.1:1080'
+git config --global http.proxy 'socks5://127.0.0.1:10800'
+git config --global https.prxoy 'socks5://127.0.0.1:10800'

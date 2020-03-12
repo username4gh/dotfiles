@@ -3,7 +3,7 @@
         "loglevel": "info"
     },
     "inbound": {
-        "port": 1080,
+        "port": 10800,
         "listen": "127.0.0.1",
         "protocol": "socks",
         "domainOverride": [

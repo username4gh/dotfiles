@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
 
-rsync -e 'ssh -o "ProxyCommand /usr/bin/nc -x localhost:1080 %h %p"' "$@"
+rsync -e 'ssh -o "ProxyCommand /usr/bin/nc -x localhost:10800 %h %p"' "$@"
