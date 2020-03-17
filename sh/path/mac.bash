@@ -22,9 +22,7 @@ if _is_darwin; then
         export PATH="/usr/local/opt/qt/bin:$PATH"
 
         # prefer `homebrew/versions/bash-completion2`, the `bash-completion` package wonn't work properly with other stuff in this dotfile, some function is missing
-        if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
-            . $(brew --prefix)/share/bash-completion/bash_completion
-        fi
+        [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
     else
         echo "install [macports](https://www.macports.org/) or [homebrew](http://brew.sh/)"
     fi
