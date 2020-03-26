@@ -4,4 +4,8 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-svn rm $(svn status | _percol | gawk '{print $2}')
+FILE=$(svn status | _percol | gawk '{print $2}')
+
+if [[ "${#FILE}" -gt 0 ]];then
+    svn rm $FILE
+fi
