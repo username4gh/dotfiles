@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+svn rm $(svn status | _percol | gawk '{print $2}')
