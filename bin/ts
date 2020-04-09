@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 # coding=utf-8
 
+# TODO 可能的优化点，目前的设计是每个进程在处理完一个文件后就往std输出结果，而这个操作对于多个进程是互斥的，这样是否会造成
+#  某些情况下，例如一个处理很多文件但是命中很少的进程被另外一个处理很少文件但是命中很高的进程常常阻塞？
+#  因为目前的工作在多个进程间不是平均分配的，并没有实现work-steal，这样每个cpu核心上分配的任务就不太一样了
+
 from __future__ import print_function
 
 import optparse
@@ -313,49 +317,62 @@ def _search(matcher=None,
     return match_found
 
 
-def _is_binary(target):
-    if os.path.exists(target):
-        # We open in non-blocking mode so things like file-based sockets
-        # don't hang while waiting for reading th full kb.
-        fd = os.open(target, os.O_NONBLOCK)
-        with os.fdopen(fd) as f:
+def _is_utf8_text_file(target):
+    # We open in non-blocking mode so things like file-based sockets
+    # don't hang while waiting for reading th full kb.
+    fd = os.open(target, os.O_NONBLOCK)
+    with os.fdopen(fd) as f:
+        try:
             if '\0' in f.read(1024):
+                return False
+            else:
                 return True
-    return False
+        except UnicodeDecodeError:
+            return False
+
+
+extension_regex = re.compile(".*(fidlgen|js|pm|pkg|txt)$")
 
 
 def _is_file_wont_be_ignored(extension, target):
-    if extension:
+    if extension is not None:
         if not target.endswith(".%s" % extension):
             return False
-    if os.path.isdir(target):  # ignore any directory
+    if extension_regex.match(target):
+        return False
+    if os.path.islink(target):
+        return False
+    if os.path.isdir(target):
         return False
     if os.stat(target).st_size == 0:
         return False
-    if _is_binary(target):
+    if not _is_utf8_text_file(target):
         return False
     return True
 
 
+black_list = ['git', 'hg', 'svn']
+
+
 def _is_dir_wont_be_ignored(target):
-    black_list = ['.git']
     for item in black_list:
-        if item in target:
+        if target.endswith(".%s" % item):
             return False
     return True
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
     import signal
+
     def init_worker():
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     from pathos import multiprocessing as mp
-    # import multiprocessing as mp
+
     pool = mp.Pool(mp.cpu_count())
     try:
         from scandir import scandir, walk
-    except:
+    except ImportError:
         from os import scandir, walk
 
     def process_file_path(entry):
@@ -376,7 +393,7 @@ def _parallel_search(options, output_formatter, matcher, directory):
     def generate_file_paths():
         try:
             for entry in scandir(directory):
-                st = entry.stat(follow_symlinks=False)
+                # st = entry.stat(follow_symlinks=False)
                 entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
                           'path': os.path.abspath(entry.path)}
                 yield entry_
@@ -396,16 +413,16 @@ def _threading_search(options, output_formatter, matcher, directory):
     import threading
     try:
         from scandir import scandir, walk
-    except:
+    except ImportError:
         from os import scandir, walk
 
     if PY2:
-        import Queue as q
+        import Queue as que
 
     if PY3:
-        import queue as q
+        import queue as que
 
-    def do_work(in_queue, out_queue):
+    def do_search_work(in_queue, out_queue):
         try:
             while True:
                 member = in_queue.get()
@@ -415,24 +432,42 @@ def _threading_search(options, output_formatter, matcher, directory):
         except KeyboardInterrupt:
             pass
 
-    try:
-        work_queue = q.Queue()
-        results = q.Queue()
+    def do_dir_list_work(list_queue, search_queue):
+        try:
+            while True:
+                dir_to_list = list_queue.get()
+                for entry in scandir(dir_to_list):
+                    if entry.is_dir(follow_symlinks=False):
+                        if _is_dir_wont_be_ignored(entry.path):
+                            list_queue.put(entry.path)
+                    else:
+                        file_path = os.path.abspath(entry.path)
+                        if _is_file_wont_be_ignored(options.extension, file_path):
+                            search_queue.put(entry.path)
+                list_queue.task_done()
+        except KeyboardInterrupt:
+            pass
 
-        # start for workers
-        for i in range(4):
-            t = threading.Thread(target=do_work, args=(work_queue, results))
+    try:
+        list_work_queue = que.Queue()
+        search_work_queue = que.Queue()
+        search_result_queue = que.Queue()
+
+        # start for list workers
+        for _ in range(6):
+            t = threading.Thread(target=do_dir_list_work, args=(list_work_queue, search_work_queue))
             t.daemon = True
             t.start()
 
-        # produce data
-        for (dir_path, dir_names, file_names) in walk(directory, followlinks=False):
-            for filename in file_names:
-                file_path = os.path.join(dir_path, filename)
-                if _is_file_wont_be_ignored(options.extension, file_path):
-                    work_queue.put(os.path.abspath(file_path))
+        # start for search workers
+        for _ in range(2):
+            t = threading.Thread(target=do_search_work, args=(search_work_queue, search_result_queue))
+            t.daemon = True
+            t.start()
 
-        work_queue.join()
+        list_work_queue.put(directory)
+        list_work_queue.join()
+        search_work_queue.join()
     except KeyboardInterrupt:
         pass
 
