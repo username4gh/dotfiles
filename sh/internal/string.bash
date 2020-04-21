@@ -21,6 +21,13 @@ _string_trim() {
     echo "$(echo -e "${1}" | tr -d '[[:space:]]')"
 }
 
+_string_split_by() {
+    if [[ "$#" -eq 2 ]];then
+        ARRAY=(${1//$2/ })
+        echo "$ARRAY"
+    fi
+}
+
 _string_replace_front_end() {
     string="$1"
     substring="$2"
