@@ -39,3 +39,9 @@ _file_name_from_uri() {
         echo "${1##*/}"
     fi
 }
+
+_file_abspath() {
+    pushd "$(dirname "$1")" > /dev/null;
+    echo "$(pwd -P)/$(basename "$1";)";
+    popd > /dev/null;
+}
