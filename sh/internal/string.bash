@@ -117,3 +117,19 @@ _string_remove_from_back_greedy() {
     substring="$2"
     echo "${input%%substring}"
 }
+
+_string_uppercase() {
+    echo "${1^^}"
+}
+
+_string_uppercase_first_letter() {
+    echo "${1^}"
+}
+
+_string_lowercase() {
+    echo "${1,,}"
+}
+
+_string_lowercase_first_letter() {
+    echo "${1,}"
+}
