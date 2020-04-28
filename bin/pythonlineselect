@@ -373,7 +373,7 @@ def _process_line(args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', dest='input', help='the absolute path of the input file')
-    parser.add_argument('-p', dest='pattern', help='lower_bound:upper_bound:count', required=True)
+    parser.add_argument('-p', dest='pattern', help='lower_bound:upper_bound:count, lower_bound & upper_bound both start from 0', required=True)
     args = parser.parse_args()
 
     if args is None:
