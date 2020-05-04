@@ -35,7 +35,7 @@ def process(file_name: str) -> None:
     Process the given JSON file.
     """
     d: Dict = read_file(file_name)
-    traverse("root", d)
+    traverse("$", d)
 
 
 ##############################################################################
