@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+_rg --type-add "foo:*.$1" -tfoo "$2"

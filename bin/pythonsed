@@ -24,9 +24,13 @@ def _process_line(options):
             f.close()
 
     func = eval(options.lambda_string)
+    result_lines = []
 
     for i in range(0, len(lines)):
-        lines[i] = func(lines[i])
+        # lines[i] = func(lines[i])
+        line = func(lines[i])
+        if line is not None:
+            result_lines += line
 
     try:
         if options.in_place:
@@ -36,7 +40,7 @@ def _process_line(options):
         else:
             f = open(options.output, 'w')
         # here we use the completely-override-write to make it's easy to implement in-place edit
-        f.writelines(lines)
+        f.writelines(result_lines)
     except IOError as err:
         print(err)
     finally:
@@ -49,7 +53,7 @@ def main():
     parser.add_option('--in-place', dest='in_place', action='store_true', help='edit the file in-place')
     parser.add_option('--input', dest='input', type='string', help='the input file, omittable')
     parser.add_option('--output', dest='output', type='string', help='the output file, omittable')
-    parser.add_option('--lambda-string', dest='lambda_string', type='string', help='\"lambda x:x.something()\", here we assume x is str, also the double quote is necessary')
+    parser.add_option('--lambda-string', dest='lambda_string', type='string', help='\"lambda x:x.something()\", the double quote cannot be omitted, here we assume x is str, represents one line of content from input file; x.something() is all about line-based operation, if x.something() returns None, then this line will be deleted')
     options, args = parser.parse_args()
 
     if options.lambda_string is None:
