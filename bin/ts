@@ -225,8 +225,8 @@ def parse_cmdline(cmdline_args):
     """
     option_parser = optparse.OptionParser(
         usage='usage: %prog [options] <pattern>',
-        description='Grep like tool',
-        prog='npg',
+        description='ts short for TextSearch, Grep like tool',
+        prog='ts',
         add_help_option=False)  # -h is a real option
 
     option_parser.add_option('-h', '--help',
