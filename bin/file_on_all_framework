@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+_file_name_noext() {
+    if [[ "$#" == 1 ]];then
+        local FILE_NO_PATH=${1##*/};
+        local NOEXT=${FILE_NO_PATH%\.*};
+        echo $NOEXT
+    fi
+}
+
+while IFS= read -r item;
+do
+    file "$item/$(_file_name_noext $(basename $item))" | head -n 1
+done < <(pythonfind -t d "framework$")
