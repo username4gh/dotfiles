@@ -1,3 +1,9 @@
 #! /usr/bin/env bash
 
-_rg --type-add "foo:*.$1" -tfoo "$2"
+if [[ "$#" -lt 2 ]];then
+    echo "Usage: $0 <extension> <pattern>"
+else
+    extension="$1"
+    shift
+    _rg --type-add "foo:*.$extension" -tfoo "$*"
+fi
