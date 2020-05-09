@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+pythonsed --in-place --input /tmp/_svn_changelist_stash --lambda-string "lambda x:x.replace('@2x.png', '@2x.png@')"
+pythonsed --in-place --input /tmp/_svn_changelist_stash --lambda-string "lambda x:x.replace('@3x.png', '@3x.png@')"
