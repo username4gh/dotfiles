@@ -28,7 +28,7 @@ if PY2:
 
         Returns None if module does not exist.
 
-        Exception is raised if (existing) module raises exceptio during its import.
+        Exception is raised if (existing) module raises exceptioduring its import.
         """
         module = sys.modules.get(full_module_name)
         if module is None:
@@ -353,128 +353,14 @@ def _is_file_wont_be_ignored(extension, target):
     return True
 
 
-dir_black_list = ['.git', '.hg', '.svn']
+black_list = ['git', 'hg', 'svn']
 
 
 def _is_dir_wont_be_ignored(target):
-    for item in dir_black_list:
-        if target.endswith("%s" % item):
+    for item in black_list:
+        if target.endswith(".%s" % item):
             return False
     return True
-
-
-def _parallel_search_disable(options, output_formatter, matcher, directory):
-    from pathos import multiprocessing as mp
-    from pathos.pools import ProcessPool
-
-    if PY2:
-        import Queue as que
-
-    if PY3:
-        import queue as que
-
-    pool = ProcessPool(mp.cpu_count())
-    try:
-        from scandir import scandir, walk
-    except ImportError:
-        from os import scandir, walk
-
-    def process_file_path(entry):
-        try:
-            if entry['is_dir']:
-                if not _is_dir_wont_be_ignored(entry['path']):
-                    return
-                _threading_search(options, output_formatter, matcher, entry['path'])
-            else:
-                if _is_file_wont_be_ignored(options.extension, entry['path']):
-                    _search(matcher=matcher, output_formatter=output_formatter, input_file=entry['path'],
-                            options=options)
-        except OSError:
-            pass
-
-    def generate_file_paths():
-        try:
-            for entry in scandir(directory):
-                entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
-                          'path': os.path.abspath(entry.path)}
-                yield entry_
-        except OSError:
-            pass
-
-    try:
-        for _ in pool.imap(process_file_path, generate_file_paths()):
-            pass
-        pool.close()
-        pool.join()
-    except KeyboardInterrupt:
-        pool.terminate()
-
-
-def _threading_search(options, output_formatter, matcher, directory):
-    import threading
-    try:
-        from scandir import scandir, walk
-    except ImportError:
-        from os import scandir, walk
-
-    if PY2:
-        import Queue as que
-
-    if PY3:
-        import queue as que
-
-    def do_search_work(in_queue, out_queue):
-        while True:
-            try:
-                member = in_queue.get(True, 5)
-                result = _search(matcher, output_formatter, member, options)
-                out_queue.put(result)
-                in_queue.task_done()
-            except que.Empty:
-                break
-            except KeyboardInterrupt:
-                pass
-
-    def do_dir_list_work(list_queue, search_queue):
-        while True:
-            try:
-                dir_to_list = list_queue.get(True, 5)
-                for entry in scandir(dir_to_list):
-                    if entry.is_dir(follow_symlinks=False):
-                        if _is_dir_wont_be_ignored(entry.path):
-                            list_queue.put(entry.path)
-                    else:
-                        file_path = os.path.abspath(entry.path)
-                        if _is_file_wont_be_ignored(options.extension, file_path):
-                            search_queue.put(entry.path)
-                list_queue.task_done()
-            except que.Empty:
-                break
-            except KeyboardInterrupt:
-                break
-
-    try:
-        list_work_queue = que.Queue()
-        search_work_queue = que.Queue()
-        search_result_queue = que.Queue()
-
-        # start for list workers
-        for _ in range(6):
-            t = threading.Thread(target=do_dir_list_work, args=[list_work_queue, search_work_queue])
-            t.daemon = True
-            t.start()
-
-        # start for search workers
-        for _ in range(2):
-            t = threading.Thread(target=do_search_work, args=[search_work_queue, search_result_queue])
-            t.daemon = True
-            t.start()
-
-        list_work_queue.put(directory)
-        list_work_queue.join()
-        search_work_queue.join()
-    except KeyboardInterrupt:
-        pass
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
@@ -482,37 +368,70 @@ def _parallel_search(options, output_formatter, matcher, directory):
 
     if PY2:
         from Queue import Empty
+        import Queue as que
 
     if PY3:
         from queue import Empty
+        import queue as que
 
     try:
         from scandir import scandir, walk
     except ImportError:
         from os import scandir, walk
 
-    def process_file_path(que):
+    import threading
+
+    def do_search_work(in_queue):
         while True:
             try:
-                entity = que.get(True, 1)
+                member = in_queue.get(True, 5)
+                result = _search(matcher, output_formatter, member, options)
+                in_queue.task_done()
+            except Empty:
+                break
+            except KeyboardInterrupt:
+                pass
+
+    def do_dir_list_work(list_work_queue, search_work_queue):
+        process_queue = list_work_queue.get()
+        while True:
+            try:
+                entity = process_queue.get(True, 1)
                 for entry in scandir(entity['path']):
                     entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
                               'path': os.path.abspath(entry.path)}
                     try:
                         if entry_['is_dir']:
                             if _is_dir_wont_be_ignored(entry_['path']):
-                                que.put(entry_)
+                                process_queue.put(entry_)
                         else:
                             if _is_file_wont_be_ignored(options.extension, entry_['path']):
-                                _search(matcher=matcher, output_formatter=output_formatter, input_file=entry_['path'],
-                                        options=options)
+                                search_work_queue.put(entry_['path'])
                     except OSError:
                         pass
-                que.task_done()
+                process_queue.task_done()
             except KeyboardInterrupt:
                 pass
             except Empty:
                 break
+        list_work_queue.task_done()
+
+    def process_file_path(process_queue):
+        list_work_queue = que.Queue()
+        search_work_queue = que.Queue()
+
+        main_t = threading.Thread(target=do_dir_list_work, args=[list_work_queue, search_work_queue])
+        main_t.daemon = True
+        main_t.start()
+
+        for _ in range(4):
+            t = threading.Thread(target=do_search_work, args=[search_work_queue])
+            t.daemon = True
+            t.start()
+
+        list_work_queue.put(process_queue)
+        list_work_queue.join()
+        search_work_queue.join()
 
     try:
         cores = mp.cpu_count()
@@ -541,10 +460,7 @@ def main(argv=None):
     matcher = _create_matcher(pattern=pattern,
                               options=options)
     try:
-        if not find_module('pathos'):
-            _threading_search(options, output_formatter, matcher, os.path.curdir)
-        else:
-            _parallel_search(options, output_formatter, matcher, os.path.curdir)
+        _parallel_search(options, output_formatter, matcher, os.path.curdir)
     except KeyboardInterrupt:
         return 'interrupted - exiting'
     except Exception as err:
@@ -553,4 +469,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-n
+ 
