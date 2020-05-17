@@ -1609,58 +1609,81 @@ class Processor:
         :param matcher:
         :return:
         """
-        f = open(path, 'rb')  # open as a binary file
+        f = open(path, 'rb', newline='')  # open as a binary file
         callback = lambda: print(path)
         Processor._process(options, f, matcher, callback)
 
     @staticmethod
     def _process(options, f, matcher, callback):
-        reader = JavaClassReader()
-        reader.read(f)
-        if options.dump:
-            reader.output.dump()
-        else:
-            if Processor.search_constant_pool(reader.output.constant_pool, matcher):
-                callback()
+        try:
+            reader = JavaClassReader()
+            reader.read(f)
+            if options.dump:
+                reader.output.dump()
+            else:
+                if Processor.search_constant_pool(reader.output.constant_pool, matcher):
+                    callback()
+        except KeyboardInterrupt:
+            pass
+
+    @staticmethod
+    def _process_zip_file(options, path, matcher):
+        try:
+            f = zipfile.ZipFile(path)
+            for member in f.namelist():
+                if (Processor._is_class_file(member)):
+                    callback = lambda: print(member)
+                    Processor._process(options, f.open(member), matcher, callback)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            f.close()
 
     @staticmethod
     def _process_zip_file_with_threading(options, path, matcher):
-        f = zipfile.ZipFile(path)
+        try:
+            f = zipfile.ZipFile(path)
 
-        import threading
+            import threading
 
-        if PY2:
-            import Queue as q
+            if PY2:
+                import Queue as q
 
-        if PY3:
-            import queue as q
+            if PY3:
+                import queue as q
 
-        def do_work(in_queue, out_queue):
-            while True:
-                member = in_queue.get()
-                member_file = f.open(member)
-                callback = lambda: print(member)
-                result = Processor._process(options, member_file, matcher, callback)
-                member_file.close()
-                out_queue.put(result)
-                in_queue.task_done()
+            def do_work(in_queue):
+                while True:
+                    try:
+                        member = in_queue.get(True, 1) # if a thread cannot get item to process for 1 second, we consider there will be any work left to be done any more                    
+                        member_file = f.open(member)
+                        callback = lambda: print(member) # capturing-lambda for printing out the file name
+                        result = Processor._process(options, member_file, matcher, callback)
+                        member_file.close()
+                        in_queue.task_done()
+                    except q.Empty:
+                        break
+                    except KeyboardInterrupt:
+                        break
 
-        work_queue = q.Queue()
-        results = q.Queue()
+            work_queue = q.Queue()
 
-        # start for workers
-        for i in range(2):
-            t = threading.Thread(target=do_work, args=(work_queue, results))
-            t.daemon = True
-            t.start()
+            # start for workers
+            for i in range(8):
+                t = threading.Thread(target=do_work, args=[work_queue])
+                t.daemon = True
+                t.start()
 
-        # produce data
-        for member in f.namelist():
-            if (Processor._is_class_file(member)):
-                work_queue.put(member)
+            # produce data
+            for member in f.namelist():
+                if (Processor._is_class_file(member)):
+                    work_queue.put(member)
 
-        work_queue.join()
-        f.close()
+            work_queue.join()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            f.close()
 
     @staticmethod
     def process(options=None, path=None, matcher=None):
@@ -1854,8 +1877,7 @@ def _parallel_process(options, matcher, directory):
     try:
         chunk_size = 4  # For very long iterables using a large value for chunksize can make the job complete much faster than using the default value of 1.
         for result in pool.imap(processFilepath, generateFilepaths(), chunk_size):
-            if result is not None:
-                print(result)
+            pass
         pool.close()
     except KeyboardInterrupt:
         pool.terminate()
