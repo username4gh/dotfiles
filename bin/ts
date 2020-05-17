@@ -28,7 +28,7 @@ if PY2:
 
         Returns None if module does not exist.
 
-        Exception is raised if (existing) module raises exception during its import.
+        Exception is raised if (existing) module raises exceptio during its import.
         """
         module = sys.modules.get(full_module_name)
         if module is None:
@@ -304,10 +304,12 @@ def _search(matcher=None,
             match_found = True
 
             if options.count:
-                output_formatter.emit_line('%s : %s' % (input_file, str(len(matches))))
+                if output_formatter:
+                    output_formatter.emit_line('%s : %s' % (input_file, str(len(matches))))
             else:
                 for match in matches:
-                    output_formatter.emit_matching_line(input_file, match)
+                    if output_formatter:
+                        output_formatter.emit_matching_line(input_file, match)
     except (OSError, IOError):
         pass
     finally:
@@ -351,19 +353,25 @@ def _is_file_wont_be_ignored(extension, target):
     return True
 
 
-black_list = ['git', 'hg', 'svn']
+dir_black_list = ['.git', '.hg', '.svn']
 
 
 def _is_dir_wont_be_ignored(target):
-    for item in black_list:
-        if target.endswith(".%s" % item):
+    for item in dir_black_list:
+        if target.endswith("%s" % item):
             return False
     return True
 
 
-def _parallel_search(options, output_formatter, matcher, directory):
+def _parallel_search_disable(options, output_formatter, matcher, directory):
     from pathos import multiprocessing as mp
     from pathos.pools import ProcessPool
+
+    if PY2:
+        import Queue as que
+
+    if PY3:
+        import queue as que
 
     pool = ProcessPool(mp.cpu_count())
     try:
@@ -372,7 +380,6 @@ def _parallel_search(options, output_formatter, matcher, directory):
         from os import scandir, walk
 
     def process_file_path(entry):
-        print("process_file_path")
         try:
             if entry['is_dir']:
                 if not _is_dir_wont_be_ignored(entry['path']):
@@ -380,12 +387,12 @@ def _parallel_search(options, output_formatter, matcher, directory):
                 _threading_search(options, output_formatter, matcher, entry['path'])
             else:
                 if _is_file_wont_be_ignored(options.extension, entry['path']):
-                    _search(matcher=matcher, output_formatter=output_formatter, input_file=entry['path'], options=options)
+                    _search(matcher=matcher, output_formatter=output_formatter, input_file=entry['path'],
+                            options=options)
         except OSError:
             pass
 
     def generate_file_paths():
-        print(isinstance())
         try:
             for entry in scandir(directory):
                 entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
@@ -470,6 +477,57 @@ def _threading_search(options, output_formatter, matcher, directory):
         pass
 
 
+def _parallel_search(options, output_formatter, matcher, directory):
+    import multiprocessing as mp
+
+    if PY2:
+        from Queue import Empty
+
+    if PY3:
+        from queue import Empty
+
+    try:
+        from scandir import scandir, walk
+    except ImportError:
+        from os import scandir, walk
+
+    def process_file_path(que):
+        while True:
+            try:
+                entity = que.get(True, 1)
+                for entry in scandir(entity['path']):
+                    entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
+                              'path': os.path.abspath(entry.path)}
+                    try:
+                        if entry_['is_dir']:
+                            if _is_dir_wont_be_ignored(entry_['path']):
+                                que.put(entry_)
+                        else:
+                            if _is_file_wont_be_ignored(options.extension, entry_['path']):
+                                _search(matcher=matcher, output_formatter=output_formatter, input_file=entry_['path'],
+                                        options=options)
+                    except OSError:
+                        pass
+                que.task_done()
+            except KeyboardInterrupt:
+                pass
+            except Empty:
+                break
+
+    try:
+        cores = mp.cpu_count()
+        q = mp.JoinableQueue()
+        q.put({'is_dir': True, 'path': os.path.abspath(directory)})
+        processes = [mp.Process(target=process_file_path, args=[q]) for i in range(0, cores)]
+        for p in processes:
+            p.daemon = True
+            p.start()
+        for p in processes:
+            p.join()
+    except KeyboardInterrupt:
+        pass
+
+
 def main(argv=None):
     options, args, opt_parser = parse_cmdline(argv[1:])
 
@@ -495,4 +553,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
+n
