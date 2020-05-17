@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+
+if [[ "$#" -lt 1 ]];then
+    echo "Usage: $0 <file> <start time> <end time>, more info on https://ffmpeg.org/ffmpeg-utils.html#time-duration-syntax"
+else
+    ffmpeg -i "$1" -ss "$2" -to "$3" -c copy "cut_$1"
+fi

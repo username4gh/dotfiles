@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+AUDIO_EXTENSION=$(ffprobe "$1" 2>&1 | pythongrep -o '(?<=Audio: ).*?(?= )')
+
+ffmpeg -i "$1" -vn -acodec copy "$1"."$AUDIO_EXTENSION"
