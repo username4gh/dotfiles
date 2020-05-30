@@ -2,3 +2,6 @@ cscope.*
 G*
 tags
 *MembersInjector.java
+*_ViewBinding.java
+*/R.java
+*/build/intermediates/*
