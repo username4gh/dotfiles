@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+
+NEW_IP=$1
+
+FILES+=(".git/config")
+
+OLD_IP="$(git -C . config --list | pythongrep 'remote.origin.url' | pythongrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+
+for((i=0; i<${#FILES[@]}; i++))
+do
+    # here we assume the files list above have the same 'OLD_IP'
+    pythonsed --in-place --input "${FILES[$i]}" --lambda-string "lambda x:x.replace('"$OLD_IP"', '"$NEW_IP"')"
+done
