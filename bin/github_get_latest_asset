@@ -1,39 +1,24 @@
+#! /usr/bin/env python
+# coding=utf-8
+
 from __future__ import print_function
 
-from json import loads, dumps
-import os
+from json import loads
 import sys
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
 
-def query_string(name, owner):
-    return """query asset {
-  repository(name: \"%s\", owner: \"%s\") {
-    releases(orderBy: {field: CREATED_AT, direction: ASC}, last: 1) {
-      nodes {
-        releaseAssets(last: 1) {
-          nodes {
-            downloadUrl
-          }
-        }
-      }
-    }
-  }
-}    
-    """ % (name, owner)
-
-
 def main(argv):
     if len(argv) != 2:
         print("""
         usage: github_get_latest_asset <full-repo-name>
-
+        
         full-repo-name would be likely in these form:
-
+        
         org-name/repo-name
-
+        
         author-name/repo-name
         """)
         return
@@ -52,36 +37,29 @@ def main(argv):
         def __init__(self):
             pass
 
-        def http_response(self, req, resp):
-            return resp
+        def http_response(self, request, response):
+            return response
 
         https_response = http_response
 
     opener = urllib.build_opener(NoRedirection)
     urllib.install_opener(opener)
 
-    name = argv[1].split("/")[1]
-    owner = argv[1].split("/")[0]
-    request = urllib.Request('https://api.github.com/graphql', data=bytes(dumps({'query': query_string(name, owner)}), 'utf-8'),
-                             method='POST')
-    request.add_header("Authorization", "Bearer %s" % os.getenv("HOMEBREW_GITHUB_API_TOKEN"))
+    url = 'https://api.github.com/repos/' + argv[1] + '/releases/latest'
 
     try:
-        response = urllib.urlopen(request)
+        r = urllib.urlopen(url)
 
-        if response.code == 200:
-            x = loads(response.read())
+        if r.code == 200:
+            x = loads(r.read())
 
-            try:
-                print(x['data']['repository']['releases']['nodes'][0]['releaseAssets']['nodes'][0]['downloadUrl'])
-            except KeyError:
-                print(x)
+            for s in x['assets']:
+                print(''.join(s['browser_download_url']))
         else:
-            print('code: %s, msg: %s, response: %s' % (str(response.code), response.msg, response.readlines()))
+            print('url: %s, code: %s, msg: %s, response: %s' % (url, str(r.code), r.msg, r.readlines()))
     except IOError as err:
-        print(err)
+        print (err.message)
 
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-
