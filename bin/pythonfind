@@ -468,7 +468,7 @@ def build_option_parser():
     group.add_argument('--invert',
                        action='store_true', default=False,
                        help='invert match')
-    group.add_argument('--entire',
+    group.add_argument('--entire', dest='entire',
                        action='store_true', default=False,
                        help='match PATTERN against the entire path string')
     group.add_argument('--non-entire', dest='entire',
