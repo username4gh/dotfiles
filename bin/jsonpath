@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+jsonpathfinder.py $FANQIANG/v2ray_client.json | pythongrep "\\$\['outbounds'\]\[0\]\['settings'\]\['vnext'\]\[0\]\['address'\]" | pythongrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
