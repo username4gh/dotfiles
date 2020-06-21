@@ -1,0 +1,40 @@
+#! /usr/bin/env python
+# coding=utf-8
+
+from __future__ import print_function
+
+import os
+import re
+import sys
+
+
+def _search_command(output, path, pattern):
+    if os.path.exists(path):
+        for f in os.listdir(path):
+            if not os.path.isdir(f):
+                lf = f.lower()
+                if re.match(pattern, lf):
+                    output(lf, path)
+                    return True
+    return False
+
+
+def main(argv):
+    path_list = os.getenv('PATH').split(":")
+
+    command = argv[1].lower()
+    pattern = re.compile(command, re.IGNORECASE)
+    
+    output = eval("lambda lf, path: print('%s/%s' %(path, lf))")
+
+    for p in set(path_list):
+        if os.getenv('MY_PRIVATE_BIN') in p:
+            continue
+        p = os.path.expanduser(p)
+        p = os.path.expandvars(p)
+        if _search_command(output, p, pattern):
+            break
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))
