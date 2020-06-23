@@ -66,7 +66,7 @@ _is_command_exist() {
     [[ "$#" -eq 1 ]] && command -v "$1" > /dev/null
 }
 
-typeset -fx _is_command_exist
+declare -fx _is_command_exist
 
 # format is : command1|command1_alternative1|command1_alternative2|...;command2;...;commandX
 # must end with ';'
@@ -156,28 +156,28 @@ _expand_path() {
 
 # https://docstore.mik.ua/orelly/unix3/upt/ch29_13.htm
 # export function to subshell
-typeset -fx _expand_path
+declare -fx _expand_path
 
 _is_dir_exist() {
     # here we use _expand_path to avoid the case: "$1" contains '~' and cannot do tilde-expansion correctly because of the use of single-quote or double-quote
     [[ "$#" -eq 1 ]] && [[ -d "$(_expand_path ${1})" ]]
 }
-typeset -fx _is_dir_exist
+declare -fx _is_dir_exist
 
 _is_file_exist() {
     [[ "$#" -eq 1 ]] && [[ -e "$(_expand_path ${1})" ]]
 }
-typeset -fx _is_file_exist
+declare -fx _is_file_exist
 
 _is_root() {
     [[ "$#" -eq 0 ]] && [[ "$(id -u)" -ne 0 ]]
 }
-typeset -fx _is_root
+declare -fx _is_root
 
 _is_not_root() {
     [[ "$#" -eq 0 ]] && [[ "$(whoami)" != root ]]
 }
-typeset -fx _is_not_root
+declare -fx _is_not_root
 
 _is_termux() {
     _is_linux && [[ "$HOME" =~ "com.termux/files/home" ]]
