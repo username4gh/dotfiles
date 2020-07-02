@@ -11,6 +11,7 @@ import os
 import re
 import struct
 import zipfile
+import zlib
 from collections import namedtuple
 
 PY2 = sys.version_info[0] == 2
@@ -194,7 +195,10 @@ class u1(u):
         return struct.unpack(">B", self.value)[0]
 
     def read(self, f):
-        self.value = f.read(1)
+        try:
+            self.value = f.read(1)
+        except zlib.error:
+            pass
 
 
 class u2(u):
@@ -202,10 +206,16 @@ class u2(u):
         u.__init__(self)
 
     def u2_2int(self):
-        return struct.unpack(">H", self.value)[0]
+        try:
+            return struct.unpack(">H", self.value)[0]
+        except TypeError:
+            return -1
 
     def read(self, f):
-        self.value = f.read(2)
+        try:
+            self.value = f.read(2)
+        except zlib.error:
+            pass
 
 
 class u4(u):
@@ -219,7 +229,10 @@ class u4(u):
         return struct.unpack(">f", self.value)[0]
 
     def read(self, f):
-        self.value = f.read(4)
+        try:
+            self.value = f.read(4)
+        except zlib.error:
+            pass
 
 
 class un(u):
@@ -1464,11 +1477,14 @@ class JavaClassReader:
         :param f:
         :return:
         """
-        self.java_class.this_class.read(f)
-        self.output.this_class = "{\"this_class\": " + str(
-            self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
-                                 + self.output.constant_pool[self.output.constant_pool[
-            self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+        try:
+            self.java_class.this_class.read(f)
+            self.output.this_class = "{\"this_class\": " + str(
+                    self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
+                            + self.output.constant_pool[self.output.constant_pool[
+                                self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+        except KeyError:
+            pass
 
     def read_super_class(self, f):
         """
@@ -1633,7 +1649,10 @@ class Processor:
             for member in f.namelist():
                 if (Processor._is_class_file(member)):
                     callback = lambda: print(member)
-                    Processor._process(options, f.open(member), matcher, callback)
+                    try:
+                        Processor._process(options, f.open(member), matcher, callback)
+                    except zipfile.BadZipFile:
+                        print("zipfile.BadZipFile: %s" % (member))
         except KeyboardInterrupt:
             pass
         finally:
@@ -1661,6 +1680,12 @@ class Processor:
                         result = Processor._process(options, member_file, matcher, callback)
                         member_file.close()
                         in_queue.task_done()
+                    except UnicodeDecodeError:
+                        pass
+                    except ValueError:
+                        pass
+                    except zipfile.BadZipFile:
+                        break
                     except q.Empty:
                         break
                     except KeyboardInterrupt:
