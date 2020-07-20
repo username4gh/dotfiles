@@ -3,6 +3,7 @@
 
 from __future__ import print_function
 import optparse
+import os
 import sys
 
 PY3 = sys.version_info[0] == 3
@@ -14,8 +15,12 @@ def _process_line(options):
         if options.input is None:
             f = sys.stdin
         else:
-            f = open(options.input, 'r')
-        lines = f.readlines()
+            if os.path.exists(options.input):
+                f = open(options.input, 'r')
+                lines = f.readlines()
+            else:
+                print("cannot access %s" % options.input)
+                return 1
     except IOError as err:
         print(err)
         return 1
@@ -27,7 +32,6 @@ def _process_line(options):
     result_lines = []
 
     for i in range(0, len(lines)):
-        # lines[i] = func(lines[i])
         line = func(lines[i])
         if line is not None:
             result_lines += line

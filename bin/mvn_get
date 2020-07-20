@@ -5,5 +5,5 @@ REPOSITORY_URL=http://repo1.maven.org/maven2/
 ARRAY=(${1//:/ })
 
 if [[ "${#ARRAY[@]}" == 3 ]];then
-    mvn dependency:get -DremoteRepositories="$REPOSITORY_URL" -DgroupId="${ARRAY[0]}" -DartifactId="${ARRAY[1]}" -Dversion="${ARRAY[2]}" -Dtransitive=false
+    mvn dependency:resolve -DremoteRepositories="$REPOSITORY_URL" -DgroupId="${ARRAY[0]}" -DartifactId="${ARRAY[1]}" -Dversion="${ARRAY[2]}" -Dtransitive=true
 fi

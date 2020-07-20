@@ -6,6 +6,8 @@ FILES+=(".git/config")
 
 OLD_IP="$(git -C . config --list | pythongrep 'remote.origin.url' | pythongrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
 
+echo $OLD_IP
+
 for((i=0; i<${#FILES[@]}; i++))
 do
     # here we assume the files list above have the same 'OLD_IP'

@@ -11,6 +11,7 @@ import os
 import re
 import struct
 import zipfile
+import zlib
 from collections import namedtuple
 
 PY2 = sys.version_info[0] == 2
@@ -142,42 +143,6 @@ class ContentMatcher(object):
         return regex
 
 
-# Memoization
-class Memoize:
-    """Memoize(fn) - an instance which acts like fn but memoizes its arguments
-       Will only work on functions with non-mutable arguments
-    """
-
-    def __init__(self, fn):
-        self.fn = fn
-        self.memo = {}
-
-    def __call__(self, *args):
-        if not self.memo.has_key(args):
-            self.memo[args] = self.fn(*args)
-        return self.memo[args]
-
-
-class MemoizeMutable:
-    """Memoize(fn) - an instance which acts like fn but memoizes its arguments
-       Will work on functions with mutable arguments (slower than Memoize)
-    """
-
-    def __init__(self, fn):
-        self.fn = fn
-        self.memo = {}
-
-    def __call__(self, *args):
-        try:
-            import cPickle
-            args_str = cPickle.dumps(args)
-            if not self.memo.has_key(args_str):
-                self.memo[args_str] = self.fn(*args)
-            return self.memo[args_str]
-        except ModuleNotFoundError:
-            pass
-
-
 # --- basic type
 # here we assume the endian-ess of class file is big-endian
 
@@ -191,10 +156,16 @@ class u1(u):
         u.__init__(self)
 
     def u1_2int(self):
+        return struct.unpack(">b", self.value)[0]
+
+    def u1_2char(self):
         return struct.unpack(">B", self.value)[0]
 
     def read(self, f):
-        self.value = f.read(1)
+        try:
+            self.value = f.read(1)
+        except zlib.error:
+            pass
 
 
 class u2(u):
@@ -202,10 +173,16 @@ class u2(u):
         u.__init__(self)
 
     def u2_2int(self):
-        return struct.unpack(">H", self.value)[0]
+        try:
+            return struct.unpack(">H", self.value)[0]
+        except TypeError:
+            return -1
 
     def read(self, f):
-        self.value = f.read(2)
+        try:
+            self.value = f.read(2)
+        except zlib.error:
+            pass
 
 
 class u4(u):
@@ -219,82 +196,78 @@ class u4(u):
         return struct.unpack(">f", self.value)[0]
 
     def read(self, f):
-        self.value = f.read(4)
+        try:
+            self.value = f.read(4)
+        except zlib.error:
+            pass
+
+
+# ------------------------------------------ modified utf-8 ------------------------------------------
+def utf8m_to_utf8s(string):
+    """
+    :param string: modified utf8 encoded string
+    :return: utf8 encoded string
+    """
+    new_string = []
+    length = len(string)
+    i = 0
+    while i < length:
+        byte1 = string[i]
+        if (byte1 & 0x80) == 0:  # 1byte encoding
+            new_string.append(byte1)
+        elif (byte1 & 0xE0) == 0xC0:  # 2byte encoding
+            i += 1
+            byte2 = string[i]
+            if byte1 != 0xC0 or byte2 != 0x80:
+                new_string.append(byte1)
+                new_string.append(byte2)
+            else:
+                new_string.append(0)
+        elif (byte1 & 0xF0) == 0xE0:  # 3byte encoding
+            i += 1
+            byte2 = string[i]
+            i += 1
+            byte3 = string[i]
+            if i + 3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
+                # See if this is a pair of 3byte encodings
+                byte4 = string[i + 1]
+                byte5 = string[i + 2]
+                byte6 = string[i + 3]
+                if byte4 == 0xED and (byte5 & 0xF0) == 0xB0:
+                    # Bits in: 11101101 1010xxxx 10xxxxxx
+                    # Bits in: 11101101 1011xxxx 10xxxxxx
+                    i += 3
+
+                    # Reconstruct 21 bit code
+                    u21 = ((byte2 & 0x0F) + 1) << 16
+                    u21 += (byte3 & 0x3F) << 10
+                    u21 += (byte5 & 0x0F) << 6
+                    u21 += (byte6 & 0x3F)
+
+                    # Bits out: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+                    # Convert to 4byte encoding
+                    new_string.append(0xF0 + ((u21 >> 18) & 0x07))
+                    new_string.append(0x80 + ((u21 >> 12) & 0x3F))
+                    new_string.append(0x80 + ((u21 >> 6) & 0x3F))
+                    new_string.append(0x80 + (u21 & 0x3F))
+                    continue
+            new_string.append(byte1)
+            new_string.append(byte2)
+            new_string.append(byte3)
+        i += 1
+    return bytes(new_string).decode('utf-8')
 
 
 class un(u):
     def __init__(self):
         u.__init__(self)
-        # self.value = []
 
     def read(self, f, n):
-        # for _ in range(n):
-        #    temp = u1()
-        #    temp.read(f)
-        #    self.value.append(temp)
         self.value = f.read(n)
 
     def un_2str(self):
-        # result = ''
-        # for v in self.value:
-        #    result = result + v.value.decode()
-        # return result
-        return self.utf8m_to_utf8s(self.value)
-
-    def utf8m_to_utf8s(self, string):
-        """
-        :param string: modified utf8 encoded string
-        :return: utf8 encoded string
-        """
-        new_string = []
-        length = len(string)
-        i = 0
-        while i < length:
-            byte1 = string[i]
-            if (byte1 & 0x80) == 0:  # 1byte encoding
-                new_string.append(byte1)
-            elif (byte1 & 0xE0) == 0xC0:  # 2byte encoding
-                i += 1
-                byte2 = string[i]
-                if byte1 != 0xC0 or byte2 != 0x80:
-                    new_string.append(byte1)
-                    new_string.append(byte2)
-                else:
-                    new_string.append(0)
-            elif (byte1 & 0xF0) == 0xE0:  # 3byte encoding
-                i += 1
-                byte2 = string[i]
-                i += 1
-                byte3 = string[i]
-                if i + 3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
-                    # See if this is a pair of 3byte encodings
-                    byte4 = string[i + 1]
-                    byte5 = string[i + 2]
-                    byte6 = string[i + 3]
-                    if byte4 == 0xED and (byte5 & 0xF0) == 0xB0:
-                        # Bits in: 11101101 1010xxxx 10xxxxxx
-                        # Bits in: 11101101 1011xxxx 10xxxxxx
-                        i += 3
-
-                        # Reconstruct 21 bit code
-                        u21 = ((byte2 & 0x0F) + 1) << 16
-                        u21 += (byte3 & 0x3F) << 10
-                        u21 += (byte5 & 0x0F) << 6
-                        u21 += (byte6 & 0x3F)
-
-                        # Bits out: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-
-                        # Convert to 4byte encoding
-                        new_string.append(0xF0 + ((u21 >> 18) & 0x07))
-                        new_string.append(0x80 + ((u21 >> 12) & 0x3F))
-                        new_string.append(0x80 + ((u21 >> 6) & 0x3F))
-                        new_string.append(0x80 + (u21 & 0x3F))
-                        continue
-                new_string.append(byte1)
-                new_string.append(byte2)
-                new_string.append(byte3)
-            i += 1
-        return bytes(new_string).decode('utf-8')
+        return utf8m_to_utf8s(self.value)
 
 
 # ------------------------------------------ constant pool ------------------------------------------
@@ -1088,7 +1061,7 @@ class element_value:
 
     def read(self, f):
         self.tag.read(f)
-        if self.tag.u1_2int() == 'B' \
+        if self.tag.u1_2char() == 'B' \
                 or self.tag.u1_2char() == 'C' \
                 or self.tag.u1_2char() == 'D' \
                 or self.tag.u1_2char() == 'F' \
@@ -1100,19 +1073,19 @@ class element_value:
             self.value = constant_value_index()
             self.value.read(f)
 
-        if self.tag.u1_2int() == 'e':
+        if self.tag.u1_2char() == 'e':
             self.value = enum_const_value()
             self.value.read(f)
 
-        if self.tag.u1_2int() == 'c':
+        if self.tag.u1_2char() == 'c':
             self.value = class_info_index()
             self.value.read(f)
 
-        if self.tag.u1_2int() == '@':
+        if self.tag.u1_2char() == '@':
             self.value = annotation_value()
             self.value.read(f)
 
-        if self.tag.u1_2int() == '[':
+        if self.tag.u1_2char() == '[':
             self.value = array_value()
             self.value.read(f)
 
@@ -1464,11 +1437,14 @@ class JavaClassReader:
         :param f:
         :return:
         """
-        self.java_class.this_class.read(f)
-        self.output.this_class = "{\"this_class\": " + str(
-            self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
-                                 + self.output.constant_pool[self.output.constant_pool[
-            self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+        try:
+            self.java_class.this_class.read(f)
+            self.output.this_class = "{\"this_class\": " + str(
+                self.java_class.this_class.u2_2int()) + ", \"class_name\": \"" \
+                                     + self.output.constant_pool[self.output.constant_pool[
+                self.java_class.this_class.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}"
+        except KeyError:
+            pass
 
     def read_super_class(self, f):
         """
@@ -1615,86 +1591,45 @@ class Processor:
 
     @staticmethod
     def _process(options, f, matcher, callback):
-        try:
-            reader = JavaClassReader()
-            reader.read(f)
-            if options.dump:
-                reader.output.dump()
-            else:
-                if Processor.search_constant_pool(reader.output.constant_pool, matcher):
-                    callback()
-        except KeyboardInterrupt:
-            pass
+        reader = JavaClassReader()
+        reader.read(f)
+        if options.dump:
+            reader.output.dump()
+        else:
+            if Processor.search_constant_pool(reader.output.constant_pool, matcher):
+                callback()
 
     @staticmethod
     def _process_zip_file(options, path, matcher):
+        f = None
         try:
             f = zipfile.ZipFile(path)
             for member in f.namelist():
-                if (Processor._is_class_file(member)):
+                if Processor._is_class_file(member):
                     callback = lambda: print(member)
-                    Processor._process(options, f.open(member), matcher, callback)
-        except KeyboardInterrupt:
-            pass
-        finally:
-            f.close()
-
-    @staticmethod
-    def _process_zip_file_with_threading(options, path, matcher):
-        try:
-            f = zipfile.ZipFile(path)
-
-            import threading
-
-            if PY2:
-                import Queue as q
-
-            if PY3:
-                import queue as q
-
-            def do_work(in_queue):
-                while True:
                     try:
-                        member = in_queue.get(True, 1) # if a thread cannot get item to process for 1 second, we consider there will be any work left to be done any more                    
-                        member_file = f.open(member)
-                        callback = lambda: print(member) # capturing-lambda for printing out the file name
-                        result = Processor._process(options, member_file, matcher, callback)
-                        member_file.close()
-                        in_queue.task_done()
-                    except q.Empty:
-                        break
-                    except KeyboardInterrupt:
-                        break
-
-            work_queue = q.Queue()
-
-            # start for workers
-            for i in range(8):
-                t = threading.Thread(target=do_work, args=[work_queue])
-                t.daemon = True
-                t.start()
-
-            # produce data
-            for member in f.namelist():
-                if (Processor._is_class_file(member)):
-                    work_queue.put(member)
-
-            work_queue.join()
+                        Processor._process(options, f.open(member), matcher, callback)
+                    except UnicodeDecodeError:
+                        pass
+        except zipfile.BadZipFile:
+            print("zipfile.BadZipFile: %s" % path)
         except KeyboardInterrupt:
             pass
         finally:
-            f.close()
+            if f:
+                f.close()
 
     @staticmethod
     def process(options=None, path=None, matcher=None):
         """
         入口函数
+        :param options:
         :param path:
         :param matcher:
         :return:
         """
         if zipfile.is_zipfile(path):
-            Processor._process_zip_file_with_threading(options, path, matcher)
+            Processor._process_zip_file(options, path, matcher)
         else:
             if Processor._is_class_file(path):
                 Processor._process_class_file(options, path, matcher)
@@ -1806,54 +1741,24 @@ class Profiler:
             print(tag + "totally consumed " + str(Profiler.end_time - Profiler.start_time) + " milliseconds")
 
 
-# ------------------------------------------ Log ------------------------------------------
-
-class Logger:
-    is_on = False
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def on():
-        Logger.is_on = True
-
-    @staticmethod
-    def off():
-        Logger.is_on = False
-
-    @staticmethod
-    def log(content=''):
-        if Logger.is_on:
-            print(content)
-
+# ------------------------------------------ process ------------------------------------------
 
 def _parallel_process(options, matcher, directory):
     from pathos import multiprocessing as mp
     pool = mp.Pool(mp.cpu_count())
     from scandir import scandir, walk
-    import pickle
 
     def processFilepath(dir_entry):
-        try:
-            if dir_entry['is_dir']:
-                for (dirpath, dirnames, filenames) in walk(dir_entry['name']):
-                    for filename in filenames:
-                        if filename.endswith('.jar'):
-                            filepath = os.path.join(dirpath, filename)
-                            if os.stat(filepath).st_size == 0:
-                                continue
-                            try:
-                                Processor.process(options, filepath, matcher)
-                            except:
-                                return filepath
-            else:
-                try:
-                    Processor.process(options, dir_entry['path'], matcher)
-                except:
-                    return dir_entry['path']
-        except:
-            pass
+        if dir_entry['is_dir']:
+            for (dirpath, dirnames, filenames) in walk(dir_entry['name']):
+                for filename in filenames:
+                    if filename.endswith('.jar'):
+                        filepath = os.path.join(dirpath, filename)
+                        if os.stat(filepath).st_size == 0:
+                            continue
+                        Processor.process(options, filepath, matcher)
+        else:
+            Processor.process(options, dir_entry['path'], matcher)
 
     def _generateFilepaths(d):
         for entry in scandir(d):
@@ -1866,23 +1771,27 @@ def _parallel_process(options, matcher, directory):
     def generateFilepaths():
         for entry in _generateFilepaths(directory):
             st = entry.stat(follow_symlinks=False)
-            st_ = {'st_mode': st.st_mode, 'st_size': st.st_size, \
-                   'st_atime': st.st_atime, 'st_mtime': st.st_mtime, \
+            st_ = {'st_mode': st.st_mode, 'st_size': st.st_size,
+                   'st_atime': st.st_atime, 'st_mtime': st.st_mtime,
                    'st_ctime': st.st_ctime}
             # now convert the entry object to entry_
-            entry_ = {'name': entry.name, 'is_dir': entry.is_dir(follow_symlinks=False), \
+            entry_ = {'name': entry.name, 'is_dir': entry.is_dir(follow_symlinks=False),
                       'path': entry.path, 'stat': st_}
             yield entry_
 
     try:
-        chunk_size = 4  # For very long iterables using a large value for chunksize can make the job complete much faster than using the default value of 1.
-        for result in pool.imap(processFilepath, generateFilepaths(), chunk_size):
+        chunk_size = 4  # For very long iterables using a large value for chunksize can make the job complete much
+        # faster than using the default value of 1.
+        for _ in pool.imap(processFilepath, generateFilepaths(), chunk_size):
             pass
         pool.close()
+        pool.join()
     except KeyboardInterrupt:
         pool.terminate()
+        pool.join()
     except RuntimeError:
         pool.terminate()
+        pool.join()
 
 
 # ------------------------------------------ main ------------------------------------------

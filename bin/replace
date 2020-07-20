@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-find . -name \$1 -exec sed -i "s/$2/$3/g" {} \;
