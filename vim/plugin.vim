@@ -24,6 +24,7 @@ call plug#begin(g:plug_dir)
 
 Plug 'altercation/vim-colors-solarized'
 Plug 'bling/vim-bufferline'
+Plug 'brtastic/vim-jsonviewer'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'derekwyatt/vim-scala'
 Plug 'easymotion/vim-easymotion'

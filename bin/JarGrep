@@ -1613,8 +1613,6 @@ class Processor:
                         pass
         except zipfile.BadZipFile:
             print("zipfile.BadZipFile: %s" % path)
-        except KeyboardInterrupt:
-            pass
         finally:
             if f:
                 f.close()
