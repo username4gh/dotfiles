@@ -7,6 +7,7 @@ from __future__ import print_function
 import sys
 import inspect
 import argparse
+import json
 import os
 import re
 import struct
@@ -1383,44 +1384,44 @@ class JavaClassReader:
             if need_to_skip:
                 need_to_skip = False
                 continue
-            ci = constant_pool_info()
-            ci.read(f)
-            if ci.is_class():
-                ci_e = class_info(ci)
-            elif ci.is_field_ref():
-                ci_e = field_ref_info(ci)
-            elif ci.is_method_ref():
-                ci_e = method_ref_info(ci)
-            elif ci.is_interface_method_ref():
-                ci_e = interface_method_ref_info(ci)
-            elif ci.is_string():
-                ci_e = string_info(ci)
-            elif ci.is_integer():
-                ci_e = integer_info(ci)
-            elif ci.is_float():
-                ci_e = float_info(ci)
-            elif ci.is_long():
+            cpi = constant_pool_info()
+            cpi.read(f)
+            if cpi.is_class():
+                cpi_e = class_info(cpi)
+            elif cpi.is_field_ref():
+                cpi_e = field_ref_info(cpi)
+            elif cpi.is_method_ref():
+                cpi_e = method_ref_info(cpi)
+            elif cpi.is_interface_method_ref():
+                cpi_e = interface_method_ref_info(cpi)
+            elif cpi.is_string():
+                cpi_e = string_info(cpi)
+            elif cpi.is_integer():
+                cpi_e = integer_info(cpi)
+            elif cpi.is_float():
+                cpi_e = float_info(cpi)
+            elif cpi.is_long():
                 need_to_skip = True
-                ci_e = long_info(ci)
-            elif ci.is_double():
+                cpi_e = long_info(cpi)
+            elif cpi.is_double():
                 need_to_skip = True
-                ci_e = double_info(ci)
-            elif ci.is_name_and_type():
-                ci_e = name_and_type_info(ci)
-            elif ci.is_utf8():
-                ci_e = utf8_info(ci)
-            elif ci.is_method_handle():
-                ci_e = method_handle_info(ci)
-            elif ci.is_method_type():
-                ci_e = method_type_info(ci)
-            elif ci.is_invoke_dynamic():
-                ci_e = invoke_dynamic_info(ci)
+                cpi_e = double_info(cpi)
+            elif cpi.is_name_and_type():
+                cpi_e = name_and_type_info(cpi)
+            elif cpi.is_utf8():
+                cpi_e = utf8_info(cpi)
+            elif cpi.is_method_handle():
+                cpi_e = method_handle_info(cpi)
+            elif cpi.is_method_type():
+                cpi_e = method_type_info(cpi)
+            elif cpi.is_invoke_dynamic():
+                cpi_e = invoke_dynamic_info(cpi)
             else:
                 raise RuntimeError("unknown stuff in constant pool")
 
-            if ci_e is not None:
-                ci_e.read_info(f)
-                self.output.constant_pool[i] = ci_e
+            if cpi_e is not None:
+                cpi_e.read_info(f)
+                self.output.constant_pool[i] = cpi_e
 
     def read_access_flags(self, f):
         """
@@ -1472,7 +1473,7 @@ class JavaClassReader:
             interface.read(f)
             self.java_class.interfaces.append(interface)
             self.output.interfaces.append(
-                "{\"interface\": \"" + str(interface.u2_2int()) + ", \"class_name\": \"" + self.output.constant_pool[
+                "{\"interface\": \"" + str(interface.u2_2int()) + "\", \"class_name\": \"" + self.output.constant_pool[
                     self.output.constant_pool[interface.u2_2int()].name_index.u2_2int()].bytes.un_2str() + "\"}")
 
     def read_fields(self, f):
@@ -1518,49 +1519,19 @@ class JavaClassReader:
         :param f:
         :return:
         """
-        Profiler.begin()
         self.read_magic(f)
-        Profiler.end('read_magic')
-
-        Profiler.begin()
+        if self.java_class.magic:
+            return
         self.read_minor_version(f)
-        Profiler.end('read_minor_version')
-
-        Profiler.begin()
         self.read_major_version(f)
-        Profiler.end('read_major_version')
-
-        Profiler.begin()
         self.read_constant_pool(f)
-        Profiler.end('read_constant_pool')
-
-        Profiler.begin()
         self.read_access_flags(f)
-        Profiler.end('read_access_flags')
-
-        Profiler.begin()
         self.read_this_class(f)
-        Profiler.end('read_this_class')
-
-        Profiler.begin()
         self.read_super_class(f)
-        Profiler.end('read_super_class')
-
-        Profiler.begin()
         self.read_interfaces(f)
-        Profiler.end('read_interfaces')
-
-        Profiler.begin()
         self.read_fields(f)
-        Profiler.end('read_fields')
-
-        Profiler.begin()
         self.read_methods(f)
-        Profiler.end('read_methods')
-
-        Profiler.begin()
         self.read_attributes(f)
-        Profiler.end('read_attributes')
 
 
 # ------------------------------------------ Processor ------------------------------------------
@@ -1571,9 +1542,42 @@ class Processor:
 
     @staticmethod
     def search_constant_pool(content, matcher):
+        if content is None:
+            return False
+        if content.values() is None:
+            return False
+        if matcher is None:
+            return False
         for info in list(content.values()):
             if info.search(matcher):
                 print(info.dump())
+                return True
+        return False
+
+    @staticmethod
+    def search_super_class(content, matcher):
+        if matcher is None:
+            # for pattern be empty, just return true
+            return False
+        dictize = json.loads(content)
+        superClass = dictize['class_name'].replace('/', '.')
+        matches = list(matcher.match_line(superClass))
+        if matches:
+            return True
+        return False
+
+    @staticmethod
+    def search_interfaces(content, matcher):
+        if len(content)  == 0:
+            return
+        if matcher is None:
+            # for pattern be empty, just return true
+            return False
+        for interface in content:
+            dictize = json.loads(interface)
+            superClass = dictize['class_name'].replace('/', '.')
+            matches = list(matcher.match_line(superClass))
+            if matches:
                 return True
         return False
 
@@ -1587,17 +1591,27 @@ class Processor:
         """
         f = open(path, 'rb', newline='')  # open as a binary file
         callback = lambda: print(path)
-        Processor._process(options, f, matcher, callback)
+        Processor._process_class(options, f, matcher, callback)
 
     @staticmethod
-    def _process(options, f, matcher, callback):
-        reader = JavaClassReader()
-        reader.read(f)
-        if options.dump:
-            reader.output.dump()
-        else:
-            if Processor.search_constant_pool(reader.output.constant_pool, matcher):
-                callback()
+    def _process_class(options, f, matcher, callback):
+        try:
+            reader = JavaClassReader()
+            reader.read(f)
+            if options.dump:
+                reader.output.dump()
+            else:
+                if options.searchConstantPool:
+                    if Processor.search_constant_pool(reader.output.constant_pool, matcher):
+                        callback()
+                elif options.searchSuperClass:
+                    if Processor.search_super_class(reader.output.super_class, matcher):
+                        callback()
+                elif options.searchInterface:
+                    if Processor.search_interfaces(reader.output.interfaces, matcher):
+                        callback()
+        except UnicodeDecodeError:
+            pass
 
     @staticmethod
     def _process_zip_file(options, path, matcher):
@@ -1607,10 +1621,7 @@ class Processor:
             for member in f.namelist():
                 if Processor._is_class_file(member):
                     callback = lambda: print(member)
-                    try:
-                        Processor._process(options, f.open(member), matcher, callback)
-                    except UnicodeDecodeError:
-                        pass
+                    Processor._process_class(options, f.open(member), matcher, callback)
         except zipfile.BadZipFile:
             print("zipfile.BadZipFile: %s" % path)
         finally:
@@ -1631,30 +1642,6 @@ class Processor:
         else:
             if Processor._is_class_file(path):
                 Processor._process_class_file(options, path, matcher)
-
-    @staticmethod
-    def dump_by_file_pattern(path, file_pattern):
-        """
-        dump指定文件
-        :param path:
-        :param file_pattern:
-        :return:
-        """
-        if zipfile.is_zipfile(path):
-            with zipfile.ZipFile(path) as z:
-                for member in z.namelist():
-                    if file_pattern in member:
-                        output_file = open('./' + Processor._generate_class_name(member), 'wr')
-                        output_file.write(z.open(member, 'r').read())
-
-    @staticmethod
-    def _generate_class_name(member):
-        """
-        convert x/x/x/x.class to x_x_x_x.class
-        :param member:
-        :return:
-        """
-        return member.replace('/', '_')
 
     @staticmethod
     def _is_class_file(name):
@@ -1685,12 +1672,20 @@ def _parse_cmdline(cmdline_args):
                         action='store_true', dest='help', default=False,
                         help='Display this information')
 
-    parser.add_argument('-b', "--benchmarking",
-                        action='store_true', dest='benchmark', default=False,
-                        help='Turn on benchmarking mode')
-
     parser.add_argument('-v', '--verbose',
                         action='store_true', dest='verbose', default=False,
+                        help='Turn on verbose mode')
+
+    parser.add_argument('--SuperClass',
+                        action='store_true', dest='searchSuperClass', default=False,
+                        help='Turn on verbose mode')
+
+    parser.add_argument('--Interface',
+                        action='store_true', dest='searchInterface', default=False,
+                        help='Turn on verbose mode')
+
+    parser.add_argument('--ConstantPool',
+                        action='store_true', dest='searchConstantPool', default=False,
                         help='Turn on verbose mode')
 
     parser.add_argument('-d', '--dump',
@@ -1700,43 +1695,6 @@ def _parse_cmdline(cmdline_args):
     options, args = parser.parse_known_args(cmdline_args)
 
     return options, args, parser
-
-
-# ------------------------------------------ benchmark ------------------------------------------
-
-class Profiler:
-    is_on = False
-
-    start_time = 0
-    end_time = 0
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def on():
-        Profiler.is_on = True
-
-    @staticmethod
-    def off():
-        Profiler.is_on = False
-
-    @staticmethod
-    def _current_time_in_millisecond():
-        import time
-        second = int(round(time.time() * 1000))
-        return second
-
-    @staticmethod
-    def begin():
-        if Profiler.is_on:
-            Profiler.start_time = Profiler._current_time_in_millisecond()
-
-    @staticmethod
-    def end(tag=""):
-        if Profiler.is_on:
-            Profiler.end_time = Profiler._current_time_in_millisecond()
-            print(tag + "totally consumed " + str(Profiler.end_time - Profiler.start_time) + " milliseconds")
 
 
 # ------------------------------------------ process ------------------------------------------
@@ -1796,6 +1754,10 @@ def _parallel_process(options, matcher, directory):
 def main(argv):
     options, args, parser = _parse_cmdline(argv)
 
+    if len(args) < 2:
+        parser.print_help()
+        return
+
     if options.verbose:
         print(args)
 
@@ -1810,18 +1772,10 @@ def main(argv):
         print(path + " not exist")
         return
 
-    if options.benchmark:
-        Profiler.on()
-        Profiler.begin()
-
     if os.path.isdir(path):
         _parallel_process(options, matcher, path)
     else:
         Processor.process(options, path, matcher)
 
-    if options.benchmark:
-        Profiler.end()
-
 
 sys.exit(main(sys.argv))
-

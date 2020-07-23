@@ -362,11 +362,11 @@ def _process_line(args):
                 if current_line_no >= upper_bound:
                     if count:
                         if current_line_no - upper_bound < count:
-                            print(line)
+                            sys.stdout.write(line)
                         else:
                             break
                     else:
-                        print(line)
+                        sys.stdout.write(line)
                 current_line_no = current_line_no + 1
 
 
