@@ -160,7 +160,7 @@ class ContentMatcher(object):
                     col_ranges = [match.span() for match in self._finditer(line) if match]
 
                 if col_ranges:
-                    yield MatchResult(line, line_number, col_ranges)
+                    yield MatchResult(line.lstrip(), line_number, col_ranges)
         except UnicodeDecodeError:
             pass
 
@@ -172,7 +172,7 @@ class ContentMatcher(object):
                 search_result = self._search(line)
 
                 if search_result is None:
-                    yield MatchResult(line, line_number, [])
+                    yield MatchResult(line.strip(), line_number, [])
             except Exception as err:
                 print(err)
 
