@@ -1520,8 +1520,6 @@ class JavaClassReader:
         :return:
         """
         self.read_magic(f)
-        if self.java_class.magic:
-            return
         self.read_minor_version(f)
         self.read_major_version(f)
         self.read_constant_pool(f)
