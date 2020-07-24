@@ -1676,15 +1676,15 @@ def _parse_cmdline(cmdline_args):
 
     parser.add_argument('--SuperClass',
                         action='store_true', dest='searchSuperClass', default=False,
-                        help='Turn on verbose mode')
+                        help='search by super class')
 
     parser.add_argument('--Interface',
                         action='store_true', dest='searchInterface', default=False,
-                        help='Turn on verbose mode')
+                        help='search by interface')
 
     parser.add_argument('--ConstantPool',
                         action='store_true', dest='searchConstantPool', default=False,
-                        help='Turn on verbose mode')
+                        help='search through constant pool')
 
     parser.add_argument('-d', '--dump',
                         action='store_true', dest='dump', default=False,

@@ -1,0 +1,17 @@
+#! /usr/bin/env bash
+
+_percol() {
+    percol --match-method regex "$@"
+}
+
+FILE="$1"
+PATTERN="$2"
+
+while IFS= read -r item;
+do
+    REVISION=$(echo $item | tr -d 'r')
+    RESULT="$(svn diff -r $REVISION $FILE | grep $PATTERN)"
+    if [[ $RESULT != '' ]];then
+        echo "$item"
+    fi
+done < <(svn log -q "$FILE" | grep "^r[0-9]" | gawk '{print $1}')
