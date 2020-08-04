@@ -1,0 +1,4 @@
+#! /usr/bin/env bash
+
+java -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions -XX:+PrintFlagsFinal -XX:+PrintFlagsWithComments -version
+
