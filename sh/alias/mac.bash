@@ -72,4 +72,6 @@ if _is_darwin; then
     # spctl
     alias spctl_master_disable='sudo spctl --master-disable'
     alias spctl_master_enable='sudo spctl --master-enable'
+
+    alias list_all_usb='system_profiler SPUSBDataType'
 fi
