@@ -5,3 +5,4 @@ tags
 *_ViewBinding.java
 */R.java
 */build/intermediates/*
+*/obj/*
