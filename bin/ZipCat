@@ -1,22 +1,26 @@
 #! /usr/bin/env python
 # coding=UTF-8
 
+from __future__ import print_function
+
 import sys
 import zipfile
 
 
-class FileProcessor:
+class Processor:
     def __init__(self):
         pass
 
     @staticmethod
-    def _is_file_need_be_ignored(name):
-        if '.class' in name:
+    def _is_file_need_be_ignored(name=''):
+        # if '.class' in name: # ignore the class file
+        #     return True
+        if '/' == name[len(name)-1:]: # ignore the directory
             return True
         return False
 
     @staticmethod
-    def _is_matched(content, pattern):
+    def _is_file_name_matched(content, pattern):
         if pattern is None:
             return True
         if pattern in content:
@@ -27,18 +31,19 @@ class FileProcessor:
     def _deal_with_zip_file(path, pattern):
         f = zipfile.ZipFile(path)
         for member in f.namelist():
-            if FileProcessor._is_file_need_be_ignored(member):
+            if Processor._is_file_need_be_ignored(member):
                 continue
 
-            if FileProcessor._is_matched(member, pattern):
-                print member + ':'
-                member_file = f.open(member)
-                print member_file.read()
+            if Processor._is_file_name_matched(member, pattern):
+                print('[' + member + ']')
+                member_file = f.open(member, 'r')
+                for line in member_file.readlines():
+                    print(line)
 
     @staticmethod
     def process(path, pattern):
         if zipfile.is_zipfile(path):
-            FileProcessor._deal_with_zip_file(path, pattern)
+            Processor._deal_with_zip_file(path, pattern)
 
 
 def main(argv):
@@ -46,7 +51,7 @@ def main(argv):
     
     pattern = argv[2] if len(argv) > 2 else None
 
-    FileProcessor.process(path, pattern)
+    Processor.process(path, pattern)
 
 
 sys.exit(main(sys.argv))
