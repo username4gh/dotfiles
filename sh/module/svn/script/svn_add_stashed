@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+result='';
+while IFS= read -r line;
+do
+    result+="$line ";
+done < <(cat /tmp/_svn_changelist_stash)
+#echo $result
+svn add $result
