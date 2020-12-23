@@ -1,10 +1,6 @@
 #! /usr/bin/env python
 # coding=utf-8
 
-# TODO 可能的优化点，目前的设计是每个进程在处理完一个文件后就往std输出结果，而这个操作对于多个进程是互斥的，这样是否会造成
-#  某些情况下，例如一个处理很多文件但是命中很少的进程被另外一个处理很少文件但是命中很高的进程常常阻塞？
-#  因为目前的工作在多个进程间不是平均分配的，并没有实现work-steal，这样每个cpu核心上分配的任务就不太一样了
-
 from __future__ import print_function
 
 import optparse
