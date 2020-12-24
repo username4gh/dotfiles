@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
 
-export PAGER=jidwrapper
+# export PAGER=jidwrapper

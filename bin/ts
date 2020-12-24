@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # coding=utf-8
 
 from __future__ import print_function
@@ -370,7 +370,8 @@ def _is_dir_wont_be_ignored(target):
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
-    import multiprocessing as mp
+    # pip install multiprocessing_on_dill
+    import multiprocessing_on_dill as mp
 
     if PY2:
         from Queue import Empty
