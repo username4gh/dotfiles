@@ -3,7 +3,7 @@ filetype off
 syntax off
 
 if empty(glob("~/.vim/autoload/plug.vim"))
-    silent execute '!curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    silent execute '!curl --proxy socks5://127.0.0.1:10800 -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 endif
 
 let g:plug_dir='~/.vim/plugged'
