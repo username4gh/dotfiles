@@ -3,5 +3,5 @@
 result='';
 while IFS= read -r line;
 do
-    svn add $line
+    svn rm $line;
 done < <(cat /tmp/_svn_changelist_stash)

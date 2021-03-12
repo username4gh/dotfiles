@@ -4,8 +4,8 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-FILE=$(svn status | _percol | gawk '{print $2}')
+FILE=$(svn status | pythongrep -v '(/obj|/bin)' | _percol | gawk '{print $2}')
 
 if [[ "${#FILE}" -gt 0 ]];then
-    svn diff $FILE
+    svn diff --diff-cmd icdiff $FILE
 fi
