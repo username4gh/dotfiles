@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # coding=utf-8
 
-# built-in
+# built-in color picker on macos only out put digit, hence this
+
 import sys
 
 result = ''
