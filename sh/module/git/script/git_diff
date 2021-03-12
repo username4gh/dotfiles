@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+_percol() {
+    percol --match-method regex "$@"
+}
+
+git diff "$(git status -s | gawk '{print $2}' | _percol)"
