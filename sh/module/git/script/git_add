@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+_percol() {
+    percol --match-method regex "$@"
+}
+
+git add "$(git status -s | _percol | gawk '{print $2}')"
