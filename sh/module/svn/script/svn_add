@@ -4,7 +4,7 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-FILTER='(/bin/|/obj/)'
+FILTER="$(svn_filter)"
 
 FILE=$(svn status | pythongrep -v "$FILTER" | _percol | gawk '{print $2}')
 

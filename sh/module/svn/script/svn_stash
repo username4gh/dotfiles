@@ -4,7 +4,7 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-FILTER='(/bin/|/obj/)'
+FILTER="$(svn_filter)"
 
 #svn changelist stash $(svn status | _percol | gawk '{print $2}')
 # svn changelist do not support directory

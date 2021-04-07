@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+FILTER='(.gradle/|.idea/|/bin/|/obj/)'
+
+echo "$FILTER"
