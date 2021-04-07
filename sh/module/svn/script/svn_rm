@@ -4,7 +4,9 @@ _percol() {
     percol --match-method regex "$@"
 }
 
-FILE=$(svn status | _percol | gawk '{print $2}')
+FILTER='(/bin/|/obj/)'
+
+FILE=$(svn status | pythongrep -v "$FILTER" | _percol | gawk '{print $2}')
 
 if [[ "${#FILE}" -gt 0 ]];then
     svn rm $FILE
