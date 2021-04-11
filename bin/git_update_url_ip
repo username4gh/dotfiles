@@ -13,8 +13,10 @@ OLD_IP="$(git -C . config --list | pythongrep 'remote.origin.url' | pythongrep -
 
 echo $OLD_IP
 
-for((i=0; i<${#FILES[@]}; i++))
-do
-    # here we assume the files list above have the same 'OLD_IP'
-    pythonsed --in-place --input "${FILES[$i]}" --lambda-string "lambda x:x.replace('"$OLD_IP"', '"$NEW_IP"')"
-done
+if [[ ! -z $OLD_IP ]];then
+    for((i=0; i<${#FILES[@]}; i++))
+    do
+        # here we assume the files list above have the same 'OLD_IP'
+        pythonsed --in-place --input "${FILES[$i]}" --lambda-string "lambda x:x.replace('"$OLD_IP"', '"$NEW_IP"')"
+    done
+fi
