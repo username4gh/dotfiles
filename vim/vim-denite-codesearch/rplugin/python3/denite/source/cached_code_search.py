@@ -24,6 +24,8 @@ LINE_SYNTAX = (
 LINE_HIGHLIGHT = 'highlight default link deniteSource_LineNR LineNR'
 PATTERNS_HIGHLIGHT = 'highlight default link denitePatterns Function'
 
+PLUGIN_NAME = 'cached_code_search'
+
 
 class BaseSource(Base):
     def on_init(self, context: UserContext) -> None:
@@ -92,7 +94,7 @@ class BaseSource(Base):
             patterns = [context['input']]
         else:
             patterns = [
-                self.vim.call('denite#util#input', 'Pattern: ')
+                self.vim.call('denite#util#input', '%s: ' % PLUGIN_NAME)
             ]
         return [x for x in patterns if x]
 
@@ -136,7 +138,7 @@ def _candidate(result: typing.List[typing.Any], path: str) -> Candidate:
 class Source(BaseSource):
     def __init__(self, vim: Nvim) -> None:
         super().__init__(vim)
-        self.name = 'cached_code_search'# this has to be same with file name
+        self.name = PLUGIN_NAME # this has to be same with file name
         self.kind = 'file'
         self.vars = {
             'command': ['_csearch'],
