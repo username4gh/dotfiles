@@ -93,7 +93,9 @@ if _is_on_heavy_mode()
                 \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
     call denite#custom#alias('source', 'file/rec/py', 'file/rec')
-    call denite#custom#var('file/rec/py', 'command',['scantree.py'])
+    call denite#custom#var('file/rec/py', 'command',
+				\ ['file_list.py', '--path', ':directory',
+				\  "--ignore='.hg,.git,.o\$'"])
 
     " Change default prompt
     call denite#custom#option('default', 'prompt', '>')
@@ -109,6 +111,7 @@ if _is_on_heavy_mode()
     map <Leader>fg :Denite file/rec/git -no-empty<CR>
     map <Leader>fp :Denite file/rec/py -no-empty<CR>
     map <Leader>gp :Denite grep -no-empty<CR>
+    map <Leader>ts :Denite text_search -no-empty<CR>
 
     " Define mappings
     autocmd FileType denite call s:denite_my_settings()
