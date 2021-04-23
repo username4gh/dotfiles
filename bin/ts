@@ -339,14 +339,14 @@ def _is_utf8_text_file(target):
             return False
 
 
-extension_regex = re.compile(".*(fidlgen|js|pm|pkg|txt)$")
+blacklist_file_extension_regex = re.compile(".*(fidlgen|js|pm|pkg|txt)$")
 
 
 def _is_file_wont_be_ignored(extension, target):
     if extension is not None:
         if not target.endswith(".%s" % extension):
             return False
-    if extension_regex.match(target):
+    if blacklist_file_extension_regex.match(target):
         return False
     if os.path.islink(target):
         return False
@@ -359,12 +359,12 @@ def _is_file_wont_be_ignored(extension, target):
     return True
 
 
-black_list = ['git', 'hg', 'svn']
+blacklist_dir = [r'/.git/', r'/.hg/', r'/.idea/', r'/.svn/', r'/bin/', r'/build/', r'/obj/']
 
 
 def _is_dir_wont_be_ignored(target):
-    for item in black_list:
-        if target.endswith(".%s" % item):
+    for item in blacklist_dir:
+        if item in target:
             return False
     return True
 
