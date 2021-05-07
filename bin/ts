@@ -46,7 +46,7 @@ else:
 
 
 def tostring(b):
-    """ Convert the given bytes or string object to string
+    """Convert the given bytes or string object to string
     """
     if isinstance(b, bytes):
         return bytes2str(b)
@@ -290,14 +290,15 @@ def _is_utf8_text_file(target):
 
 try:
     from configobj import ConfigObj
+
     home = os.getenv('HOME')
     conf_path = os.path.join(home, '.text-search.conf')
     config = ConfigObj(conf_path)
 
     if 'blacklist_file_name' in config:
-        blacklist_file_name = config['blacklist_file_name']
+        blacklist_file_name = re.compile(config['blacklist_file_name'])
     if 'blacklist_dir_name' in config:
-        blacklist_dir_name = config['blacklist_dir_name']
+        blacklist_dir_name = re.compile(config['blacklist_dir_name'])
 
     if 'whitelist_file_extension' in config:
         whitelist_file_extension = config['whitelist_file_extension']
@@ -313,9 +314,8 @@ except ModuleNotFoundError as err:
 def _is_file_wont_be_ignored(extension, target):
     if 'blacklist_file_name' in globals():
         # noinspection PyUnresolvedReferences
-        for item in blacklist_file_name:
-            if item in target:
-                return False
+        if blacklist_file_name.match(target):
+            return False
 
     if extension is not None:
         if not target.endswith(".%s" % extension):
@@ -347,9 +347,8 @@ def _is_file_wont_be_ignored(extension, target):
 def _is_dir_wont_be_ignored(target):
     if 'blacklist_dir_name' in globals():
         # noinspection PyUnresolvedReferences
-        for item in blacklist_dir_name:
-            if r"%s" % item in target:
-                return False
+        if blacklist_dir_name.match(target):
+            return False
     return True
 
 
@@ -399,7 +398,7 @@ def _parallel_search(options, output_formatter, matcher, directory):
                             if _is_dir_wont_be_ignored(entry_['path']):
                                 process_queue.put(entry_)
                         else:
-                            if _is_file_wont_be_ignored(options.extension, os.path.basename(entry_['path'])):
+                            if _is_file_wont_be_ignored(options.extension, entry_['path']):
                                 search_work_queue.put(entry_['path'])
                     except OSError:
                         pass
