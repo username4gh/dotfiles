@@ -12,6 +12,7 @@ from collections import namedtuple
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
 
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -21,58 +22,6 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-
-if PY2:
-    import importlib
-    import pkgutil
-    import sys
-
-
-    def find_module(full_module_name):
-        """
-        Returns module object if module `full_module_name` can be imported.
-
-        Returns None if module does not exist.
-
-        Exception is raised if (existing) module raises exceptioduring its import.
-        """
-        module = sys.modules.get(full_module_name)
-        if module is None:
-            module_path_tail = full_module_name.split('.')
-            module_path_head = []
-            loader = True
-            while module_path_tail and loader:
-                module_path_head.append(module_path_tail.pop(0))
-                module_name = ".".join(module_path_head)
-                loader = bool(pkgutil.find_loader(module_name))
-                if not loader:
-                    # Double check if module realy does not exist
-                    # (case: full_module_name == 'paste.deploy')
-                    try:
-                        importlib.import_module(module_name)
-                    except ImportError:
-                        pass
-                    else:
-                        loader = True
-            if loader:
-                module = importlib.import_module(full_module_name)
-        return module
-
-if PY3:
-    import importlib
-
-
-    def find_module(full_module_name):
-        """
-        Returns module object if module `full_module_name` can be imported.
-        Returns None if module does not exist.
-        Exception is raised if (existing) module raises exception during its import.
-        """
-        try:
-            return importlib.import_module(full_module_name)
-        except ImportError as exc:
-            if not (full_module_name + '.').startswith(exc.name + '.'):
-                raise
 
 
 def identity_function(x):
@@ -339,15 +288,51 @@ def _is_utf8_text_file(target):
             return False
 
 
-blacklist_file_extension_regex = re.compile(".*(fidlgen|js|pm|pkg|txt)$")
+try:
+    from configobj import ConfigObj
+    home = os.getenv('HOME')
+    conf_path = os.path.join(home, '.text-search.conf')
+    config = ConfigObj(conf_path)
+
+    if 'blacklist_file_name' in config:
+        blacklist_file_name = config['blacklist_file_name']
+    if 'blacklist_dir_name' in config:
+        blacklist_dir_name = config['blacklist_dir_name']
+
+    if 'whitelist_file_extension' in config:
+        whitelist_file_extension = config['whitelist_file_extension']
+        whitelist_file_extension_regex = re.compile(whitelist_file_extension)
+    if 'blacklist_file_extension' in config:
+        blacklist_file_extension = config['blacklist_file_extension']
+        blacklist_file_extension_regex = re.compile(blacklist_file_extension)
+except ModuleNotFoundError as err:
+    print(err)
+    print('pip3 install --user configobj')
 
 
 def _is_file_wont_be_ignored(extension, target):
+    if 'blacklist_file_name' in globals():
+        # noinspection PyUnresolvedReferences
+        for item in blacklist_file_name:
+            if item in target:
+                return False
+
     if extension is not None:
         if not target.endswith(".%s" % extension):
             return False
-    if blacklist_file_extension_regex.match(target):
-        return False
+
+    if 'whitelist_file_extension_regex' in globals():
+        # noinspection PyUnresolvedReferences
+        if whitelist_file_extension_regex.match(target):
+            return True
+        else:
+            return False
+
+    if 'blacklist_file_extension_regex' in globals():
+        # noinspection PyUnresolvedReferences
+        if blacklist_file_extension_regex.match(target):
+            return False
+
     if os.path.islink(target):
         return False
     if os.path.isdir(target):
@@ -359,21 +344,23 @@ def _is_file_wont_be_ignored(extension, target):
     return True
 
 
-blacklist_dir = [r'/.git/', r'/.hg/', r'/.idea/', r'/.svn/', r'/bin/', r'/build/', r'/obj/']
-
-
 def _is_dir_wont_be_ignored(target):
-    for item in blacklist_dir:
-        if item in target:
-            return False
+    if 'blacklist_dir_name' in globals():
+        # noinspection PyUnresolvedReferences
+        for item in blacklist_dir_name:
+            if r"%s" % item in target:
+                return False
     return True
 
 
 def _parallel_search(options, output_formatter, matcher, directory):
-    # pip install multiprocessing_on_dill
-    import multiprocessing_on_dill as mp
+    try:
+        import multiprocessing_on_dill as mp
+    except ModuleNotFoundError:
+        print('pip install multiprocessing_on_dill')
 
     if PY2:
+        # noinspection PyUnresolvedReferences
         from Queue import Empty
         import Queue as que
 
@@ -412,7 +399,7 @@ def _parallel_search(options, output_formatter, matcher, directory):
                             if _is_dir_wont_be_ignored(entry_['path']):
                                 process_queue.put(entry_)
                         else:
-                            if _is_file_wont_be_ignored(options.extension, entry_['path']):
+                            if _is_file_wont_be_ignored(options.extension, os.path.basename(entry_['path'])):
                                 search_work_queue.put(entry_['path'])
                     except OSError:
                         pass
