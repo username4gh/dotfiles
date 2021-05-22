@@ -46,7 +46,7 @@ else:
 
 
 def tostring(b):
-    """Convert the given bytes or string object to string
+    """onvert the given bytes or string object to string
     """
     if isinstance(b, bytes):
         return bytes2str(b)
@@ -296,7 +296,7 @@ try:
     config = ConfigObj(conf_path)
 
     if 'blacklist_file_name' in config:
-        blacklist_file_name = re.compile(config['blacklist_file_name'])
+        blacklist_file_name = config['blacklist_file_name']
     if 'blacklist_dir_name' in config:
         blacklist_dir_name = re.compile(config['blacklist_dir_name'])
 
@@ -314,8 +314,9 @@ except ModuleNotFoundError as err:
 def _is_file_wont_be_ignored(extension, target):
     if 'blacklist_file_name' in globals():
         # noinspection PyUnresolvedReferences
-        if blacklist_file_name.match(target):
-            return False
+        for name in blacklist_file_name:
+            if name in target:
+                return False
 
     if extension is not None:
         if not target.endswith(".%s" % extension):
@@ -462,4 +463,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
- 
+C
