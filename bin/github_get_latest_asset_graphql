@@ -2,9 +2,9 @@
 
 from __future__ import print_function
 
-from json import loads, dumps
 import os
 import sys
+from json import loads, dumps
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -15,7 +15,7 @@ def query_string(name, owner):
   repository(name: \"%s\", owner: \"%s\") {
     releases(orderBy: {field: CREATED_AT, direction: ASC}, last: 1) {
       nodes {
-        releaseAssets(last: 1) {
+        releaseAssets(last: 50) {
           nodes {
             downloadUrl
           }
@@ -75,7 +75,9 @@ def main(argv):
             x = loads(response.read())
 
             try:
-                print(x['data']['repository']['releases']['nodes'][0]['releaseAssets']['nodes'][0]['downloadUrl'])
+                assets = x['data']['repository']['releases']['nodes'][0]['releaseAssets']['nodes']
+                for asset in assets:
+                    print(asset['downloadUrl'])
             except KeyError:
                 print(x)
         else:
