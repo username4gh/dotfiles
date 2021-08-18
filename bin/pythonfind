@@ -1,11 +1,14 @@
 #! /usr/bin/env python3
 
 from __future__ import print_function
+
+import argparse
+import collections
 import os
 import re
 import string
 import sys
-import argparse
+import typing
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -85,42 +88,42 @@ TYPES_SYMLINK = TYPES_FILE_SYMLINK | TYPES_DIR_SYMLINK
 
 TYPES_ALL = TYPES_FILE | TYPES_DIR
 
-# Global Options --------------------------------------------------------------
-options = None
+FILE_TYPES = " a (all)\n f (files)\n d (dirs)\n r (real)\n s (symlinked)\n e (real files)\n c (real dirs)\n x (" \
+             "symlinked files)\n y (symlinked dirs)\n "
 
 
 # Output ----------------------------------------------------------------------
-def out(s):
+def out(options, s: str) -> None:
     sys.stdout.write(s + ('\0' if options.zero else '\n'))
 
 
-def err(s):
+def err(options, s: str) -> None:
     sys.stderr.write(s + ('\0' if options.zero else '\n'))
 
 
-def die(s, exitcode=1):
-    err('error: ' + s)
+def die(options, s: str, exitcode: int = 1) -> None:
+    err(options, 'error: ' + s)
     sys.exit(exitcode)
 
 
-def warn(s):
+def warn(s: str) -> None:
     sys.stderr.write('warning: ' + s + '\n')
 
 
 # Hidden-ess ----------------------------------------------------------------------
-def is_macos():
+def is_macos() -> bool:
     if 'darwin' in sys.platform:
         return True
     return False
 
 
-def is_windows():
+def is_windows() -> bool:
     if 'window' in sys.platform:
         return True
     return False
 
 
-def is_linux():
+def is_linux() -> bool:
     if 'linux' in sys.platform:
         return True
     return False
@@ -261,19 +264,18 @@ if is_windows():
     PY35 = sys.version_info[0] == 3 and sys.version_info[1] >= 5
 
     import ctypes
-    import os
 
 
-    def is_hidden(file_path):
-        name = os.path.basename(os.path.abspath(file_path))
+    def is_hidden(file_path: str) -> bool:
         return has_hidden_attribute(file_path)
 
 
-    def has_hidden_attribute(file_path):
+    def has_hidden_attribute(file_path: str) -> bool:
         if is_windows():
             if PY35:
                 import stat
-                return bool(os.stat(file_path).st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
+                stats: os.stat_result = os.stat(file_path)
+                return bool(stats.st_file_attributes & stat.FILE_ATTRIBUTE_HIDDEN)
 
             if PY2:
                 try:
@@ -284,14 +286,12 @@ if is_windows():
                 except (AttributeError, AssertionError):
                     result = False
                 return result
+            return False
         else:
             return False
 
 if is_linux():
-    import os
-
-
-    def is_hidden(file_path):
+    def is_hidden(file_path: str) -> bool:
         name = os.path.basename(os.path.abspath(file_path))
         return name.startswith('.')
 
@@ -311,7 +311,7 @@ def get_type(path):
         return TYPE_FILE_REAL
 
 
-def match(query, path, basename):
+def match(options, query, path, basename):
     def _match():
         if not query(path if options.entire else basename):
             # because cpu is generally much faster than IO
@@ -342,11 +342,11 @@ def match(query, path, basename):
     return not result if options.invert else result
 
 
-def _search(query, root, depth):
+def _search(options, query, root, depth):
     try:
         contents = os.listdir(root)
     except OSError:
-        err('Error: `' + root + '`: Permission denied')
+        err(options, 'Error: `' + root + '`: Permission denied')
         return
 
     dirs = []
@@ -362,27 +362,27 @@ def _search(query, root, depth):
         if is_dir:
             if options.follow or not os.path.islink(path):
                 dirs.append(path)
-        if match(query, path, item):
+        if match(options, query, path, item):
             if depth >= options.mindepth:
-                out(path)
+                out(options, path)
 
     if depth < options.maxdepth:
         for d in dirs:
-            _search(query, d, depth + 1)
+            _search(options, query, d, depth + 1)
 
 
-def _parallel_search(query, directory):
+def _parallel_search(options, query, directory):
     import signal
+    from pathos import multiprocessing as mp
+    from scandir import scandir, walk
 
-    def initializer():
+    def initializer() -> None:
         """Ignore CTRL+C in the worker process."""
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    from pathos import multiprocessing as mp
     pool = mp.Pool(mp.cpu_count(), initializer=initializer)
-    from scandir import scandir, walk
 
-    def walk_with_depth_limit(some_dir, maxdepth=1):
+    def walk_with_depth_limit(some_dir, maxdepth=1) -> collections.Iterable:
         some_dir = some_dir.rstrip(os.path.sep)
         assert os.path.isdir(some_dir)
         num_sep = some_dir.count(os.path.sep)
@@ -392,33 +392,33 @@ def _parallel_search(query, directory):
             if num_sep + maxdepth <= num_sep_this:
                 del dir_names[:]
 
-    def process_file_path(root):
+    def process_file_path(root) -> None:
         try:
             for (dir_path, dir_names, file_names) in walk_with_depth_limit(root, options.maxdepth - 1):
                 for dir_name in dir_names:
-                    if match(query, dir_path, dir_name):
+                    if match(options, query, dir_path, dir_name):
                         dir_path = os.path.join(dir_path, dir_name)
-                        out(dir_path)
+                        out(options, dir_path)
                 for filename in file_names:
-                    if match(query, dir_path, filename):
+                    if match(options, query, dir_path, filename):
                         file_path = os.path.join(dir_path, filename)
-                        out(file_path)
+                        out(options, file_path)
         except KeyboardInterrupt:
             pass
 
-    def generate_file_paths():
+    def generate_file_paths() -> typing.Generator:
         try:
             for entry in scandir(directory):
                 if entry.is_dir():
                     yield entry.path
                 else:
-                    if match(query, directory, entry.name):
-                        out(entry.name)
+                    if match(options, query, directory, entry.name):
+                        out(options, entry.name)
         except KeyboardInterrupt:
             pass
 
     try:
-        for result in pool.imap(process_file_path, generate_file_paths()):
+        for _ in pool.imap(process_file_path, generate_file_paths()):
             pass
         pool.close()
     except KeyboardInterrupt:
@@ -426,16 +426,17 @@ def _parallel_search(query, directory):
         pool.join()
 
 
-def search(query, directory='.', depth=1):
+def search(options, query, directory='.', depth=1) -> None:
     if options.parallel and find_module('pathos.multiprocessing') and find_module("scandir"):
-        _parallel_search(query, directory)
+        _parallel_search(options, query, directory)
     else:
-        _search(query, directory, depth)
+        _search(options, query, directory, depth)
 
 
 # Option Parsing and Main -----------------------------------------------------
-def build_option_parser():
-    parser = argparse.ArgumentParser("usage: %prog [options] PATTERN")
+def build_option_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser("usage: %prog [options] PATTERN",
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--verbose', default=False, dest='verbose', action='store_true',
                         help="verbose mode")
     # Main options
@@ -457,7 +458,7 @@ def build_option_parser():
                        dest='follow', action='store_false',
                        help="don't follow symlinked directories (default)")
     group.add_argument('--ignore-hidden',
-                       dest='ignore_hidden', action='store_true', default=False,
+                       dest='ignore_hidden', action='store_true', default=True,
                        help='include the hidden file into the result, disable by default')
     parser.add_argument_group(group)
 
@@ -511,18 +512,9 @@ def build_option_parser():
 
     # Type filtering
     group = parser.add_argument_group("Type Filtering",
-                                      "Possible types are "
-                                      "a (all), "
-                                      "f (files), "
-                                      "d (dirs), "
-                                      "r (real), "
-                                      "s (symlinked), "
-                                      "e (real files), "
-                                      "c (real dirs), "
-                                      "x (symlinked files), "
-                                      "y (symlinked dirs). "
-                                      "If multiple types are given they will be unioned together:  "
-                                      "--type 'es' would match real files and all symlinks.")
+                                      "Possible types are:\n%s"
+                                      "If multiple types are given, they will be unioned together:  "
+                                      "--type 'es' would match real files and all symlinks." % FILE_TYPES)
     group.add_argument('-t', '--type',
                        action='store', default='a', metavar='TYPE(S)',
                        help='match only specific types of things (files, dirs, non-symlinks, symlinks)')
@@ -531,24 +523,15 @@ def build_option_parser():
     return parser
 
 
-def build_type_set(types):
-    if types is None:
+def build_type_set(options):
+    if options.type is None:
         return TYPES_ALL
 
     result = set()
-    for c in types:
+    for c in options.type:
         if c not in 'aexcyfdrs':
-            die("invalid type specification\n\n"
-                "valid types:\n\n"
-                "  a (all)\n"
-                "  f (files)\n"
-                "  d (dirs)\n"
-                "  r (real)\n"
-                "  s (symlinked)\n"
-                "  e (real files)\n"
-                "  c (real dirs)\n"
-                "  x (symlinked files)\n"
-                "  y (symlinked dirs)")
+            die(options, "invalid type specification\n\n"
+                         "valid types:\n\n%s" % FILE_TYPES)
 
         result = result | {
             'a': TYPES_ALL,
@@ -578,15 +561,16 @@ def is_re(s):
 
 
 def main(argv):
-    global options
-
     parser = build_option_parser()
 
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(0)
 
+    options: argparse.Namespace
+    args: list[str]
     options, args = parser.parse_known_args(argv[1:])
+
     if options.verbose:
         print(args)
 
@@ -622,7 +606,7 @@ def main(argv):
             options.case = CASE_INSENSITIVE
 
     # --type
-    options.type = build_type_set(options.type)
+    options.type = build_type_set(options)
 
     # Build the query matcher.
     if options.literal or not is_re(query):
@@ -639,8 +623,9 @@ def main(argv):
             r = re.compile(query, re.IGNORECASE)
         query = lambda s: r.search(s)
 
-    search(query, options.dir)
+    search(options, query, options.dir)
 
 
 if __name__ == '__main__':
     main(sys.argv)
+
