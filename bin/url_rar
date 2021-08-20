@@ -1,0 +1,19 @@
+#! /bin/bash
+
+_is_darwin() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" =~ "Darwin" ]]
+}
+
+_is_linux() {
+    [[ "$#" -eq 0 ]] && [[ "$(uname -s)" =~ "Linux" ]]
+}
+
+
+if _is_darwin;then
+    echo https://www.rarlab.com/rar/rarosx$(curl -s https://www.rarlab.com/download.htm | pythongrep -o '(?<=href=\"/rar/rarosx).*(?=\")')
+fi
+
+
+if _is_linux;then
+    echo https://www.rarlab.com/rar/rarlinux$(curl -s https://www.rarlab.com/download.htm | pythongrep -o '(?<=href=\"/rar/rarlinux).*(?=\")')
+fi
