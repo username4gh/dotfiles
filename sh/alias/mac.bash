@@ -74,4 +74,9 @@ if _is_darwin; then
     alias spctl_master_enable='sudo spctl --master-enable'
 
     alias list_all_usb='system_profiler SPUSBDataType'
+
+    alias disable_wifi='networksetup -setnetworkserviceenabled Wi-Fi off'
+    alias enable_wifi='networksetup -setnetworkserviceenabled Wi-Fi on'
+    alias disable_ethernet='networksetup -setnetworkserviceenabled Ethernet off'
+    alias enable_ethernet='networksetup -setnetworkserviceenabled Ethernet on'
 fi
