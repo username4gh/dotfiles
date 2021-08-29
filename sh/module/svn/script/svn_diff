@@ -6,7 +6,7 @@ _percol() {
 
 FILTER="$(svn_filter)"
 
-FILE=$(svn status | pythongrep -v "$FILTER" | _percol | gawk '{print $2}')
+FILE=$(svn status | pythongrep "^M" | pythongrep -v "$FILTER" | _percol | gawk '{print $2}')
 
 if [[ "${#FILE}" -gt 0 ]];then
     svn diff --diff-cmd icdiff $FILE
