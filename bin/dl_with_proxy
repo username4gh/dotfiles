@@ -6,7 +6,13 @@ if [[ "$#" -eq 1 ]];then
 
     echo "[dl] : downloading $FILE_NAME ..."
 
-    curl --preproxy socks5://127.0.0.1:10800 -k -L -C - "$1" -o ./$FILE_NAME
+    # https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell
+    function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+
+    DECODED_FILE_NAME="$(urldecode $FILE_NAME)"
+
+    curl --socks5-hostname 127.0.0.1:10800 --preproxy socks5://127.0.0.1:10800 -k -L -C - "$1" -o ./"$DECODED_FILE_NAME"
+    #curl --socks5-hostname 127.0.0.1:10800 --preproxy socks5://127.0.0.1:10800 -k -L -C - -O "$1"
 
     unset FILE_NAME
 else
