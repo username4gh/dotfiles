@@ -163,6 +163,9 @@ class OutputFormatter:
             for _, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
                 self.emit_line(
                     '%s:%s:%s' % (matching_file, match_result.matching_line_number, line))
+                #self.emit_line(
+                #    '%s:%s' % (matching_file, match_result.matching_line_number))
+
 
     def emit(self, content):
         """ Write the string to the stream.
@@ -296,15 +299,22 @@ try:
     config = ConfigObj(conf_path)
 
     if 'blacklist_file_name' in config:
+        blacklist_file_name = config['blacklist_file_name'] 
+        print('blacklist_file_name: %s' % blacklist_file_name)
         blacklist_file_name = config['blacklist_file_name']
+        blacklist_file_name_regex = re.compile(blacklist_file_name)
     if 'blacklist_dir_name' in config:
-        blacklist_dir_name = re.compile(config['blacklist_dir_name'])
+        blacklist_dir_name = config['blacklist_dir_name']
+        print('blacklist_dir_name: %s' % blacklist_dir_name)
+        blacklist_dir_name = re.compile(blacklist_dir_name)
 
     if 'whitelist_file_extension' in config:
         whitelist_file_extension = config['whitelist_file_extension']
+        print('whitelist_file_extension: %s' % whitelist_file_extension)
         whitelist_file_extension_regex = re.compile(whitelist_file_extension)
     if 'blacklist_file_extension' in config:
         blacklist_file_extension = config['blacklist_file_extension']
+        print('blacklist_file_extension: %s' % blacklist_file_extension)
         blacklist_file_extension_regex = re.compile(blacklist_file_extension)
 except ModuleNotFoundError as err:
     print(err)
@@ -312,11 +322,10 @@ except ModuleNotFoundError as err:
 
 
 def _is_file_wont_be_ignored(extension, target):
-    if 'blacklist_file_name' in globals():
+    if 'blacklist_file_name_regex' in globals():
         # noinspection PyUnresolvedReferences
-        for name in blacklist_file_name:
-            if name in target:
-                return False
+        if blacklist_file_name_regex.match(target):
+            return False
 
     if extension is not None:
         if not target.endswith(".%s" % extension):
