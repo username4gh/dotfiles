@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+_percol() {
+    percol --match-method regex "$@"
+}
+
+TARGET=$(svn log -l 1 -v | grep M | gawk '{print $2}' | _percol)
+
+svn diff --diff-cmd icdiff -r $(svn log -q "$1" | grep "^r[0-9]" | _percol | gawk '{print $1}') "${TARGET:4}"

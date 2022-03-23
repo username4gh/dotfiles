@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+result='';
+while IFS= read -r line;
+do
+    svn revert $line;
+done < <(cat /tmp/_svn_changelist_stash)

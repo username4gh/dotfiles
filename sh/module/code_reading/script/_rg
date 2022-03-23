@@ -1,3 +1,7 @@
 #! /usr/bin/env bash
 
-rg --no-heading --ignore-file "$MY_SH_MODULE/code_reading/resource/ripgrep.ignore" $@
+#rg --no-heading --ignore-file "$MY_SH_MODULE/code_reading/resource/ripgrep.ignore" $@
+
+rg --no-heading \
+    --ignore-file "$MY_SH_MODULE/code_reading/resource/ripgrep.ignore" \
+    --type-add "custome_type:*.cpp" -tcustom_type $@

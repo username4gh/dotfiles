@@ -1,0 +1,32 @@
+#! /usr/bin/env bash
+
+
+_autodetect_bin() {
+    if [[ "$#" == 1 ]];then
+        # it seems like that zsh treat 'path' same as 'PATH', so here we use bin_path
+        local bin_path
+        bin_path=$(find ~/bin -mindepth 1 -maxdepth 1 -type f | grep "$1" | tail -1)
+        echo $bin_path
+    else
+        echo "Usage: _autodetect_bin 'regex_str'"
+    fi
+}
+
+_dl() {
+    FILE_NAME="${1##*/}"
+    echo "[dl] : downloading $FILE_NAME ..."
+    curl --preproxy socks5://127.0.0.1:10800 -k -L -C - "$1" -o ~/bin/$FILE_NAME
+    unset FILE_NAME
+}
+
+CHECKSTYLE_JAR="$(_autodetect_bin "checkstyle-.*\.jar")"
+
+
+if [[ "$CHECKSTYLE_JAR" =~ .*checkstyle-.*\.jar ]];then
+    echo $CHECKSTYLE_JAR
+else
+    _dl $(github_get_latest_asset 'checkstyle/checkstyle')
+fi
+
+shopt -s globstar
+java -classpath butterknife-annotations-10.1.0.jar -jar "$CHECKSTYLE_JAR" -c ~/Downloads/sonar-checkstyle.xml "$@"

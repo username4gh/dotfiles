@@ -1,10 +1,10 @@
 #! /usr/bin/env python3
 # coding=UTF-8
 
-from collections import namedtuple
 import optparse
 import re
 import sys
+from collections import namedtuple
 
 PY3 = sys.version_info[0] == 3
 
@@ -74,40 +74,47 @@ class ContentMatcher(object):
             self._find_str_len = len(self._find_str)
 
     def matcher(self, file_obj):
-        for line_number, line in enumerate(file_obj, 1):
-            # Iterate over all matches of the pattern in the line,
-            # noting each matching column range.
-            try:
-                if self._find_str:
-                    # Make the common case faster: there's no match in this line, so
-                    # bail out ASAP.
-                    index = line.find(self._find_str, 0)
-                    if index == -1:
-                        continue
-                    col_ranges = []
-                    while index >= 0:
-                        next_start = index + self._find_str_len
-                        col_ranges.append((index, next_start))
-                        index = line.find(self._find_str, next_start)
-                else:
-                    col_ranges = [match.span() for match in self._finditer(line) if match]
+        try:
+            # exception might occur during enumerating process
+            for line_number, line in enumerate(file_obj, 1):
+                # Iterate over all matches of the pattern in the line,
+                # noting each matching column range.
+                try:
+                    if self._find_str:
+                        # Make the common case faster: there's no match in this line, so
+                        # bail out ASAP.
+                        index = line.find(self._find_str, 0)
+                        if index == -1:
+                            continue
+                        col_ranges = []
+                        while index >= 0:
+                            next_start = index + self._find_str_len
+                            col_ranges.append((index, next_start))
+                            index = line.find(self._find_str, next_start)
+                    else:
+                        col_ranges = [match.span() for match in self._finditer(line) if match]
 
-                if col_ranges:
-                    yield MatchResult(line, line_number, col_ranges)
-            except Exception as err:
-                print(err)
+                    if col_ranges:
+                        yield MatchResult(line, line_number, col_ranges)
+                except Exception as err:
+                    print(err)
+        except UnicodeDecodeError as err:
+            print(err)
 
     def inverted_matcher(self, file_obj):
-        for line_number, line in enumerate(file_obj, 1):
-            # Invert match: only return lines that don't match the
-            # pattern anywhere
-            try:
-                search_result = self._search(line)
+        try:
+            for line_number, line in enumerate(file_obj, 1):
+                # Invert match: only return lines that don't match the
+                # pattern anywhere
+                try:
+                    search_result = self._search(line)
 
-                if search_result is None:
-                    yield MatchResult(line, line_number, [])
-            except Exception as err:
-                print(err)
+                    if search_result is None:
+                        yield MatchResult(line, line_number, [])
+                except Exception as err:
+                    print(err)
+        except UnicodeDecodeError as err:
+            print(err)
 
     @staticmethod
     def _pattern_is_simple(pattern):
@@ -172,11 +179,11 @@ def parse_cmdline(cmdline_args):
         add_help_option=False)  # -h is a real option
 
     option_parser.add_option('-h', '--help',
-                         action='store_true', dest='help',
-                         help='Display this information')
+                             action='store_true', dest='help',
+                             help='Display this information')
     option_parser.add_option('-f', '--file',
-                         action='store', dest='input_file', type='string', default=None,
-                         help='input file')
+                             action='store', dest='input_file', type='string', default=None,
+                             help='input file')
 
     group_searching = optparse.OptionGroup(option_parser, 'Regexp selection and interpretation')
     group_searching.add_option('-i', '--ignore-case',
@@ -292,9 +299,8 @@ def main(argv=sys.argv):
              only_matching=options.only_matching)
     except KeyboardInterrupt:
         return 'interrupted - exiting'
-    except Exception as err:
-        return str('error: %s' % err)
 
 
 if __name__ == "__main__":
     sys.exit(main())
+

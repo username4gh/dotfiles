@@ -4,21 +4,48 @@
 from __future__ import print_function
 import optparse
 import os
+# noinspection PyUnresolvedReferences
+import re
 import sys
 
-PY3 = sys.version_info[0] == 3
+
+# https://stackoverflow.com/questions/35750907/how-can-i-tell-a-python-script-to-hault-for-debugger-attach-to-process
+# import sys
+# import threading
+#
+# from importlib.abc import MetaPathFinder
+#
+#
+# class NotificationFinder(MetaPathFinder):
+#     def find_spec(self, fullname, _path, _target=None):
+#         if 'pydevd' in fullname:
+#             with t:
+#                 t.notify()
+#
+#
+# t = threading.Condition()
+# sys.meta_path.insert(0, NotificationFinder())
+#
+# with t:
+#     t.wait()
+
+# debug specific lambda string
+# def func(x: str):
+#     return re.sub(r'io.reactivex.rxjava3.*', 'io.reactivex.rxjava3:rxjava:3.1.4', x)
 
 
-def _process_line(options):
+def _read_lines(options):
     f = None
     try:
         if options.input is None:
             f = sys.stdin
             lines = f.readlines()
+            return lines
         else:
             if os.path.exists(options.input):
                 f = open(options.input, 'r')
                 lines = f.readlines()
+                return lines
             else:
                 print("cannot access %s" % options.input)
                 return 1
@@ -29,14 +56,9 @@ def _process_line(options):
         if f:
             f.close()
 
-    func = eval(options.lambda_string)
-    result_lines = []
 
-    for i in range(0, len(lines)):
-        line = func(lines[i])
-        if line is not None:
-            result_lines += line
-
+def _write_lines(options, lines):
+    f = None
     try:
         if options.in_place:
             f = open(options.input, 'w')
@@ -45,7 +67,7 @@ def _process_line(options):
         else:
             f = open(options.output, 'w')
         # here we use the completely-override-write to make it's easy to implement in-place edit
-        f.writelines(result_lines)
+        f.writelines(lines)
     except IOError as err:
         print(err)
     finally:
@@ -53,12 +75,50 @@ def _process_line(options):
             f.close()
 
 
+def _process_line(options):
+    if options.line_regex:
+        line_regex = re.compile(options.line_regex)
+    else:
+        line_regex = None
+
+    # first, read all lines
+    lines = _read_lines(options)
+    if lines is None:
+        return
+
+    if 'func' not in globals():
+        func = eval(options.lambda_string)
+    result_lines = []
+
+    for i in range(0, len(lines)):
+        if line_regex:
+            match = line_regex.search(lines[i])
+            if match and match.group():
+                line = func(lines[i])
+            else:
+                line = lines[i]
+        else:
+            line = func(lines[i])
+        if line is not None:
+            result_lines += line
+
+    # in the end, write all lines
+    _write_lines(options, lines=result_lines)
+
+
 def main():
     parser = optparse.OptionParser(optparse.SUPPRESS_USAGE)
     parser.add_option('--in-place', dest='in_place', action='store_true', help='edit the file in-place')
     parser.add_option('--input', dest='input', type='string', help='the input file, omittable')
     parser.add_option('--output', dest='output', type='string', help='the output file, omittable')
-    parser.add_option('--lambda-string', dest='lambda_string', type='string', help='\"lambda x:x.something()\", the double quote cannot be omitted, here we assume x is str, represents one line of content from input file; x.something() is all about line-based operation, if x.something() returns None, then this line will be deleted')
+    parser.add_option('--line-regex', dest='line_regex', type='string',
+                      help='regex to match the line that we want to be processed, need to be quoted with double quote, '
+                           'omittable')
+    parser.add_option('--lambda-string', dest='lambda_string', type='string',
+                      help='\"lambda x:x.something()\", the double quote cannot be omitted, here we assume x is str, '
+                           'represents one line of content from input file; x.something() is all about line-based '
+                           'operation, if x.something() returns None, then this line will be deleted '
+                           'also you can use re related method, e.g. re.sub(pattern, replacement, x)')
     options, args = parser.parse_args()
 
     if options.lambda_string is None:
@@ -70,4 +130,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

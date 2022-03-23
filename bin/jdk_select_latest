@@ -3,35 +3,47 @@
 
 import re
 import sys
+import typing
 
 PY3 = sys.version_info[0] == 3
 
-pattern = re.compile('(?<=jdk).*?(?=\\.jdk)')
+pattern = re.compile('(?<=jdk)[-]*[.0-9_]*(?=\\.jdk)')
 
-major_version_pattern = re.compile('(?<=^)\\d+\\.\\d+\\.\\d+(?=_)')
+version = re.compile('[.0-9_]+(?=\\.jdk)')
 
-minor_version_pattern = re.compile('(?<=_)\\d+(?=$)')
+major_version = re.compile('(?<=^)\\d+\\.\\d+\\.\\d+')
+
+minor_version = re.compile('(?<=_)\\d+(?=$)')
 
 
-def asc_order(x, y):
-    find_x = pattern.findall(x)
-    find_y = pattern.findall(y)
-    if find_x and find_y:
-        x_processed = find_x[0]
-        y_processed = find_x[0]
+def extract(p: typing.Pattern, source: str) -> str:
+    result = p.findall(source)
+    if len(result) == 0:
+        return "0"
+    else:
+        return result[0]
 
-        if major_version_pattern.findall(x_processed) > major_version_pattern.findall(y_processed):
+
+def asc_order(x: str, y: str) -> int:
+    version_x = extract(version, x)
+    version_y = extract(version, y)
+    major_version_x = extract(major_version, version_x)
+    major_version_y = extract(major_version, version_y)
+
+    if major_version_x > major_version_y:
+        return 1
+    elif major_version_x == major_version_y:
+        minor_version_x = extract(minor_version, version_x)
+        minor_version_y = extract(minor_version, version_y)
+
+        if minor_version_x > minor_version_y:
             return 1
-        elif major_version_pattern.findall(x_processed) == major_version_pattern.findall(y_processed):
-            if int(minor_version_pattern.findall(x_processed)[0]) > int(minor_version_pattern.findall(y_processed)[0]):
-                return 1
-            elif int(minor_version_pattern.findall(x_processed)[0]) == int(
-                    minor_version_pattern.findall(y_processed)[0]):
-                return 0
-            else:
-                return -1
+        elif minor_version_x == minor_version_y:
+            return 0
         else:
             return -1
+    else:
+        return -1
 
 
 def desc_order(x, y):
@@ -47,10 +59,10 @@ def main():
         if pattern.search(line):
             input_src.append(line)
 
-    # import os
-    # for line in os.listdir('/Library/Java/JavaVirtualMachines/'):
-    #     if pattern.search(line):
-    #         input_src.append(line)
+    #import os
+    #for line in os.listdir('/Library/Java/JavaVirtualMachines/'):
+    #    if pattern.search(line):
+    #        input_src.append(line)
 
     if PY3:
         import functools

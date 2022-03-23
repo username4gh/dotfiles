@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-SELECTION="$(git status -s | gawk '{print $2}' | percol --match-method regex)"
+SELECTION="$(git ls-files -m | percol --match-method regex)"
 
 if [[ ${#SELECTION} -gt 0 ]];then
     if command -v 'git-icdiff' > /dev/null; then

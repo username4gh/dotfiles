@@ -54,20 +54,13 @@ def tostring(b):
         return b
 
 
-MatchResult = namedtuple('MatchResult', ' '.join([
-    'matching_line',
-    'matching_line_number',
-    'matching_column_ranges']))
+MatchResult = namedtuple('MatchResult', ' '.join(['matching_line', 'matching_line_number', 'matching_column_ranges']))
 
 
 class ContentMatcher(object):
-    def __init__(self,
-                 pattern,
-                 options=None):
-        self.regex = ContentMatcher._create_regex(pattern,
-                                                  ignore_case=options.ignore_case,
-                                                  whole_words=options.word_regexp,
-                                                  literal_pattern=options.literal)
+    def __init__(self, pattern, options=None):
+        self.regex = ContentMatcher._create_regex(pattern, ignore_case=options.ignore_case,
+                                                  whole_words=options.word_regexp, literal_pattern=options.literal)
         if options.invert_match:
             self.match_file = self.inverted_matcher
         else:
@@ -129,10 +122,7 @@ class ContentMatcher(object):
         return bool(re.match('[\\w_]+$', tostring(pattern)))
 
     @staticmethod
-    def _create_regex(pattern,
-                      ignore_case=False,
-                      whole_words=False,
-                      literal_pattern=False):
+    def _create_regex(pattern, ignore_case=False, whole_words=False, literal_pattern=False):
         """ Utility for creating the compiled regex from pattern and options.
         """
         if literal_pattern:
@@ -146,10 +136,9 @@ class ContentMatcher(object):
 
 
 class OutputFormatter:
-    def __init__(self,
-                 only_matching=False):
-        self.only_matching = only_matching
-
+    def __init__(self, options=None):
+        self.only_matching = options.only_matching
+        self.path_only = options.path_only
         self.output_stream = sys.stdout
 
     def emit_matching_line(self, matching_file, match_result):
@@ -161,11 +150,11 @@ class OutputFormatter:
             # while only_matching we print out all matches line by line, even when multiple matches
             # in the same line, we just split it with '\n'
             for _, (match_start, match_end) in enumerate(match_result.matching_column_ranges):
-                self.emit_line(
-                    '%s:%s:%s' % (matching_file, match_result.matching_line_number, line))
-                #self.emit_line(
-                #    '%s:%s' % (matching_file, match_result.matching_line_number))
-
+                if self.path_only:
+                    self.emit_line('%s' % matching_file)
+                else:
+                    self.emit_line('%s:%s:%s' % (matching_file, match_result.matching_line_number, line))
+                # self.emit_line(  #    '%s:%s' % (matching_file, match_result.matching_line_number))
 
     def emit(self, content):
         """ Write the string to the stream.
@@ -181,43 +170,33 @@ def parse_cmdline(cmdline_args):
         triple: options, args, parser -- the first two being the result of
         OptionParser.parse_args, and the third the parser object itself.`
     """
-    option_parser = optparse.OptionParser(
-        usage='usage: %prog [options] <pattern>',
-        description='ts short for TextSearch, Grep like tool',
-        prog='ts',
-        add_help_option=False)  # -h is a real option
+    option_parser = optparse.OptionParser(usage='usage: %prog [options] <pattern>',
+        description='ts short for TextSearch, Grep like tool', prog='ts', add_help_option=False)  # -h is a real option
 
-    option_parser.add_option('-h', '--help',
-                             action='store_true', dest='help',
-                             help='Display this information')
-    option_parser.add_option('-e', '--extension',
-                             action='store', dest='extension', type='string', default=None,
+    option_parser.add_option('-h', '--help', action='store_true', dest='help', help='Display this information')
+    option_parser.add_option('-e', '--extension', action='store', dest='extension', type='string', default=None,
                              help='file extension')
 
     group_searching = optparse.OptionGroup(option_parser, 'Regexp selection and interpretation')
-    group_searching.add_option('-i', '--ignore-case',
-                               action='store_true', dest='ignore_case', default=False,
+    group_searching.add_option('-i', '--ignore-case', action='store_true', dest='ignore_case', default=False,
                                help='Ignore case distinctions in the pattern')
-    group_searching.add_option('-w', '--word-regexp',
-                               action='store_true', dest='word_regexp', default=False,
+    group_searching.add_option('-w', '--word-regexp', action='store_true', dest='word_regexp', default=False,
                                help='Force the pattern to match only whole words')
-    group_searching.add_option('-l', '--literal',
-                               action='store_true', dest='literal', default=False,
+    group_searching.add_option('-l', '--literal', action='store_true', dest='literal', default=False,
                                help='Quote all metacharacters; the pattern is literal')
     option_parser.add_option_group(group_searching)
 
     group_miscellaneous = optparse.OptionGroup(option_parser, 'Miscellaneous')
-    group_miscellaneous.add_option('-v', '--invert-match',
-                                   action='store_true', dest='invert_match', default=False,
+    group_miscellaneous.add_option('--path-only', action='store_true', dest='path_only', default=False,
+                                   help='only print out the matching file')
+    group_miscellaneous.add_option('-v', '--invert-match', action='store_true', dest='invert_match', default=False,
                                    help='Invert the sense of matching, to select non-matching lines.')
     option_parser.add_option_group(group_miscellaneous)
 
     group_output = optparse.OptionGroup(option_parser, 'Output control')
-    group_output.add_option('-c', '--count',
-                            action='store_true', dest='count', default=False,
+    group_output.add_option('-c', '--count', action='store_true', dest='count', default=False,
                             help='Suppress normal output; instead print a count of matching lines for each input file.')
-    group_output.add_option('-o', '--only-matching',
-                            action='store_true', dest='only_matching', default=False,
+    group_output.add_option('-o', '--only-matching', action='store_true', dest='only_matching', default=False,
                             help='Print only the matched (non-empty) parts of a matching line, with each such part on '
                                  'a separate output line.')
     option_parser.add_option_group(group_output)
@@ -227,11 +206,10 @@ def parse_cmdline(cmdline_args):
 
 
 def _create_output_formatter(options):
-    return OutputFormatter(options.only_matching)
+    return OutputFormatter(options)
 
 
-def _create_matcher(pattern=None,
-                    options=None):
+def _create_matcher(pattern=None, options=None):
     if pattern is None:
         pattern = b''
     else:
@@ -239,15 +217,11 @@ def _create_matcher(pattern=None,
             pattern = tostring(pattern)
 
     # Set up the content matcher
-    matcher = ContentMatcher(pattern=pattern,
-                             options=options)
+    matcher = ContentMatcher(pattern=pattern, options=options)
     return matcher
 
 
-def _search(matcher=None,
-            output_formatter=None,
-            input_file=None,
-            options=None):
+def _search(matcher=None, output_formatter=None, input_file=None, options=None):
     """ Returns True if a match was found, False otherwise. """
     match_found = False
 
@@ -299,7 +273,7 @@ try:
     config = ConfigObj(conf_path)
 
     if 'blacklist_file_name' in config:
-        blacklist_file_name = config['blacklist_file_name'] 
+        blacklist_file_name = config['blacklist_file_name']
         print('blacklist_file_name: %s' % blacklist_file_name)
         blacklist_file_name = config['blacklist_file_name']
         blacklist_file_name_regex = re.compile(blacklist_file_name)
@@ -401,8 +375,7 @@ def _parallel_search(options, output_formatter, matcher, directory):
             try:
                 entity = process_queue.get(True, 1)
                 for entry in scandir(entity['path']):
-                    entry_ = {'is_dir': entry.is_dir(follow_symlinks=False),
-                              'path': os.path.abspath(entry.path)}
+                    entry_ = {'is_dir': entry.is_dir(follow_symlinks=False), 'path': os.path.abspath(entry.path)}
                     try:
                         if entry_['is_dir']:
                             if _is_dir_wont_be_ignored(entry_['path']):
@@ -460,8 +433,7 @@ def main(argv=None):
     pattern = args[0]
 
     output_formatter = _create_output_formatter(options)
-    matcher = _create_matcher(pattern=pattern,
-                              options=options)
+    matcher = _create_matcher(pattern=pattern, options=options)
     try:
         _parallel_search(options, output_formatter, matcher, os.path.curdir)
     except KeyboardInterrupt:
@@ -472,4 +444,3 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
-C

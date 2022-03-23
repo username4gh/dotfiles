@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env bash
 
 # https://stackoverflow.com/questions/5917576/sort-a-text-file-by-line-length-including-spaces
 

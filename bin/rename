@@ -1,23 +1,97 @@
 #! /usr/bin/env python
 # coding=UTF-8
 
-import os, sys
+import json
+import logging
+import optparse
+import os
+import re
+import shutil
+import sys
 
-# pattern to match file for process
-def rename(old_str, new_str):
+logging.basicConfig(encoding='utf-8', format='%(message)s', level=logging.DEBUG)
+
+
+class Walker:
+    @staticmethod
+    def walk_with_level(some_dir: str, level=1):
+        cur_dir = some_dir.rstrip(os.path.sep)
+        assert os.path.isdir(cur_dir)
+        num_sep = cur_dir.count(os.path.sep)
+        for root, dirs, files in os.walk(cur_dir):
+            yield root, dirs, files
+            num_sep_this = root.count(os.path.sep)
+            if num_sep + level <= num_sep_this:
+                del dirs[:]
+
+    @staticmethod
+    def walk(some_dir: str, process):
+        for folder, sub_folders, files in Walker.walk_with_level(some_dir, 2):
+            for file in files:
+                file_path = os.path.join(os.path.abspath(folder), file)
+                process(file_path)
+
+
+class Option:
+    def __init__(self):
+        self.directory = os.curdir
+        self.wet_run = False
+        self.search = None
+        self.replacement = None
+
+
+def _rename_recursively(options: Option):
+    def process_file(file_path: str):
+        dir_name = os.path.dirname(file_path)
+        old_name = os.path.basename(file_path)
+        new_name = os.path.join(dir_name, re.sub(options.search, options.replacement, old_name))
+        if options.wet_run:
+            logging.debug('%s -> %s' % (file_path, new_name))
+            shutil.move(file_path, new_name)
+
+    Walker.walk(options.directory, process_file)
+
+
+def _rename_from_stdin(options: Option):
     try:
         input_name = sys.stdin
         lines = input_name.readlines()
         for line in lines:
             old_file_name = str(line).strip('\n')
-            new_file_name = old_file_name.replace(old_str, new_str)
-            os.rename(old_file_name, new_file_name)
-    except KeyboardInterrupt:
-        print('interrupted - exiting')
-        return 130
+            new_file_name = old_file_name.replace(options.search, options.replacement)
+            if options.wet_run:
+                shutil.move(old_file_name, new_file_name)
     except Exception as err:
-        print('unexpected error: %s' % err)
-        return 1
+        logging.error('unexpected error: %s' % err)
+        pass
 
 
-rename(sys.argv[1], sys.argv[2])
+# pattern to match file for process
+def rename(options: Option):
+    if options.directory:
+        _rename_recursively(options)
+    else:
+        _rename_from_stdin(options)
+
+
+def main():
+    parser = optparse.OptionParser(optparse.SUPPRESS_USAGE)
+    parser.add_option('-d', '--directory', dest='directory', action='store', type=str, default=os.curdir,
+                      help='directory')
+    parser.add_option('-w', '--wet-run', dest='wet_run', default=False, action='store_true', help='opposite to dry-run')
+    parser.add_option('-s', '--search', dest='search', type='string', help='str to be replaced, support regex, '
+                                                                           'no quoting')
+    parser.add_option('-r', '--replacement', dest='replacement', type='string', help='replacement, no quoting')
+    options, args = parser.parse_args()
+
+    logging.debug(json.dumps(options, default=vars))
+
+    if options.search is None:
+        parser.print_help()
+        exit(1)
+    else:
+        rename(options)
+
+
+if __name__ == '__main__':
+    main()

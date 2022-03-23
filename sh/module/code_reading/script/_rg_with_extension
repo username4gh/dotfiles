@@ -5,6 +5,5 @@ if [[ "$#" -lt 2 ]];then
 else
     extension="$1"
     shift 1
-    echo "$*"
-    rg --no-heading --ignore-file "$MY_SH_MODULE/code_reading/resource/ripgrep.ignore" --type-add "foo:*.$extension" -tfoo $*
+    rg --no-heading --ignore-file "$MY_SH_MODULE/code_reading/resource/ripgrep.ignore" --type-add "foo:*.$extension" -tfoo $@
 fi

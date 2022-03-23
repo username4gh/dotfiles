@@ -29,7 +29,7 @@ def main():
     inputfile = options.inputfile
     outputfile = options.outputfile
     if (inputfile == None) or (outputfile == None):
-        print parser.usage
+        print(parser.usage)
         exit(1)
     else:
         _lineDeduplication(inputfile, outputfile)

@@ -79,4 +79,5 @@ if _is_darwin; then
     alias enable_wifi='networksetup -setnetworkserviceenabled Wi-Fi on'
     alias disable_ethernet='networksetup -setnetworkserviceenabled Ethernet off'
     alias enable_ethernet='networksetup -setnetworkserviceenabled Ethernet on'
+    alias ls='gls --time-style=long-iso'
 fi

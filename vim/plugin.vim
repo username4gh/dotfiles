@@ -79,7 +79,7 @@ if _is_on_heavy_mode()
     " denite
     if executable('rg')
         " Ripgrep command on grep source
-        call denite#custom#var('grep', 'command', ['rg'])
+        call denite#custom#var('grep', 'command', ['_rg'])
         call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
         call denite#custom#var('grep', 'recursive_opts', [])
         call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
