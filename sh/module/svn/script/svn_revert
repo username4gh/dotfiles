@@ -1,12 +1,8 @@
 #! /usr/bin/env bash
 
-_percol() {
-    percol --match-method regex "$@"
-}
-
 FILTER="$(svn_filter)"
 
-FILE=$(svn status | pythongrep -v "$FILTER" | _percol | gawk '{print $2}')
+FILE=$(svn status | pythongrep -v "$FILTER" | percol --match-method regex | gawk '{print $2}')
 
 if [[ "${#FILE}" -gt 0 ]];then
     svn revert $FILE

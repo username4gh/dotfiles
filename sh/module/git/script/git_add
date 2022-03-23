@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-_percol() {
-    percol --match-method regex "$@"
-}
+SELECTION="$(git status -s | percol --match-method regex | gawk '{print $2}')"
 
-git add "$(git status -s | _percol | gawk '{print $2}')"
+if [[ ${#SELECTION} -gt 0 ]];then
+    git add $SELECTION
+fi

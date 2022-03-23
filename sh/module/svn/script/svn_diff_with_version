@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 
-_percol() {
-    percol --match-method regex "$@"
-}
+SELECTION="$(svn log -q "$1" | grep "^r[0-9]" | percol --match-method regex | gawk '{print $1}') "$1""
 
-svn diff --diff-cmd icdiff -r $(svn log -q "$1" | grep "^r[0-9]" | _percol | gawk '{print $1}') "$1"
+if [[ ${#SELECTION} -gt 0 ]];then
+    if command -v icdiff > /dev/null;then
+        svn diff --diff-cmd icdiff -r $SELECTION
+    else
+        svn diff -r $SELECTION
+    fi
+fi

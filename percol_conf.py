@@ -1,9 +1,7 @@
-#! /usr/bin/env python
 # https://www.python.org/dev/peps/pep-0263/
-# coding=UTF-8
 
-percol.view.PROMPT = ur"<blue>Input:</blue> %q"
-percol.view.RPROMPT = ur"(%F) [%i/%I]"
+percol.view.PROMPT = r"<blue>Input:</blue> %q"
+percol.view.RPROMPT = r"(%F) [%i/%I]"
 
 # Emacs like
 percol.import_keymap({

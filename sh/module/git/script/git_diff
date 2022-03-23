@@ -1,7 +1,11 @@
 #! /usr/bin/env bash
 
-_percol() {
-    percol --match-method regex "$@"
-}
+SELECTION="$(git status -s | gawk '{print $2}' | percol --match-method regex)"
 
-git diff "$(git status -s | gawk '{print $2}' | _percol)"
+if [[ ${#SELECTION} -gt 0 ]];then
+    if command -v 'git-icdiff' > /dev/null; then
+        git-icdiff $SELECTION
+    else
+        git diff $SELECTION
+    fi
+fi

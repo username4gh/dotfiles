@@ -1,9 +1,5 @@
 #! /usr/bin/env bash
 
-_percol() {
-    percol --match-method regex "$@"
-}
-
 FILE="$1"
 PATTERN="$2"
 
